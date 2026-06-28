@@ -20,9 +20,9 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### Slice 0: Fundacao
 - [x] Task 0.1 Scaffold
 - [x] Task 0.2 Tokens de marca / sistema de design Elevate
-- [ ] Task 0.3 Banco e ORM
+- [~] Task 0.3 Banco e ORM (codigo pronto + migracao gerada; falta aplicar em Postgres real)
 - [ ] Task 0.4 Seed Copa 2026
-- [ ] Task 0.5 Deploy
+- [x] Task 0.5 Deploy (producao no ar; CI GitHub Actions ainda pendente)
 
 ### Slice 1: Auth e perfil
 - [ ] Task 1.1 NextAuth Credentials
@@ -52,9 +52,17 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ---
 
-## 3. Must-haves da task atual (proxima: Task 0.3 Banco e ORM)
+## 3. Must-haves da task atual (Task 0.3 Banco e ORM)
 
-A definir ao iniciar a 0.3. Must-haves da 0.2 (concluida) abaixo, com evidencia.
+- [x] Drizzle configurado (drizzle.config.ts) e lib/db.ts (cliente vercel-postgres).
+- [x] drizzle/schema.ts com todas as tabelas do DATA_SPEC (users, teams, matches,
+      predictions com criterion, leagues, league_members, special_predictions),
+      indices e unique(user_id, match_id).
+- [x] db:generate funciona: migracao 0000 gerada com as 7 tabelas (validada pelo kit).
+- [ ] db:migrate aplica no Postgres: BLOQUEADO (sem conexao Postgres; ver B2).
+- [x] .env.example preenchido (POSTGRES_URL..., AUTH_SECRET, AUTH_URL).
+
+### Task 0.2 (concluida)
 
 ### Task 0.2 (concluida)
 - [x] globals.css importa tokens.css; Tailwind expoe bg-indigo/text-rose/text-teal e
@@ -102,6 +110,11 @@ A definir ao iniciar a 0.3. Must-haves da 0.2 (concluida) abaixo, com evidencia.
   e rotulos seguem indigo/ink/muted com contraste >= 4.5:1.
 - DI4. Componentes nomeados em minusculo/kebab (header.tsx, brand-bar.tsx, ui/button.tsx)
   para casar com a arvore do ESTRUTURA.md.
+- DI5. Deploy: Vercel religada a mzinhoww-svg/desafiopass; framework forcado via
+  vercel.json ("framework":"nextjs") porque o projeto estava com framework null e
+  exigia output dir public. Producao no ar (commit cb24bc6, READY). PRs ganham preview.
+- DI6. drizzle-orm 0.45: segundo arg do pgTable usa array (forma de objeto do DATA_SPEC
+  foi deprecada na 0.36). Tabelas/colunas/constraints identicos ao DATA_SPEC.
 
 ---
 
@@ -118,14 +131,27 @@ A definir ao iniciar a 0.3. Must-haves da 0.2 (concluida) abaixo, com evidencia.
   tipografica .t-*, Framer Motion (FadeIn/Reveal) + Lucide, header com asa, brand-bar,
   primitivos ui (button/input/card/pill), home de demonstracao | typecheck/lint/build
   verdes; home mostra acento por fundo, motion e icone Lucide | commit feat(design)
+- 2026-06-28 | Task 0.5 (deploy) | Vercel religada ao repo certo; vercel.json framework
+  nextjs corrige output dir; deploy de producao READY | site no ar (protegido por
+  Deployment Protection ate o usuario desligar) | commits chore/fix na main
+- 2026-06-28 | Task 0.3 | schema Drizzle do DATA_SPEC, drizzle.config.ts, lib/db.ts,
+  .env.example; migracao 0000 gerada (7 tabelas) | typecheck/lint/build verdes;
+  db:generate ok; db:migrate pendente de Postgres real (B2) | commit feat(db)
 
 ---
 
 ## 6. Bloqueios e ambiguidades
 
-- B1. Push e PR bloqueados por permissao: git relay e MCP do GitHub retornam 403
-  (integracao com acesso de leitura em mzinhoww-svg/desafiopass). Usuario vai conceder
-  write (contents + pull requests). Ate la, trabalho commitado localmente.
+- B1. (RESOLVIDO) Push/PR: usuario forneceu token GitHub; push via token direto,
+  PR #1 criado e mergeado na main. MCP do GitHub segue read-only (app de org nao
+  conectado), mas a API direta com o token funciona por egress direto.
+- B2. db:migrate e db:seed nao rodam DESTE ambiente: Postgres e TCP cru (porta 5432),
+  que o proxy de egress nao suporta ("raw-TCP databases"). A migracao 0000 esta gerada
+  e validada (SQL). Aplicar em Postgres real precisa acontecer na Vercel/CI ou na
+  maquina do usuario. Opcoes: (a) usuario provisiona Vercel Postgres (adiciona
+  POSTGRES_URL ao projeto) e roda a migracao no deploy/CI; (b) autorizar um Postgres
+  (Neon/Supabase) para validar o apply via MCP server-side. Mesmo bloqueio vale para
+  o db:seed da Task 0.4.
 
 ---
 
