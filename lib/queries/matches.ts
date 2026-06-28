@@ -1,6 +1,6 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { matches, predictions } from "@/drizzle/schema";
+import { matches, predictions, users } from "@/drizzle/schema";
 
 export type MatchRow = typeof matches.$inferSelect;
 export type PredictionRow = typeof predictions.$inferSelect;
@@ -43,4 +43,31 @@ export async function getMatchPredictions(
   matchId: string,
 ): Promise<PredictionRow[]> {
   return db.select().from(predictions).where(eq(predictions.matchId, matchId));
+}
+
+// Palpites da comunidade (com apelido) para exibir na partida. Revelado depois que
+// o usuario palpitou (ou partida encerrada).
+export interface CommunityPrediction {
+  userId: string;
+  nickname: string;
+  homeGuess: number;
+  awayGuess: number;
+  points: number;
+}
+
+export async function getMatchPredictionsWithUsers(
+  matchId: string,
+): Promise<CommunityPrediction[]> {
+  return db
+    .select({
+      userId: predictions.userId,
+      nickname: users.nickname,
+      homeGuess: predictions.homeGuess,
+      awayGuess: predictions.awayGuess,
+      points: predictions.points,
+    })
+    .from(predictions)
+    .innerJoin(users, eq(users.id, predictions.userId))
+    .where(eq(predictions.matchId, matchId))
+    .orderBy(asc(users.nickname));
 }

@@ -41,14 +41,12 @@ export function Header({
       ) : null}
 
       <div className="relative flex items-center gap-3">
-        {/* Marca: quadrado gradiente Elevate (placeholder do simbolo LATAM Pass) */}
-        <span
-          aria-hidden="true"
-          className="h-8 w-8 flex-none rounded-lg"
-          style={{
-            background: "var(--grad)",
-            boxShadow: "0 2px 10px rgba(254,49,115,.4)",
-          }}
+        {/* Marca LATAM Pass (aproximacao em SVG; trocar pelo arquivo oficial). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/latam-mark.svg"
+          alt="LATAM Pass"
+          className="h-7 w-auto flex-none"
         />
         <div className="min-w-0">
           <h1 className="text-lg font-extrabold uppercase leading-tight tracking-tight">
