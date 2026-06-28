@@ -30,6 +30,7 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   nickname: text("nickname").notNull().unique(),
   favoriteTeam: text("favorite_team"), // codigo do team, null permitido
+  avatarUrl: text("avatar_url"), // data URL (imagem redimensionada), null permitido
   role: text("role").notNull().default("user"), // 'user' | 'admin'
   isPremium: boolean("is_premium").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

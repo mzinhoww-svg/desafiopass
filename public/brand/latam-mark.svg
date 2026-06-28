@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" role="img" aria-label="LATAM Pass">
+  <!-- Aproximacao da marca "asa" LATAM Pass (3 barras rosa). Substituir pelo SVG oficial quando disponivel. -->
+  <g fill="#FE3173">
+    <path d="M18 4 L62 4 L52 15 L8 15 Z" />
+    <path d="M12 19 L50 19 L40 30 L2 30 Z" />
+    <path d="M8 34 L36 34 L26 45 L-2 45 Z" />
+  </g>
+</svg>

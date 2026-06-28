@@ -7,7 +7,11 @@ import { Pill } from "@/components/ui/pill";
 import { LinkButton } from "@/components/ui/link-button";
 import { ScoreInput } from "@/components/score-input";
 import { PredictForm } from "./predict-form";
-import { getMatchById, getUserPrediction } from "@/lib/queries/matches";
+import {
+  getMatchById,
+  getUserPrediction,
+  getMatchPredictionsWithUsers,
+} from "@/lib/queries/matches";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { teamOf } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
@@ -32,6 +36,11 @@ export default async function PartidaPage({
   const closed = match.status === "encerrada";
   const open =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
+
+  // Palpites de outros: revelados assim que o usuario palpitou (ou jogo encerrado).
+  const reveal = Boolean(prediction) || closed;
+  const community = reveal ? await getMatchPredictionsWithUsers(id) : [];
+  const others = community.filter((c) => c.userId !== user?.id);
 
   return (
     <>
@@ -135,6 +144,28 @@ export default async function PartidaPage({
             )}
           </Card>
         </div>
+
+        {reveal && others.length > 0 ? (
+          <section className="mt-4">
+            <p className="t-kicker mb-2 text-indigo">Palpites da comunidade</p>
+            <div className="rounded-2xl border border-black/10 bg-paper p-2">
+              {others.map((c) => (
+                <div
+                  key={c.userId}
+                  className="flex items-center justify-between border-b border-black/5 px-2 py-2 last:border-0"
+                >
+                  <span className="t-body text-ink">{c.nickname}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="t-body font-extrabold text-indigo">
+                      {c.homeGuess} x {c.awayGuess}
+                    </span>
+                    {closed ? <Pill variant="lime">+{c.points}</Pill> : null}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </main>
     </>
   );

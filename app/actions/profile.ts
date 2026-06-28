@@ -47,9 +47,20 @@ export async function updateProfile(
     .where(and(eq(users.nickname, nickname), ne(users.id, current.id)));
   if (clash.length > 0) return { error: "Apelido ja em uso." };
 
+  // Avatar opcional: data URL de imagem ja redimensionada no client. Vazio = sem
+  // alteracao. Limite de tamanho como guarda (256px jpeg fica bem abaixo disso).
+  const avatarRaw = String(formData.get("avatarUrl") ?? "");
+  const avatarUpdate: { avatarUrl?: string } = {};
+  if (avatarRaw) {
+    if (!avatarRaw.startsWith("data:image/") || avatarRaw.length > 400_000) {
+      return { error: "Imagem invalida ou muito grande." };
+    }
+    avatarUpdate.avatarUrl = avatarRaw;
+  }
+
   await db
     .update(users)
-    .set({ nickname, favoriteTeam })
+    .set({ nickname, favoriteTeam, ...avatarUpdate })
     .where(eq(users.id, current.id));
 
   revalidatePath("/perfil");

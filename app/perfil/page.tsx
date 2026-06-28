@@ -50,6 +50,7 @@ export default async function PerfilPage() {
             <ProfileForm
               nickname={user.nickname}
               favoriteTeam={user.favoriteTeam}
+              avatarUrl={user.avatarUrl}
               teams={realTeams}
             />
           </Card>
