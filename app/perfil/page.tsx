@@ -58,7 +58,7 @@ export default async function PerfilPage() {
           </Card>
         </div>
 
-        <LinkButton href="/palpites-especiais" variant="secondary" className="mt-4 w-full">
+        <LinkButton href="/partidas?aba=especiais" variant="secondary" className="mt-4 w-full">
           Palpites especiais (campeão e artilheiro)
         </LinkButton>
 

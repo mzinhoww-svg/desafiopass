@@ -50,10 +50,13 @@ export default async function PartidaPage({
         })
       : null;
 
-  // Palpites de outros: revelados assim que o usuario palpitou (ou jogo encerrado).
+  // Palpites da comunidade: revelados assim que o usuario palpitou (ou jogo
+  // encerrado). Inclui o proprio usuario (marcado "voce"), ordenado primeiro.
   const reveal = Boolean(prediction) || closed;
-  const community = reveal ? await getMatchPredictionsWithUsers(id) : [];
-  const others = community.filter((c) => c.userId !== user?.id);
+  const communityAll = reveal ? await getMatchPredictionsWithUsers(id) : [];
+  const community = [...communityAll].sort((a, b) =>
+    a.userId === user?.id ? -1 : b.userId === user?.id ? 1 : 0,
+  );
 
   const palpiteBlock = (
     <Card>
@@ -155,26 +158,34 @@ export default async function PartidaPage({
         <p className="t-body text-center text-muted">
           Faça seu palpite para ver os palpites da comunidade.
         </p>
-      ) : others.length === 0 ? (
+      ) : community.length === 0 ? (
         <p className="t-body text-center text-muted">
-          Ninguém mais palpitou nesta partida ainda.
+          Ninguém palpitou nesta partida ainda.
         </p>
       ) : (
         <div className="flex flex-col">
-          {others.map((c) => (
-            <div
-              key={c.userId}
-              className="flex items-center justify-between border-b border-black/5 px-1 py-2 last:border-0"
-            >
-              <span className="t-body text-ink">{c.nickname}</span>
-              <span className="flex items-center gap-2">
-                <span className="t-body font-extrabold text-indigo">
-                  {c.homeGuess} x {c.awayGuess}
+          {community.map((c) => {
+            const isMe = c.userId === user?.id;
+            return (
+              <div
+                key={c.userId}
+                className={`flex items-center justify-between px-2 py-2 ${
+                  isMe ? "rounded-xl bg-lime/20" : "border-b border-black/5 last:border-0"
+                }`}
+              >
+                <span className="t-body text-ink">
+                  {c.nickname}
+                  {isMe ? " (você)" : ""}
                 </span>
-                {closed ? <Pill variant="lime">+{c.points}</Pill> : null}
-              </span>
-            </div>
-          ))}
+                <span className="flex items-center gap-2">
+                  <span className="t-body font-extrabold text-indigo">
+                    {c.homeGuess} x {c.awayGuess}
+                  </span>
+                  {closed ? <Pill variant="lime">+{c.points}</Pill> : null}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </Card>
@@ -186,7 +197,7 @@ export default async function PartidaPage({
       <Breadcrumbs
         items={[
           { label: "Início", href: "/" },
-          { label: "Jogos", href: "/partidas" },
+          { label: "Palpites", href: "/partidas" },
           { label: `${match.homeCode} x ${match.awayCode}` },
         ]}
       />
