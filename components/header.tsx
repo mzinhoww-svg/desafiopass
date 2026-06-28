@@ -41,10 +41,10 @@ export function Header({
       ) : null}
 
       <div className="relative flex items-center gap-3">
-        {/* Marca LATAM Pass (aproximacao em SVG; trocar pelo arquivo oficial). */}
+        {/* Logo oficial LATAM Pass (branco), sobre o header indigo. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/brand/latam-mark.svg"
+          src="/brand/latam-white-2k23.png"
           alt="LATAM Pass"
           className="h-7 w-auto flex-none"
         />
