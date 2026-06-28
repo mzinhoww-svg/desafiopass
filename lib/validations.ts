@@ -37,6 +37,11 @@ export const scoreSchema = z.object({
   awayGuess: z.number().int().min(0).max(20),
 });
 
+// Criar liga (Task 4.1).
+export const createLeagueSchema = z.object({
+  name: z.string().min(3).max(40),
+});
+
 // Resultado inserido pelo admin (Task 2.4).
 export const adminResultSchema = z.object({
   matchId: z.string(),

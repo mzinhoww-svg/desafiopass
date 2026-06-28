@@ -48,9 +48,11 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - [x] Task 3.1 Ranking geral (competition ranking, desempate travado, faixa pessoal, /ranking)
 
 ### Slice 4: Ligas privadas
-- [ ] Task 4.1 Criar liga
-- [ ] Task 4.2 Entrar na liga
-- [ ] Task 4.3 Ranking da liga
+- [x] Task 4.1 Criar liga (token crypto, limite 1 liga basico, owner como membro)
+- [x] Task 4.2 Entrar na liga (token/link, valida, PK impede duplicata, limite)
+- [x] Task 4.3 Ranking da liga (getLeagueRanking RANKING_SPEC 8.5, so membros)
+
+### SLICE 4 COMPLETO (codigo, build/test verdes).
 
 ### Slice 5: Regras, premios e acabamento
 - [ ] Task 5.1 Regras e premios
