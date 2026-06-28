@@ -1,0 +1,26 @@
+name: Database
+
+# Aplica a migracao (Task 0.3) e roda o seed (Task 0.4) no Postgres (Neon).
+# Disparo manual (workflow_dispatch). O runner do Actions tem egress livre ao Neon,
+# entao migrate (TCP) e seed funcionam aqui. POSTGRES_URL vem de um secret do repo.
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Aplicar migracoes
+        run: npm run db:migrate
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+      - name: Rodar seed
+        run: npm run db:seed
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
