@@ -28,7 +28,10 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ### Slice 1: Auth e perfil
 - [x] Task 1.1 NextAuth Credentials (mergeado; AUTH_SECRET na Vercel + usuarios semeados)
-- [~] Task 1.2 Cadastro (implementado e build-verde; /cadastro + /login + signup action)
+- [x] Task 1.2 Cadastro (/cadastro + /login + signup action; build-verde)
+- [x] Task 1.3 Perfil (/perfil: pontos/posicao agregados, edicao apelido/time, logout)
+
+### SLICE 1 COMPLETO (codigo). Proximo: Slice 2 — Task 2.1 Scoring (codigo pronto em reference).
 - [ ] Task 1.2 Cadastro
 - [ ] Task 1.3 Perfil
 
@@ -159,6 +162,14 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   bcryptjs, route handler, middleware (/perfil,/ligas login; /admin role), getCurrentUser,
   augmentacao de tipos, usuarios de teste no seed | typecheck/lint/build verdes (build ok
   sem AUTH_SECRET; rota dinamica) | commit feat(auth); login funcional valida em prod
+- 2026-06-28 | Task 1.2 | /cadastro (useActionState) + signup action (Zod, unicidade,
+  bcrypt) + /login (signIn v5) exigido pelo middleware | typecheck/lint/build verdes;
+  rotas /cadastro e /login geradas | commit feat(auth) cadastro
+- 2026-06-28 | Task 1.3 | /perfil (Server Component): pontos/posicao via getMyRank
+  (lib/queries/ranking, agregado server-side), edicao de apelido (unicidade) e time do
+  coracao + logout (Server Actions) | typecheck/lint/build verdes | commit feat(profile)
+- Nota: verificacao funcional de login/cadastro/perfil ocorre em producao (egress ao
+  banco/site bloqueado deste ambiente). Codigo coberto por typecheck/lint/build + CI.
 
 ---
 

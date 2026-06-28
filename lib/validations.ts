@@ -17,3 +17,16 @@ export const signupSchema = z.object({
 });
 
 export type SignupInput = z.infer<typeof signupSchema>;
+
+// Edicao de perfil (Task 1.3). favoriteTeam vazio = sem time (null no banco);
+// quando preenchido, deve ser um codigo de selecao do seed (validado na action).
+export const profileSchema = z.object({
+  nickname: z
+    .string()
+    .min(3)
+    .max(20)
+    .regex(/^[A-Za-z0-9_]+$/),
+  favoriteTeam: z.string().optional(),
+});
+
+export type ProfileInput = z.infer<typeof profileSchema>;
