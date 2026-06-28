@@ -3,8 +3,17 @@ name: Database
 # Aplica a migracao (Task 0.3) e roda o seed (Task 0.4) no Postgres (Neon).
 # Disparo manual (workflow_dispatch). O runner do Actions tem egress livre ao Neon,
 # entao migrate (TCP) e seed funcionam aqui. POSTGRES_URL vem de um secret do repo.
+#
+# Input "reset": quando true, roda o db:reset DEPOIS do seed, deixando o banco
+# limpo para o lancamento (apaga ligas e palpites e mantem apenas a allowlist de
+# admins). CUIDADO: apaga dados de producao.
 on:
   workflow_dispatch:
+    inputs:
+      reset:
+        description: "Limpar o banco (apaga ligas/palpites e usuarios fora da allowlist)"
+        type: boolean
+        default: false
 
 jobs:
   migrate-seed:
@@ -22,5 +31,10 @@ jobs:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
       - name: Rodar seed
         run: npm run db:seed
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+      - name: Limpar banco (reset)
+        if: ${{ inputs.reset }}
+        run: npm run db:reset
         env:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}

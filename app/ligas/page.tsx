@@ -65,7 +65,8 @@ export default async function LigasPage() {
         </Card>
 
         <p className="t-caption text-muted">
-          Plano básico: 1 liga. Sócio LATAM Pass: até 100 (em breve).
+          Crie uma liga para disputar com seus amigos ou entre em uma com o link
+          de convite.
         </p>
       </main>
     </>

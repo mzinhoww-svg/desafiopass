@@ -13,9 +13,9 @@ import {
   isMember,
 } from "@/lib/queries/leagues";
 
-// Limite do MVP: usuario basico (is_premium false) participa de no maximo 1 liga
-// (owner + membro). DATA_SPEC secao 5. Socio (V2) sobe para 100.
-const FREE_LIMIT = 1;
+// Sem planos pagos: qualquer usuario participa de varias ligas. Mantemos um teto
+// alto apenas como guarda contra abuso.
+const MAX_LEAGUES = 100;
 
 export type LeagueState = { error?: string };
 
@@ -32,8 +32,8 @@ export async function createLeague(
   if (!parsed.success) return { error: "Nome da liga: de 3 a 40 caracteres." };
 
   const count = await countUserLeagues(user.id);
-  if (count >= FREE_LIMIT) {
-    return { error: "Usuarios basicos podem participar de 1 liga." };
+  if (count >= MAX_LEAGUES) {
+    return { error: "Voce atingiu o limite de ligas." };
   }
 
   // Gera token unico; em colisao de unique, tenta de novo (ate 3 vezes).
@@ -57,7 +57,7 @@ export async function createLeague(
   }
   if (!createdId) return { error: "Nao foi possivel criar a liga. Tente de novo." };
 
-  // Owner entra como membro (ocupa a vaga de 1 liga).
+  // Owner entra como membro automaticamente.
   await db.insert(leagueMembers).values({ leagueId: createdId, userId: user.id });
 
   revalidatePath("/ligas");
@@ -82,8 +82,8 @@ export async function joinLeague(
 
   if (!(await isMember(league.id, user.id))) {
     const count = await countUserLeagues(user.id);
-    if (count >= FREE_LIMIT) {
-      return { error: "Usuarios basicos podem participar de 1 liga." };
+    if (count >= MAX_LEAGUES) {
+      return { error: "Voce atingiu o limite de ligas." };
     }
     try {
       await db
