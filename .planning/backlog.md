@@ -20,12 +20,14 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### Slice 0: Fundacao
 - [x] Task 0.1 Scaffold
 - [x] Task 0.2 Tokens de marca / sistema de design Elevate
-- [~] Task 0.3 Banco e ORM (codigo pronto + migracao gerada; falta aplicar em Postgres real)
-- [~] Task 0.4 Seed Copa 2026 (codigo pronto: copa2026, flags, flag.tsx, seed.ts; run pendente, B2)
-- [x] Task 0.5 Deploy (producao no ar; CI GitHub Actions ainda pendente)
+- [x] Task 0.3 Banco e ORM (migracao 0000 aplicada no Neon via GitHub Actions, run 28332601479)
+- [x] Task 0.4 Seed Copa 2026 (db:seed rodou no mesmo run; upsert idempotente por PK)
+- [x] Task 0.5 Deploy + CI (producao no ar; ci.yml lint/typecheck/test/build; db.yml migrate+seed)
+
+### SLICE 0 COMPLETO. Proximo: Slice 1 (Auth e perfil) — Task 1.1 NextAuth Credentials.
 
 ### Slice 1: Auth e perfil
-- [ ] Task 1.1 NextAuth Credentials
+- [~] Task 1.1 NextAuth Credentials (implementado e build-verde; login funcional pende AUTH_SECRET na Vercel + seed dos usuarios de teste via db.yml)
 - [ ] Task 1.2 Cadastro
 - [ ] Task 1.3 Perfil
 
@@ -115,6 +117,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   exigia output dir public. Producao no ar (commit cb24bc6, READY). PRs ganham preview.
 - DI6. drizzle-orm 0.45: segundo arg do pgTable usa array (forma de objeto do DATA_SPEC
   foi deprecada na 0.36). Tabelas/colunas/constraints identicos ao DATA_SPEC.
+- D11. Auth (Task 1.1): Auth.js v5 (next-auth@5 beta), padrao edge-split (lib/auth.config.ts
+  sem db/bcrypt para o middleware; lib/auth.ts com Credentials + bcryptjs). Sessao JWT
+  com id e role. bcryptjs (puro JS) em vez de bcrypt nativo. Rotas protegidas no MVP:
+  /perfil e /ligas (login) e /admin (role admin); /partidas e /ranking ficam publicas.
+  Usuarios de teste semeados: admin@latampass.test e user@latampass.test, senha bolao2026.
+  AUTH_SECRET: dev em .env.local; producao usa um proprio na Vercel (nao precisa casar).
 
 ---
 
@@ -143,6 +151,13 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - 2026-06-28 | infra | Neon conectado; aplicacao da migracao/seed daqui bloqueada: a
   policy de rede do ambiente nao tem o host do Neon (api.sa-east-1.aws.neon.tech) na
   allowlist. Aplicar via CI/Vercel ou allowlist do host. Ver B2.
+- 2026-06-28 | Task 0.5 (CI) | ci.yml (lint/typecheck/test/build) + db.yml (migrate+seed),
+  vitest, secret POSTGRES_URL criado via API | run 28332601479 verde: migracao + seed
+  aplicados no Neon | PR #4 merge
+- 2026-06-28 | Task 1.1 | Auth.js v5 edge-split (auth.config/auth.ts), Credentials +
+  bcryptjs, route handler, middleware (/perfil,/ligas login; /admin role), getCurrentUser,
+  augmentacao de tipos, usuarios de teste no seed | typecheck/lint/build verdes (build ok
+  sem AUTH_SECRET; rota dinamica) | commit feat(auth); login funcional valida em prod
 
 ---
 
@@ -151,7 +166,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - B1. (RESOLVIDO) Push/PR: usuario forneceu token GitHub; push via token direto,
   PR #1 criado e mergeado na main. MCP do GitHub segue read-only (app de org nao
   conectado), mas a API direta com o token funciona por egress direto.
-- B2. db:migrate e db:seed nao rodam DESTE ambiente: Postgres e TCP cru (porta 5432),
+- B2. (RESOLVIDO via CI) db:migrate e db:seed nao rodam deste ambiente (egress da rede
+  bloqueia o Neon: TCP 5432 e o host api.*.neon.tech fora da allowlist). Solucao: o
+  workflow .github/workflows/db.yml roda no GitHub Actions (egress livre) com o secret
+  POSTGRES_URL. Run 28332601479 aplicou migracao + seed com sucesso. Para reaplicar:
+  dispatch do workflow "Database". Detalhe historico abaixo.
+- B2-hist. Postgres e TCP cru (porta 5432),
   que o proxy de egress nao suporta ("raw-TCP databases"). A migracao 0000 esta gerada
   e validada (SQL). Aplicar em Postgres real precisa acontecer na Vercel/CI ou na
   maquina do usuario. Opcoes: (a) usuario provisiona Vercel Postgres (adiciona
