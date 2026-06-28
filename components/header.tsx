@@ -14,12 +14,14 @@ interface HeaderProps {
   title?: string;
   subtitle?: string;
   wing?: boolean;
+  hideLogin?: boolean; // suprime o botao "Entrar" (ex: na propria tela de login)
 }
 
 export async function Header({
   title = "Bolão LATAM Pass",
   subtitle = "Copa 2026 · Mata-mata",
   wing = false,
+  hideLogin = false,
 }: HeaderProps) {
   const user = await getCurrentUser();
   const avatar = user ? await getUserAvatar(user.id) : null;
@@ -73,7 +75,15 @@ export async function Header({
               initials
             )}
           </Link>
-        ) : null}
+        ) : hideLogin ? null : (
+          // Atalho discreto para quem ja tem conta (visitante deslogado).
+          <Link
+            href="/login"
+            className="focus-on-dark flex-none rounded-full border border-white/30 px-3 py-1.5 text-xs font-bold text-white"
+          >
+            Entrar
+          </Link>
+        )}
       </div>
 
       <BrandBar className="absolute inset-x-0 bottom-0" />
