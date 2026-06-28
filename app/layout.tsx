@@ -39,16 +39,22 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const loggedIn = !!user;
   const pendingCount = user ? await getPendingPredictionCount(user.id) : 0;
 
   return (
     <html lang="pt-BR" className={`${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full bg-black/5">
-        {/* App-shell: largura de telefone, centralizada em telas largas (web). */}
-        <div className="mx-auto flex min-h-full max-w-md flex-col bg-paper pb-16 shadow-sm">
+        {/* App-shell: largura de telefone, centralizada em telas largas (web). A
+            barra inferior (e seu espaco) so existe para usuarios logados. */}
+        <div
+          className={`mx-auto flex min-h-full max-w-md flex-col bg-paper shadow-sm ${
+            loggedIn ? "pb-16" : ""
+          }`}
+        >
           {children}
         </div>
-        <TabBar pendingCount={pendingCount} />
+        {loggedIn ? <TabBar pendingCount={pendingCount} /> : null}
       </body>
     </html>
   );

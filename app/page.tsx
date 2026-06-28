@@ -78,27 +78,8 @@ export default async function Home() {
           </Link>
         ) : null}
 
+        {/* Partidas em destaque, logo abaixo do hero. */}
         <section className="px-5 py-6">
-          <p className="t-kicker mb-3 text-indigo">Como funciona</p>
-          <div className="flex flex-col gap-3">
-            {STEPS.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="flex items-start gap-3">
-                <span
-                  className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white"
-                  style={{ background: "var(--grad-deep)" }}
-                >
-                  <Icon size={20} strokeWidth={2.5} aria-hidden="true" />
-                </span>
-                <div className="min-w-0">
-                  <p className="t-card-title text-indigo">{title}</p>
-                  <p className="t-caption text-muted">{text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="px-5 pb-6">
           <div className="mb-3 flex items-center justify-between">
             <p className="t-kicker text-indigo">Próximos jogos</p>
             <Link href="/partidas" className="t-caption font-bold text-rose">
@@ -121,6 +102,34 @@ export default async function Home() {
               Os jogos do mata-mata aparecem aqui assim que a fase começar.
             </p>
           )}
+
+          <LinkButton
+            href={user ? "/partidas" : "/cadastro"}
+            className="mt-4 w-full"
+          >
+            <Goal size={18} strokeWidth={2.5} aria-hidden="true" />
+            {user ? "Ver todos os jogos" : "Criar conta e palpitar"}
+          </LinkButton>
+        </section>
+
+        <section className="px-5 pb-6">
+          <p className="t-kicker mb-3 text-indigo">Como funciona</p>
+          <div className="flex flex-col gap-3">
+            {STEPS.map(({ icon: Icon, title, text }) => (
+              <div key={title} className="flex items-start gap-3">
+                <span
+                  className="flex h-10 w-10 flex-none items-center justify-center rounded-xl text-white"
+                  style={{ background: "var(--grad-deep)" }}
+                >
+                  <Icon size={20} strokeWidth={2.5} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className="t-card-title text-indigo">{title}</p>
+                  <p className="t-caption text-muted">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
 
           <LinkButton href="/regras" variant="secondary" className="mt-6 w-full">
             <ScrollText size={18} strokeWidth={2.5} aria-hidden="true" />
