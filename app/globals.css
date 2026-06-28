@@ -1,48 +1,14 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 /*
- * Tokens do Bolao LATAM Pass, derivados do LATAM Pass Elevate Design System
- * (LLM_SYSTEM_GUIDE.md) e da traducao para app em specs/DESIGN_SPEC.md.
- * Regra de cor Elevate 60.30.10: 60% neutro (cloud/paper), 30% indigo, 10% acento.
- * Um acento por superficie. Acento muda com o fundo: rosa em claro, teal em escuro.
+ * Sistema de design LATAM Pass Elevate. Tokens em app/styles/tokens.css.
+ * Aqui: exposicao dos tokens ao Tailwind v4 (@theme) e escala tipografica
+ * (DESIGN_SPEC secao 3). Regra Elevate 60.30.10, acento por fundo.
  */
 
-:root {
-  /* Marca Elevate (valores exatos do guia, secao 2) */
-  --indigo: #16064f; /* base escura, tinta primaria */
-  --indigo-light: #2c1183; /* parceiro de gradiente */
-  --indigo-deep: #0c0233; /* fundo ink, momentos-heroi */
-  --rose: #fe3173; /* acento em fundo CLARO */
-  --teal: #0ae7c6; /* acento em fundo ESCURO */
-  --lime: #c2f24a; /* positivo / destaque pontual */
-  --purple: #9e4cfe; /* acento 2 / gradiente decorativo */
-
-  /* Neutros / superficie */
-  --cloud: #f3f2f8; /* fundo de tela claro */
-  --paper: #ffffff; /* cards, superficie de leitura */
-  --ink: #18112e; /* texto em fundo claro */
-  --muted: #6b6586; /* texto secundario (claro) */
-  --muted-dark: #b9b2d6; /* texto secundario (escuro) */
-
-  /* Gradientes de marca */
-  --grad: linear-gradient(135deg, var(--indigo-light), var(--rose));
-  --grad-deep: linear-gradient(160deg, #0c0233 0%, #16064f 55%, #2c1183 100%);
-
-  /* Ranking (ui-ux-pro-max, decisao travada) */
-  --rank-gold: #ffd700;
-  --rank-silver: #c0c0c0;
-  --rank-bronze: #cd7f32;
-
-  /* Semantica de acao por fundo */
-  --action-on-light: var(--rose);
-  --action-on-dark: var(--teal);
-
-  /* Toque e foco (impeccable) */
-  --tap-min: 44px;
-}
-
-/* Expoe os tokens Elevate ao Tailwind (bg-indigo, text-rose, etc.) */
 @theme inline {
+  /* Cores Elevate expostas como utilities (bg-indigo, text-rose, text-teal, ...) */
   --color-indigo: var(--indigo);
   --color-indigo-light: var(--indigo-light);
   --color-indigo-deep: var(--indigo-deep);
@@ -59,8 +25,8 @@
   --color-rank-silver: var(--rank-silver);
   --color-rank-bronze: var(--rank-bronze);
 
-  /* Plus Jakarta Sans via next/font (variavel definida no layout) */
-  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  /* Fonte do app */
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 body {
@@ -68,19 +34,72 @@ body {
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Barra gradiente Elevate (borda inferior de header, quebras) */
-.brand-bar {
-  height: 4px;
-  background: var(--grad);
-  border: 0;
+/* ----------------------------------------------------------------------------
+ * Escala tipografica (DESIGN_SPEC secao 3). Estetica atletica via peso 800,
+ * tracking negativo em titulos grandes, caixa alta em kickers, oversized em
+ * placar e pontos. Toda prosa >= 4.5:1 de contraste.
+ * ------------------------------------------------------------------------- */
+
+.t-display {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.t-screen-title {
+  font-size: 1.625rem; /* 26px */
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-kicker {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.t-card-title {
+  font-size: 1rem; /* 16px */
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.t-lead {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500;
+  text-wrap: pretty;
+}
+.t-body {
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+}
+.t-score {
+  font-size: clamp(2rem, 9vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-points {
+  font-size: 2rem; /* 32px */
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-caption {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
 }
 
-/* Foco visivel para teclado (impeccable): rosa em fundo claro */
+/* Barra gradiente Elevate vem de tokens.css (.brand-bar). */
+
+/* Foco visivel para teclado (impeccable): rosa em fundo claro. Superficies
+ * escuras aplicam o anel teal via utilitario .focus-on-dark. */
 :focus-visible {
-  outline: 2px solid var(--rose);
+  outline: 2px solid var(--focus-ring-light);
   outline-offset: 2px;
+}
+.focus-on-dark:focus-visible {
+  outline-color: var(--focus-ring-dark);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -89,5 +108,6 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -15,6 +15,8 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "framer-motion": "^12.42.0",
+    "lucide-react": "^1.22.0",
     "next": "^15.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

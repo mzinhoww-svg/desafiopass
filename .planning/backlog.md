@@ -19,7 +19,7 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ### Slice 0: Fundacao
 - [x] Task 0.1 Scaffold
-- [~] Task 0.2 Tokens de marca / sistema de design Elevate
+- [x] Task 0.2 Tokens de marca / sistema de design Elevate
 - [ ] Task 0.3 Banco e ORM
 - [ ] Task 0.4 Seed Copa 2026
 - [ ] Task 0.5 Deploy
@@ -52,13 +52,20 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ---
 
-## 3. Must-haves da task atual (Task 0.2)
+## 3. Must-haves da task atual (proxima: Task 0.3 Banco e ORM)
 
-- [ ] globals.css importa tokens.css; Tailwind expoe bg-indigo, text-rose, text-teal e os tokens de rank.
-- [ ] Plus Jakarta Sans com a escala e o tracking do DESIGN_SPEC aplicados.
-- [ ] Framer Motion e Lucide instalados e usados (animacao de entrada e um icone).
-- [ ] Header (indigo + barra gradiente), primitivos (botao, input, card, pill) e barra gradiente prontos, com acento por fundo correto.
-- [ ] Checklist anti-slop do DESIGN_SPEC secao 7 aprovado na home de demonstracao.
+A definir ao iniciar a 0.3. Must-haves da 0.2 (concluida) abaixo, com evidencia.
+
+### Task 0.2 (concluida)
+- [x] globals.css importa tokens.css; Tailwind expoe bg-indigo/text-rose/text-teal e
+      rank-gold/silver/bronze. Evidencia: CSS compilado contem #16064f/#fe3173/#0ae7c6.
+- [x] Plus Jakarta Sans + escala/tracking do DESIGN_SPEC (classes .t-* em globals.css).
+      Evidencia: CSS compilado contem "Plus Jakarta"; body usa var(--font-sans).
+- [x] Framer Motion e Lucide instalados e usados. Evidencia: FadeIn/Reveal (motion/) e
+      icones Goal/Trophy/ChevronRight na home; build inclui o bundle.
+- [x] Header (indigo + barra gradiente + asa), primitivos botao/input/card/pill e
+      brand-bar prontos, acento por fundo correto (teal no escuro, rosa no claro).
+- [x] Checklist anti-slop aprovado na home (ver D10 sobre contraste do CTA rosa).
 
 ---
 
@@ -88,6 +95,13 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   (ESLint 9 flat config). Script de lint: `eslint .`.
 - DI3. Scripts db:* e test declarados na Task 0.1 mas as ferramentas (drizzle-kit, vitest,
   tsx) so sao instaladas nas Tasks 0.3/0.4/2.1; ate la esses scripts podem falhar.
+- D10. Botao primario (CTA) usa texto branco sobre rosa #FE3173, conforme BRANDING.md
+  (decisao de marca travada) e os wireframes. Contraste branco/rosa = 3.56:1 (passa AA
+  para texto grande/bold, abaixo de 4.5 para corpo). Mantido por ser a definicao de
+  marca do CTA; sinalizado para confirmacao de design, nao e bloqueio. Texto de corpo
+  e rotulos seguem indigo/ink/muted com contraste >= 4.5:1.
+- DI4. Componentes nomeados em minusculo/kebab (header.tsx, brand-bar.tsx, ui/button.tsx)
+  para casar com a arvore do ESTRUTURA.md.
 
 ---
 
@@ -98,8 +112,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   header LATAM; typecheck/lint/build verdes | commit feat(scaffold) (inicial)
 - 2026-06-28 | Task 0.1 | completa tsconfig noUncheckedIndexedAccess, scripts
   test/db:*, arvore de pastas do ESTRUTURA.md e backlog | pendente commit chore(setup)
-- 2026-06-28 | Task 0.2 | EM ANDAMENTO: sistema de design Elevate (tokens, motion,
-  lucide, primitivos, header, home demo)
+- 2026-06-28 | Task 0.1 | push da branch para o GitHub via token (PR draft bloqueado por
+  policy de org: API do GitHub exige Claude GitHub App conectado) | branch publicada
+- 2026-06-28 | Task 0.2 | sistema de design Elevate: tokens.css + @theme, escala
+  tipografica .t-*, Framer Motion (FadeIn/Reveal) + Lucide, header com asa, brand-bar,
+  primitivos ui (button/input/card/pill), home de demonstracao | typecheck/lint/build
+  verdes; home mostra acento por fundo, motion e icone Lucide | commit feat(design)
 
 ---
 
