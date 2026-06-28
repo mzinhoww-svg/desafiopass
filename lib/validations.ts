@@ -30,3 +30,16 @@ export const profileSchema = z.object({
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+// Palpite (Task 2.3). Range 0..20; a funcao de scoring assume entrada ja valida.
+export const scoreSchema = z.object({
+  homeGuess: z.number().int().min(0).max(20),
+  awayGuess: z.number().int().min(0).max(20),
+});
+
+// Resultado inserido pelo admin (Task 2.4).
+export const adminResultSchema = z.object({
+  matchId: z.string(),
+  homeScore: z.number().int().min(0).max(30),
+  awayScore: z.number().int().min(0).max(30),
+});

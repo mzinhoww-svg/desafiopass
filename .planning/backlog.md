@@ -37,10 +37,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ### Slice 2: Palpites e pontuacao
 - [x] Task 2.1 Logica de pontuacao (lib/scoring.ts + 38 testes verdes, F8=200)
-- [ ] Task 2.2 Lista de partidas
-- [ ] Task 2.3 Registrar palpite
-- [ ] Task 2.4 Encerrar e pontuar (admin)
-- [ ] Task 2.5 Resultado na UI
+- [x] Task 2.2 Lista de partidas (/partidas por fase, match-card, selos, estado)
+- [x] Task 2.3 Registrar palpite (/partidas/[id], score-input, prazo server-side, upsert)
+- [x] Task 2.4 Encerrar e pontuar admin (/admin, finalPoints + criterion, idempotente)
+- [x] Task 2.5 Resultado na UI (partida encerrada: palpite, placar real, pontos+criterio)
+
+### SLICE 2 COMPLETO (codigo, build/test verdes). Tambem: navegacao (tab bar, breadcrumbs, empty-state).
 
 ### Slice 3: Ranking
 - [ ] Task 3.1 Ranking geral
@@ -170,6 +172,19 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   coracao + logout (Server Actions) | typecheck/lint/build verdes | commit feat(profile)
 - Nota: verificacao funcional de login/cadastro/perfil ocorre em producao (egress ao
   banco/site bloqueado deste ambiente). Codigo coberto por typecheck/lint/build + CI.
+- 2026-06-28 | nav | tab bar inferior (Inicio/Jogos/Ranking/Ligas/Perfil), breadcrumbs,
+  empty-state, link-button; home com CTAs reais; placeholders /ranking e /ligas | verde
+- 2026-06-28 | Task 2.2 | lib/queries/matches, lib/phases/teams/utils/dates, match-card,
+  /partidas por fase com selos e estado, horario Brasilia | typecheck/lint/build verdes
+- 2026-06-28 | Task 2.3 | score-input, predict-form, app/actions/palpite (scoreSchema,
+  prazo server-side now<kickoff, upsert unique user+match), /partidas/[id] editavel/travado
+- 2026-06-28 | Task 2.4 | app/actions/admin (role admin, adminResultSchema, grava placar+
+  encerrada, finalPoints->points+criterion, idempotente), /admin e /admin/partidas/[id]
+- 2026-06-28 | Task 2.5 | /partidas/[id] encerrada: 'Voce palpitou', 'O placar foi',
+  pontos (lima) + frase do criterio; match-card encerrado idem. Le do banco, sem recalcular
+- D12. Decisoes Slice 2: /partidas e /ranking publicas; palpite exige login (CTA Entrar);
+  /perfil,/ligas,/admin protegidos pelo middleware. Times exibidos via mapa estatico do
+  seed (lib/teams), sem join. Idempotencia do admin: sobrescreve points/criterion.
 
 ---
 
