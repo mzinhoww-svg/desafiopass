@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/*
+ * Tokens do Bolao LATAM Pass, derivados do LATAM Pass Elevate Design System
+ * (LLM_SYSTEM_GUIDE.md) e da traducao para app em specs/DESIGN_SPEC.md.
+ * Regra de cor Elevate 60.30.10: 60% neutro (cloud/paper), 30% indigo, 10% acento.
+ * Um acento por superficie. Acento muda com o fundo: rosa em claro, teal em escuro.
+ */
+
+:root {
+  /* Marca Elevate (valores exatos do guia, secao 2) */
+  --indigo: #16064f; /* base escura, tinta primaria */
+  --indigo-light: #2c1183; /* parceiro de gradiente */
+  --indigo-deep: #0c0233; /* fundo ink, momentos-heroi */
+  --rose: #fe3173; /* acento em fundo CLARO */
+  --teal: #0ae7c6; /* acento em fundo ESCURO */
+  --lime: #c2f24a; /* positivo / destaque pontual */
+  --purple: #9e4cfe; /* acento 2 / gradiente decorativo */
+
+  /* Neutros / superficie */
+  --cloud: #f3f2f8; /* fundo de tela claro */
+  --paper: #ffffff; /* cards, superficie de leitura */
+  --ink: #18112e; /* texto em fundo claro */
+  --muted: #6b6586; /* texto secundario (claro) */
+  --muted-dark: #b9b2d6; /* texto secundario (escuro) */
+
+  /* Gradientes de marca */
+  --grad: linear-gradient(135deg, var(--indigo-light), var(--rose));
+  --grad-deep: linear-gradient(160deg, #0c0233 0%, #16064f 55%, #2c1183 100%);
+
+  /* Ranking (ui-ux-pro-max, decisao travada) */
+  --rank-gold: #ffd700;
+  --rank-silver: #c0c0c0;
+  --rank-bronze: #cd7f32;
+
+  /* Semantica de acao por fundo */
+  --action-on-light: var(--rose);
+  --action-on-dark: var(--teal);
+
+  /* Toque e foco (impeccable) */
+  --tap-min: 44px;
+}
+
+/* Expoe os tokens Elevate ao Tailwind (bg-indigo, text-rose, etc.) */
+@theme inline {
+  --color-indigo: var(--indigo);
+  --color-indigo-light: var(--indigo-light);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-rose: var(--rose);
+  --color-teal: var(--teal);
+  --color-lime: var(--lime);
+  --color-purple: var(--purple);
+  --color-cloud: var(--cloud);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-muted-dark: var(--muted-dark);
+  --color-rank-gold: var(--rank-gold);
+  --color-rank-silver: var(--rank-silver);
+  --color-rank-bronze: var(--rank-bronze);
+
+  /* Plus Jakarta Sans via next/font (variavel definida no layout) */
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+}
+
+body {
+  background: var(--cloud);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Barra gradiente Elevate (borda inferior de header, quebras) */
+.brand-bar {
+  height: 4px;
+  background: var(--grad);
+  border: 0;
+}
+
+/* Foco visivel para teclado (impeccable): rosa em fundo claro */
+:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
