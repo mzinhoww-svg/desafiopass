@@ -244,14 +244,15 @@ Sem infraestrutura nova; frontend/dados existentes.
 - [x] #12 PWA instalável (manifest.webmanifest + ícones 192/512/apple-touch)
 - [x] #13 Privacidade/LGPD (página /privacidade + link no rodapé e no cadastro)
 
-### Slice 2 — E-mail, contas e bolão completo (v1.2) [ ]
-Decisão de infra: provedor de e-mail (Resend ou Brevo) — travar antes de codar.
-- [ ] #1 Recuperação de senha (tabela de tokens + fluxo esqueci/redefinir + e-mail)
-- [ ] #5 Lembretes antes do apito (job agendado; opt-out no perfil)
-- [ ] #2 Palpites de campeão e artilheiro (UI + action + scoring puro/testado + admin lança resultado)
+### Slice 2 — E-mail, contas e bolão completo (v1.2) [x]
+Infra: Brevo (transacional). Requer env na Vercel (BREVO_API_KEY, EMAIL_FROM_*,
+APP_URL, CRON_SECRET) e dominio desafiopass.com autenticado no Brevo (DKIM/SPF).
+- [x] #1 Recuperação de senha (password_reset_tokens + esqueci/redefinir + e-mail)
+- [x] #5 Lembretes antes do apito (cron /api/cron/reminders + opt-out no perfil)
+- [x] #2 Palpites de campeão e artilheiro (scoring puro/testado, UI, admin, pontos no ranking)
 
-### Slice 3 — Dados, operação e performance (v1.3) [ ]
-- [ ] #8 Métricas no admin (usuários, palpites por jogo, taxa de participação)
-- [ ] #9 Alerta de jogos encerrados sem placar lançado
-- [ ] #10 Funil cadastro × palpite
-- [ ] #11 Avatar em Vercel Blob (tira data URL das queries de ranking)
+### Slice 3 — Dados, operação e performance (v1.3) [x]
+- [x] #8 Métricas no admin (usuários, % que palpitaram, palpites, jogos pontuados)
+- [x] #9 Alerta de jogos com apito passado e sem placar lançado
+- [x] #10 Funil cadastro × palpite
+- [x] #11 Avatar em Vercel Blob (fallback data URL se BLOB_READ_WRITE_TOKEN ausente)
