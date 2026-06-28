@@ -14,6 +14,7 @@ export function RankingRow({ row }: { row: RankRow }) {
         : row.position === 3
           ? "bg-rank-bronze text-white"
           : "bg-cloud text-indigo";
+  const positionLabel = row.position ?? "—";
 
   return (
     <div
@@ -24,7 +25,7 @@ export function RankingRow({ row }: { row: RankRow }) {
       <span
         className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-sm font-bold ${badge}`}
       >
-        {row.position}
+        {positionLabel}
       </span>
       <span className="t-body flex-1 font-medium text-ink">
         {row.nickname}

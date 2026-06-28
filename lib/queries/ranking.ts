@@ -56,7 +56,7 @@ export interface RankRow {
   isPremium: boolean;
   points: number;
   exactCount: number;
-  position: number;
+  position: number | null; // null quando points === 0 (travessao)
   isCurrentUser: boolean;
 }
 
@@ -152,4 +152,66 @@ export async function getMyGlobalRank(
     points: Number(row.points),
     position: row.position == null ? null : Number(row.position),
   };
+}
+
+// Ranking interno de uma liga (RANKING_SPEC secao 8.5). Mesma logica de posicao e
+// desempate do geral, mas a CTE parte de league_members filtrando a liga. Lista
+// todos os membros (inclui 0 pontos, com position null = travessao).
+export async function getLeagueRanking(args: {
+  leagueId: string;
+  currentUserId: string | null;
+  limit?: number;
+  offset?: number;
+}): Promise<RankRow[]> {
+  const limit = args.limit ?? 100;
+  const offset = args.offset ?? 0;
+
+  const result = await db.execute(sql`
+    WITH member_totals AS (
+      SELECT
+        u.id AS user_id,
+        u.nickname AS nickname,
+        u.is_premium AS is_premium,
+        u.created_at AS created_at,
+        COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points,
+        COUNT(*) FILTER (WHERE m.status = 'encerrada' AND p.criterion = 'placar_exato') AS exact_count
+      FROM league_members lm
+      JOIN users u ON u.id = lm.user_id
+      LEFT JOIN predictions p ON p.user_id = u.id
+      LEFT JOIN matches m ON m.id = p.match_id
+      WHERE lm.league_id = ${args.leagueId}
+      GROUP BY u.id, u.nickname, u.is_premium, u.created_at
+    )
+    SELECT
+      user_id,
+      nickname,
+      is_premium,
+      points,
+      exact_count,
+      CASE WHEN points = 0 THEN NULL
+           ELSE 1 + (SELECT COUNT(*) FROM member_totals t2 WHERE t2.points > member_totals.points)
+      END AS position
+    FROM member_totals
+    ORDER BY points DESC, exact_count DESC, created_at ASC, user_id ASC
+    LIMIT ${limit} OFFSET ${offset}
+  `);
+
+  return (
+    result.rows as Array<{
+      user_id: string;
+      nickname: string;
+      is_premium: boolean;
+      points: number | string;
+      exact_count: number | string;
+      position: number | string | null;
+    }>
+  ).map((r) => ({
+    userId: r.user_id,
+    nickname: r.nickname,
+    isPremium: r.is_premium,
+    points: Number(r.points),
+    exactCount: Number(r.exact_count),
+    position: r.position == null ? null : Number(r.position),
+    isCurrentUser: r.user_id === args.currentUserId,
+  }));
 }
