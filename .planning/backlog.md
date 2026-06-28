@@ -63,8 +63,14 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 
 ### SLICE 5 quase completo. MVP funcional entregue; falta validacao em prod + tag v1.0.0.
 
-### REFINAMENTOS pedidos (pos-MVP, fora do escopo original): foto de perfil (upload),
-### aba de palpites de outros usuarios, logo LATAM Pass (precisa do arquivo).
+### REFINAMENTOS (pos-MVP):
+- [x] Palpite inline entre bandeiras/x no match-card.
+- [x] Logo LATAM Pass no header (aproximacao SVG; aguardando arquivo oficial p/ troca 1:1).
+- [x] Foto de perfil (coluna avatar_url, migracao 0001, upload com resize no client).
+- [x] Palpites da comunidade na pagina da partida (revelado apos o usuario palpitar).
+- [x] Painel admin de gestao: /admin/usuarios (excluir usuario), /admin/ligas (excluir
+      liga), /admin/ligas/[id] (remover membro). Cascatas tratadas.
+- [ ] Pendente: arquivo SVG oficial do logo.
 
 ---
 

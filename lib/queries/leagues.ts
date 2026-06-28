@@ -1,6 +1,6 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { leagues, leagueMembers } from "@/drizzle/schema";
+import { leagues, leagueMembers, users } from "@/drizzle/schema";
 
 export type LeagueRow = typeof leagues.$inferSelect;
 
@@ -72,4 +72,40 @@ export async function getUserLeagues(
     counts.set(m.leagueId, (counts.get(m.leagueId) ?? 0) + 1);
   }
   return ls.map((l) => ({ league: l, members: counts.get(l.id) ?? 0 }));
+}
+
+// --- Admin ---
+
+export async function getAllLeaguesWithCounts(): Promise<
+  { id: string; name: string; ownerNickname: string; members: number }[]
+> {
+  const rows = await db
+    .select({
+      id: leagues.id,
+      name: leagues.name,
+      ownerNickname: users.nickname,
+    })
+    .from(leagues)
+    .innerJoin(users, eq(users.id, leagues.ownerId))
+    .orderBy(asc(leagues.name));
+
+  const allMembers = await db
+    .select({ leagueId: leagueMembers.leagueId })
+    .from(leagueMembers);
+  const counts = new Map<string, number>();
+  for (const m of allMembers) {
+    counts.set(m.leagueId, (counts.get(m.leagueId) ?? 0) + 1);
+  }
+  return rows.map((r) => ({ ...r, members: counts.get(r.id) ?? 0 }));
+}
+
+export async function getLeagueMembersWithUsers(
+  leagueId: string,
+): Promise<{ userId: string; nickname: string }[]> {
+  return db
+    .select({ userId: leagueMembers.userId, nickname: users.nickname })
+    .from(leagueMembers)
+    .innerJoin(users, eq(users.id, leagueMembers.userId))
+    .where(eq(leagueMembers.leagueId, leagueId))
+    .orderBy(asc(users.nickname));
 }

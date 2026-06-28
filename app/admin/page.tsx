@@ -18,6 +18,21 @@ export default async function AdminPage() {
       <Header title="Admin · Partidas" subtitle="Inserir resultado" />
       <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Admin" }]} />
       <main className="flex flex-1 flex-col gap-2 px-5 py-4">
+        <div className="flex gap-2">
+          <Link
+            href="/admin/usuarios"
+            className="t-card-title flex-1 rounded-xl border border-black/10 bg-paper p-3 text-center text-indigo"
+          >
+            Usuários
+          </Link>
+          <Link
+            href="/admin/ligas"
+            className="t-card-title flex-1 rounded-xl border border-black/10 bg-paper p-3 text-center text-indigo"
+          >
+            Ligas
+          </Link>
+        </div>
+        <p className="t-kicker mt-2 text-indigo">Partidas · inserir resultado</p>
         {all.map((m) => (
           <Link
             key={m.id}
