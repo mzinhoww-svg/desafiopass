@@ -55,6 +55,22 @@ export interface CommunityPrediction {
   points: number;
 }
 
+// Quantos jogos ainda abertos (agendados, antes do apito) o usuario NAO palpitou.
+// Base do indicador de palpites pendentes (#3). Uma contagem leve.
+export async function getPendingPredictionCount(userId: string): Promise<number> {
+  const result = await db.execute(sql`
+    SELECT COUNT(*)::int AS n
+    FROM matches m
+    WHERE m.status = 'agendada'
+      AND m.kickoff_at > now()
+      AND NOT EXISTS (
+        SELECT 1 FROM predictions p
+        WHERE p.match_id = m.id AND p.user_id = ${userId}
+      )
+  `);
+  return Number((result.rows as Array<{ n: number }>)[0]?.n ?? 0);
+}
+
 // Quantos palpites cada partida recebeu (mapa matchId -> total). Base da pagina
 // Comunidade, para mostrar onde a galera esta jogando.
 export async function getMatchPredictionCounts(): Promise<Map<string, number>> {

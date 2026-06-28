@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Flag } from "@/components/flag";
+import { Countdown } from "@/components/countdown";
 import { Pill } from "@/components/ui/pill";
 import { teamOf } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
@@ -41,6 +42,8 @@ export function MatchCard({
   const closed = match.status === "encerrada";
   const open =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
+  // Pendente: aberto e ainda sem palpite -> destaque para o usuario nao esquecer.
+  const pending = open && !prediction;
 
   // Numeros entre as bandeiras: placar real (encerrado) ou palpite (antes do jogo).
   const tone: "guess" | "result" | "empty" = closed
@@ -54,7 +57,9 @@ export function MatchCard({
   return (
     <Link
       href={`/partidas/${match.id}`}
-      className="block rounded-2xl border border-black/10 bg-paper p-4 transition-colors hover:border-rose/40"
+      className={`block rounded-2xl border bg-paper p-4 transition-colors hover:border-rose/40 ${
+        pending ? "border-rose/50 ring-1 ring-rose/30" : "border-black/10"
+      }`}
     >
       <div className="flex items-center justify-between gap-2">
         <Pill variant="neutral">{phaseBadge(match.phase as Phase)}</Pill>
@@ -87,17 +92,22 @@ export function MatchCard({
           </>
         ) : (
           <>
-            <span className="t-caption text-muted">
+            <span className={`t-caption ${pending ? "font-bold text-rose" : "text-muted"}`}>
               {prediction
                 ? "Seu palpite salvo"
                 : open
-                  ? "Toque para palpitar"
+                  ? "Palpite pendente"
                   : "Prazo encerrado"}
             </span>
             <Pill variant="neutral">
-              {open
-                ? formatBrasilia(new Date(match.kickoffAt))
-                : "Prazo encerrado"}
+              {open ? (
+                <Countdown
+                  kickoffAt={new Date(match.kickoffAt).toISOString()}
+                  fallback={formatBrasilia(new Date(match.kickoffAt))}
+                />
+              ) : (
+                "Prazo encerrado"
+              )}
             </Pill>
           </>
         )}

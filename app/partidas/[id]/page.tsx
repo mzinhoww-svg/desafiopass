@@ -18,7 +18,7 @@ import { teamOf } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
 import { CRITERION_LABEL } from "@/lib/scoring-labels";
 import { formatBrasilia, isPredictionOpen } from "@/lib/utils/dates";
-import type { Criterion, Phase } from "@/lib/scoring";
+import { finalPoints, type Criterion, type Phase } from "@/lib/scoring";
 
 export default async function PartidaPage({
   params,
@@ -37,6 +37,18 @@ export default async function PartidaPage({
   const closed = match.status === "encerrada";
   const open =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
+
+  // Detalhe da pontuacao (#6): recalcula o breakdown auditavel a partir do
+  // resultado e do palpite (motor puro). So quando ha placar e palpite.
+  const breakdown =
+    closed && prediction && match.homeScore != null && match.awayScore != null
+      ? finalPoints({
+          guess: { homeGuess: prediction.homeGuess, awayGuess: prediction.awayGuess },
+          result: { homeScore: match.homeScore, awayScore: match.awayScore },
+          phase: match.phase as Phase,
+          isBrazilMatch: isBrazil,
+        })
+      : null;
 
   // Palpites de outros: revelados assim que o usuario palpitou (ou jogo encerrado).
   const reveal = Boolean(prediction) || closed;
@@ -72,6 +84,21 @@ export default async function PartidaPage({
               <span className="t-caption text-muted">
                 {CRITERION_LABEL[(prediction.criterion as Criterion) ?? "errado"]}
               </span>
+            </div>
+          ) : null}
+          {breakdown ? (
+            <div className="rounded-xl bg-cloud px-3 py-2 text-center">
+              <p className="t-caption text-muted">Como você pontuou</p>
+              <p className="t-body mt-1 font-bold text-indigo">
+                {breakdown.base} base
+                {breakdown.brazilMultiplier > 1
+                  ? ` · ×${breakdown.brazilMultiplier} Brasil`
+                  : ""}
+                {breakdown.phaseMultiplier !== 1
+                  ? ` · ×${breakdown.phaseMultiplier.toLocaleString("pt-BR")} fase`
+                  : ""}{" "}
+                = {breakdown.final}
+              </p>
             </div>
           ) : null}
         </div>
