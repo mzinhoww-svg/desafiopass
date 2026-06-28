@@ -12,7 +12,7 @@ import { Home, ListChecks, Trophy, Users, User } from "lucide-react";
  */
 const items = [
   { href: "/", label: "Início", icon: Home },
-  { href: "/partidas", label: "Jogos", icon: ListChecks },
+  { href: "/partidas", label: "Palpites", icon: ListChecks },
   { href: "/ranking", label: "Ranking", icon: Trophy },
   { href: "/comunidade", label: "Comunidade", icon: Users },
   { href: "/perfil", label: "Perfil", icon: User },
