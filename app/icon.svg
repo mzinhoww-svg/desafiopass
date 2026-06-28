@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bolão LATAM Pass">
+  <!-- Favicon de marca (interim). Substituir pela imagem oficial (app/icon.png) quando disponivel. -->
+  <rect width="64" height="64" rx="14" fill="#16064F" />
+  <g fill="#FE3173" transform="translate(10,16) scale(0.7)">
+    <path d="M18 4 L62 4 L52 15 L8 15 Z" />
+    <path d="M12 19 L50 19 L40 30 L2 30 Z" />
+    <path d="M8 34 L36 34 L26 45 L-2 45 Z" />
+  </g>
+</svg>
