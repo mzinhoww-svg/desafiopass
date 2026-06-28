@@ -25,7 +25,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-50 flex border-t border-black/10 bg-paper"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md border-t border-black/10 bg-paper"
     >
       {items.map(({ href, label, icon: Icon }) => {
         const active =

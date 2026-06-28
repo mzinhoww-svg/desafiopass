@@ -80,8 +80,7 @@ export default async function Home() {
       <footer className="border-t border-black/5 bg-paper px-5 py-6">
         <p className="t-caption text-muted">Bolão LATAM Pass · Copa 2026</p>
         <p className="t-caption mt-1 text-muted">
-          Aurimar Reiners · PM de Inovações · LATAM Pass Brasil · squad eLoyalty
-          / New Business
+          Prêmios em milhas LATAM Pass · Mata-mata
         </p>
       </footer>
     </>
