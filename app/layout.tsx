@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { TabBar } from "@/components/tab-bar";
 import "./globals.css";
 
 // Fonte unica do app (decisao travada, DESIGN_SPEC secao 1): Plus Jakarta Sans,
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${jakarta.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col pb-16">
+        {children}
+        <TabBar />
+      </body>
     </html>
   );
 }

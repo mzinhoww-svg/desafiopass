@@ -1,7 +1,7 @@
 import { Header } from "@/components/header";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Reveal } from "@/components/motion/reveal";
-import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { Goal, Trophy, ChevronRight } from "lucide-react";
@@ -31,10 +31,10 @@ export default function Home() {
               O bolão da fase mata-mata com a identidade LATAM Pass. Acerte os
               placares, acumule pontos e dispute prêmios em milhas LATAM Pass.
             </p>
-            <Button variant="onDark" className="mt-6">
+            <LinkButton href="/partidas" variant="onDark" className="mt-6">
               <Goal size={18} strokeWidth={2.5} aria-hidden="true" />
               Palpitar agora
-            </Button>
+            </LinkButton>
           </FadeIn>
         </section>
 
@@ -70,11 +70,11 @@ export default function Home() {
             </Card>
           </Reveal>
 
-          <Button className="mt-6 w-full">
+          <LinkButton href="/ranking" className="mt-6 w-full">
             <Trophy size={18} strokeWidth={2.5} aria-hidden="true" />
             Ver ranking
             <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
-          </Button>
+          </LinkButton>
         </section>
       </main>
 
