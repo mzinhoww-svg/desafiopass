@@ -1,23 +1,31 @@
+import Link from "next/link";
+import { Goal, ScrollText } from "lucide-react";
 import { Header } from "@/components/header";
-import { FadeIn } from "@/components/motion/fade-in";
-import { Reveal } from "@/components/motion/reveal";
 import { LinkButton } from "@/components/ui/link-button";
-import { Card } from "@/components/ui/card";
-import { Pill } from "@/components/ui/pill";
-import { Goal, Trophy, ChevronRight } from "lucide-react";
+import { MatchCard } from "@/components/match-card";
+import { FadeIn } from "@/components/motion/fade-in";
+import { getAllMatches, getUserPredictionMap } from "@/lib/queries/matches";
+import { getCurrentUser } from "@/lib/auth-helpers";
 
-/*
- * Home de demonstracao do sistema de design Elevate (Task 0.2). Valida tokens,
- * tipografia, acento por fundo (teal no escuro, rosa no claro), motion (entrada e
- * scroll reveal), icones Lucide e os primitivos. Telas reais vem nas proximas tasks.
- */
-export default function Home() {
+// Home (Task 5.2): hero de marca, CTA para palpitar e proximos jogos do mata-mata
+// (agendados futuros), com a navegacao principal na tab bar (layout).
+export default async function Home() {
+  const user = await getCurrentUser();
+  const [all, predMap] = await Promise.all([
+    getAllMatches(),
+    getUserPredictionMap(user?.id ?? null),
+  ]);
+  const now = Date.now();
+  const upcoming = all
+    .filter(
+      (m) => m.status === "agendada" && new Date(m.kickoffAt).getTime() > now,
+    )
+    .slice(0, 3);
+
   return (
     <>
       <Header wing />
-
       <main className="flex-1">
-        {/* Hero de marca: superficie escura, acento unico teal (DESIGN_SPEC 2.2). */}
         <section
           className="relative overflow-hidden px-5 py-12 text-white"
           style={{ background: "var(--grad-deep)" }}
@@ -38,42 +46,33 @@ export default function Home() {
           </FadeIn>
         </section>
 
-        {/* Conteudo: superficie clara, acento unico rosa. */}
-        <section className="px-5 py-8">
-          <p className="t-kicker text-indigo">Próximos jogos</p>
+        <section className="px-5 py-6">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="t-kicker text-indigo">Próximos jogos</p>
+            <Link href="/partidas" className="t-caption font-bold text-rose">
+              Ver todos
+            </Link>
+          </div>
 
-          <FadeIn className="mt-3">
-            <Card>
-              <div className="flex items-center justify-between">
-                <Pill variant="neutral">Oitavas x1,4</Pill>
-                <Pill variant="rose">x2 Brasil</Pill>
-              </div>
-              <div className="mt-3 flex items-center justify-center gap-3">
-                <span className="t-card-title text-indigo">BRA</span>
-                <span className="t-caption text-muted">vs</span>
-                <span className="t-card-title text-indigo">JPN</span>
-              </div>
-            </Card>
-          </FadeIn>
+          {upcoming.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {upcoming.map((m) => (
+                <MatchCard
+                  key={m.id}
+                  match={m}
+                  prediction={predMap.get(m.id) ?? null}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="t-body text-muted">
+              Sem jogos agendados no momento. Volte em breve.
+            </p>
+          )}
 
-          <Reveal delay={0.05} className="mt-3">
-            <Card>
-              <div className="flex items-center justify-between">
-                <Pill variant="neutral">Oitavas x1,4</Pill>
-                <Pill variant="lime">+28 pts</Pill>
-              </div>
-              <div className="mt-3 flex items-center justify-center gap-3">
-                <span className="t-card-title text-indigo">ARG</span>
-                <span className="t-caption text-muted">1 x 1</span>
-                <span className="t-card-title text-indigo">MEX</span>
-              </div>
-            </Card>
-          </Reveal>
-
-          <LinkButton href="/ranking" className="mt-6 w-full">
-            <Trophy size={18} strokeWidth={2.5} aria-hidden="true" />
-            Ver ranking
-            <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
+          <LinkButton href="/regras" variant="secondary" className="mt-6 w-full">
+            <ScrollText size={18} strokeWidth={2.5} aria-hidden="true" />
+            Regras e prêmios
           </LinkButton>
         </section>
       </main>

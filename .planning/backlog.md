@@ -55,10 +55,16 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### SLICE 4 COMPLETO (codigo, build/test verdes).
 
 ### Slice 5: Regras, premios e acabamento
-- [ ] Task 5.1 Regras e premios
-- [ ] Task 5.2 Home
-- [ ] Task 5.3 QA e responsivo
-- [ ] Task 5.4 Release
+- [x] Task 5.1 Regras e premios (/regras: pontuacao, multiplicadores, premios em milhas)
+- [x] Task 5.2 Home (hero + CTA palpitar + proximos jogos do banco + link regras)
+- [x] Task 5.3 QA (checks verdes; palpite inline entre bandeiras/x no match-card)
+- [~] Task 5.4 Release (deploy de producao no ar; tag v1.0.0 retida ate verificacao
+      funcional ponta a ponta em producao pelo usuario)
+
+### SLICE 5 quase completo. MVP funcional entregue; falta validacao em prod + tag v1.0.0.
+
+### REFINAMENTOS pedidos (pos-MVP, fora do escopo original): foto de perfil (upload),
+### aba de palpites de outros usuarios, logo LATAM Pass (precisa do arquivo).
 
 ---
 

@@ -9,10 +9,25 @@ import type { Criterion, Phase } from "@/lib/scoring";
 import type { MatchRow, PredictionRow } from "@/lib/queries/matches";
 
 /*
- * Match-card (DESIGN_SPEC 6, wireframe tela 3). Superficie paper, borda completa
- * (nunca side-stripe). Selo de fase com multiplicador, selo rosa x2 Brasil, e o
- * estado: sem palpite / palpitado / encerrado com pontos. Linka para a partida.
+ * Match-card (DESIGN_SPEC 6). Superficie paper, borda completa. O placar fica SEMPRE
+ * entre as bandeiras e o "x": palpite do usuario (rosa) antes do jogo; placar real
+ * (indigo) quando encerrado; travessao quando ainda nao palpitou. Selo de fase e x2
+ * Brasil no topo; estado e pontos abaixo. Linka para a partida.
  */
+function Num({ value, tone }: { value: number | null; tone: "guess" | "result" | "empty" }) {
+  const cls =
+    tone === "guess"
+      ? "text-rose"
+      : tone === "result"
+        ? "text-indigo"
+        : "text-muted";
+  return (
+    <span className={`min-w-6 text-center text-2xl font-extrabold ${cls}`}>
+      {value ?? "–"}
+    </span>
+  );
+}
+
 export function MatchCard({
   match,
   prediction,
@@ -27,6 +42,15 @@ export function MatchCard({
   const open =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
 
+  // Numeros entre as bandeiras: placar real (encerrado) ou palpite (antes do jogo).
+  const tone: "guess" | "result" | "empty" = closed
+    ? "result"
+    : prediction
+      ? "guess"
+      : "empty";
+  const left = closed ? match.homeScore : (prediction?.homeGuess ?? null);
+  const right = closed ? match.awayScore : (prediction?.awayGuess ?? null);
+
   return (
     <Link
       href={`/partidas/${match.id}`}
@@ -37,10 +61,12 @@ export function MatchCard({
         {isBrazil ? <Pill variant="rose">x2 Brasil</Pill> : null}
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-3">
+      <div className="mt-3 flex items-center justify-center gap-2.5">
         <Flag code={home.flagCode} name={home.name} size={26} />
         <span className="t-card-title text-indigo">{match.homeCode}</span>
+        <Num value={left} tone={tone} />
         <span className="t-caption text-muted">x</span>
+        <Num value={right} tone={tone} />
         <span className="t-card-title text-indigo">{match.awayCode}</span>
         <Flag code={away.flagCode} name={away.name} size={26} />
       </div>
@@ -51,8 +77,7 @@ export function MatchCard({
             <span className="t-caption text-muted">
               {prediction
                 ? `Você palpitou ${prediction.homeGuess} x ${prediction.awayGuess}`
-                : "Sem palpite"}{" "}
-              · Placar {match.homeScore} x {match.awayScore}
+                : "Sem palpite"}
             </span>
             {prediction ? (
               <Pill variant="lime">+{prediction.points} pts</Pill>
@@ -60,22 +85,19 @@ export function MatchCard({
               <Pill variant="neutral">Encerrada</Pill>
             )}
           </>
-        ) : prediction ? (
-          <>
-            <span className="t-caption text-muted">
-              Você palpitou {prediction.homeGuess} x {prediction.awayGuess}
-            </span>
-            <Pill variant="neutral">
-              {open ? formatBrasilia(new Date(match.kickoffAt)) : "Prazo encerrado"}
-            </Pill>
-          </>
         ) : (
           <>
             <span className="t-caption text-muted">
-              {open ? "Toque para palpitar" : "Prazo encerrado"}
+              {prediction
+                ? "Seu palpite salvo"
+                : open
+                  ? "Toque para palpitar"
+                  : "Prazo encerrado"}
             </span>
             <Pill variant="neutral">
-              {formatBrasilia(new Date(match.kickoffAt))}
+              {open
+                ? formatBrasilia(new Date(match.kickoffAt))
+                : "Prazo encerrado"}
             </Pill>
           </>
         )}
