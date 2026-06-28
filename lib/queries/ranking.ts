@@ -17,7 +17,8 @@ export async function getMyRank(userId: string): Promise<MyRank> {
     WITH totals AS (
       SELECT
         u.id AS user_id,
-        COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points
+        COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0)
+          + COALESCE((SELECT SUM(sp.points) FROM special_predictions sp WHERE sp.user_id = u.id), 0) AS points
       FROM users u
       LEFT JOIN predictions p ON p.user_id = u.id
       LEFT JOIN matches m ON m.id = p.match_id
@@ -69,7 +70,8 @@ const TOTALS_CTE = `
       u.is_premium AS is_premium,
       u.avatar_url AS avatar_url,
       u.created_at AS created_at,
-      COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points,
+      COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0)
+        + COALESCE((SELECT SUM(sp.points) FROM special_predictions sp WHERE sp.user_id = u.id), 0) AS points,
       COUNT(*) FILTER (WHERE m.status = 'encerrada' AND p.criterion = 'placar_exato') AS exact_count
     FROM users u
     LEFT JOIN predictions p ON p.user_id = u.id
@@ -180,7 +182,8 @@ export async function getLeagueRanking(args: {
         u.is_premium AS is_premium,
         u.avatar_url AS avatar_url,
         u.created_at AS created_at,
-        COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points,
+        COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0)
+        + COALESCE((SELECT SUM(sp.points) FROM special_predictions sp WHERE sp.user_id = u.id), 0) AS points,
         COUNT(*) FILTER (WHERE m.status = 'encerrada' AND p.criterion = 'placar_exato') AS exact_count
       FROM league_members lm
       JOIN users u ON u.id = lm.user_id

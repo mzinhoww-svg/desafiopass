@@ -48,3 +48,25 @@ export const adminResultSchema = z.object({
   homeScore: z.number().int().min(0).max(30),
   awayScore: z.number().int().min(0).max(30),
 });
+
+// Recuperacao de senha (#1).
+export const requestResetSchema = z.object({
+  email: z.email(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(20),
+  password: z.string().min(8),
+});
+
+// Palpites especiais (#2): campeao (codigo de team) e artilheiro (nome livre).
+export const specialPredictionSchema = z.object({
+  champion: z.string().optional(),
+  topScorer: z.string().max(60).optional(),
+});
+
+// Resultado oficial dos palpites especiais, definido pelo admin (#2).
+export const specialResultSchema = z.object({
+  champion: z.string().optional(),
+  topScorer: z.string().max(60).optional(),
+});

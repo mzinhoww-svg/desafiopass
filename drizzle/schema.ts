@@ -33,7 +33,33 @@ export const users = pgTable("users", {
   avatarUrl: text("avatar_url"), // data URL (imagem redimensionada), null permitido
   role: text("role").notNull().default("user"), // 'user' | 'admin'
   isPremium: boolean("is_premium").notNull().default(false),
+  emailReminders: boolean("email_reminders").notNull().default(true), // opt-out lembretes (#5)
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Tokens de recuperacao de senha (#1). Guardamos apenas o hash do token (nunca o
+// valor cru), com expiracao curta e marca de uso (token de uso unico).
+export const passwordResetTokens = pgTable(
+  "password_reset_tokens",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("prt_user_idx").on(t.userId)],
+);
+
+// Configuracoes globais chave/valor. Usado para o resultado oficial dos palpites
+// especiais (#2): champion = codigo do team, top_scorer = nome do artilheiro.
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const teams = pgTable("teams", {

@@ -31,6 +31,12 @@ export default async function AdminPage() {
           >
             Ligas
           </Link>
+          <Link
+            href="/admin/especiais"
+            className="t-card-title flex-1 rounded-xl border border-black/10 bg-paper p-3 text-center text-indigo"
+          >
+            Especiais
+          </Link>
         </div>
         <p className="t-kicker mt-2 text-indigo">Partidas · inserir resultado</p>
         {all.map((m) => (

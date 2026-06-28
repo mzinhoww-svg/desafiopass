@@ -70,6 +70,12 @@ export function LoginForm({ registered }: { registered: boolean }) {
           Criar conta
         </Link>
       </p>
+      <p className="t-caption mt-1 text-muted">
+        Esqueceu a senha?{" "}
+        <Link href="/esqueci-senha" className="font-bold text-rose">
+          Recuperar acesso
+        </Link>
+      </p>
     </Card>
   );
 }
