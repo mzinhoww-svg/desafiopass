@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolao LATAM Pass - Wireframe Refinado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* LATAM Pass Elevate Design System (LLM_SYSTEM_GUIDE.md) */
+    --navy:#16064F; --navy2:#2C1183; --purple:#2C1183; --pink:#FE3173; --pinkl:#FE3173;
+    --teal:#0AE7C6; --lime:#C2F24A; --purpleA:#9E4CFE;
+    --white:#fff; --off:#F3F2F8; --black:#18112E; --cap:#6B6586;
+    --green:#0AE7C6; --yellow:#C2F24A;
+    --gold:#FFD700; --silver:#C0C0C0; --bronze:#CD7F32;
+    --grad:linear-gradient(135deg,var(--navy2) 0%,var(--pink) 100%);
+    --grad-deep:linear-gradient(160deg,#0C0233 0%,#16064F 55%,#2C1183 100%);
+    --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:#cfd2dc;color:var(--black);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+  .top{position:sticky;top:0;z-index:50;background:var(--grad-deep);color:#fff;padding:16px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 2px 20px rgba(22,6,79,.4)}
+  .top .mk{width:30px;height:30px;border-radius:8px;background:var(--grad);flex:0 0 auto;box-shadow:0 2px 10px rgba(254,49,115,.5)}
+  .top h1{font-size:18px;letter-spacing:-.3px;text-transform:uppercase;font-weight:bold}
+  .top .sub{font-size:12px;color:#bcb6e8;letter-spacing:.3px}
+  .gbar{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--grad)}
+
+  .intro{max-width:1320px;margin:0 auto;padding:30px 22px 8px}
+  .intro h2{color:var(--navy);font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:-.5px;margin-bottom:8px}
+  .intro p{color:var(--cap);font-size:14px;max-width:760px}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--navy)}
+  .legend span{display:flex;align-items:center;gap:7px;font-weight:bold}
+  .sw{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .podio{display:inline-flex;gap:3px}
+  .podio i{width:10px;height:14px;border-radius:2px;display:inline-block}
+
+  .grid{max-width:1320px;margin:0 auto;padding:24px 22px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:30px}
+  .screen .cap{font-size:12px;font-weight:bold;color:var(--navy);text-transform:uppercase;letter-spacing:.3px;margin-bottom:9px;display:flex;align-items:center;gap:9px}
+  .screen .cap .n{background:var(--navy);color:#fff;min-width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+  .screen .cap .rt{font-weight:normal;color:var(--cap);font-size:11px;text-transform:none;letter-spacing:0;margin-left:auto}
+
+  .phone{background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 10px 30px rgba(22,6,79,.16);border:1px solid #d0d3dd}
+  .st{height:26px;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+  .st b{color:#fff;font-size:10px;letter-spacing:.3px}
+  .st .ic{display:flex;gap:3px;align-items:center}
+  .st .ic i{width:3px;height:8px;background:#fff;border-radius:1px;display:inline-block}
+  .st .ic i.l{opacity:.4}
+  .st .bat{font-size:9px;color:#fff;border:1px solid rgba(255,255,255,.6);border-radius:3px;padding:0 3px}
+
+  /* header refinado: gradiente profundo + arte de canto */
+  .hd{background:var(--grad-deep);padding:14px 14px 12px;position:relative;overflow:hidden}
+  .hd::after{content:"";position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;background:var(--grad);opacity:.22;transform:rotate(25deg);border-radius:30px}
+  .hd .wing{position:absolute;left:-10px;bottom:-12px;width:70px;height:30px;background:linear-gradient(90deg,var(--pink),transparent);opacity:.3;transform:skewX(-20deg);border-radius:20px}
+  .hd h3{color:#fff;font-size:13px;text-transform:uppercase;letter-spacing:-.2px;font-weight:bold;position:relative;z-index:1}
+  .hd .mark{width:18px;height:18px;border-radius:6px;background:var(--grad);position:absolute;right:14px;top:13px;z-index:1}
+  .hd .gb{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--grad)}
+
+  .body{padding:14px;min-height:380px;background:#fff}
+  .lbl{font-size:10px;color:#9a9aae;text-transform:uppercase;letter-spacing:.6px;font-weight:bold;margin:14px 0 6px}
+  .ln{height:9px;background:#e4e6ee;border-radius:5px;margin:7px 0}
+  .ln.s{width:54%}.ln.m{width:76%}.ln.xs{width:34%}
+
+  /* hero atletico */
+  .hero{background:var(--grad-deep);border-radius:16px;padding:22px 16px;position:relative;overflow:hidden;margin-bottom:14px}
+  .hero::before{content:"";position:absolute;right:-20px;top:-20px;width:90px;height:90px;background:var(--grad);opacity:.3;border-radius:24px;transform:rotate(20deg)}
+  .hero .kick{color:var(--pinkl);font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;position:relative}
+  .hero h4{color:#fff;font-size:24px;line-height:1.05;text-transform:uppercase;letter-spacing:-.8px;margin:5px 0;position:relative;font-weight:bold}
+  .hero p{color:#cfc8f0;font-size:11px;position:relative}
+
+  .btn{background:var(--pink);color:#fff;border-radius:11px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:bold;margin:11px 0;text-transform:uppercase;letter-spacing:.3px;box-shadow:0 4px 14px rgba(254,49,115,.32)}
+  .btn.sec{background:#fff;border:2px solid var(--pink);color:var(--pink);box-shadow:none}
+  .btn.ghost{background:var(--off);color:var(--navy);border:1.5px solid #d8dae4;box-shadow:none}
+  .ico{width:15px;height:15px;border:2px solid currentColor;border-radius:4px;display:inline-block;opacity:.9}
+  .ico.cir{border-radius:50%}
+
+  .field{border:1.5px solid #d4d6e0;border-radius:9px;background:#fff;min-height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:12px;color:#8a8a9e;margin:5px 0}
+  .check{display:flex;align-items:center;gap:9px;margin:9px 0}
+  .check .bx{width:20px;height:20px;border:2px solid var(--pink);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--pink);font-size:11px;font-weight:bold;flex:0 0 auto}
+  .check span{font-size:12px;color:var(--black)}
+
+  .flag{width:24px;height:17px;border-radius:3px;background:repeating-linear-gradient(45deg,#cdd0da,#cdd0da 4px,#e4e6ee 4px,#e4e6ee 8px);flex:0 0 auto;border:1px solid #c4c7d2}
+  .pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;padding:3px 9px;border-radius:20px;font-weight:bold;text-transform:uppercase;letter-spacing:.3px}
+  .pill.navy{background:var(--navy);color:#fff}.pill.pink{background:var(--pink);color:#fff}
+  .pill.green{background:var(--green);color:#fff}.pill.gray{background:#e8eaf2;color:var(--navy)}
+  .pill.yellow{background:var(--yellow);color:#3a2c00}.pill.gold{background:var(--gold);color:#5a4a00}
+
+  .mcard{border:1px solid #e0e2ec;border-radius:14px;padding:13px;margin:10px 0;background:#fff;box-shadow:0 1px 4px rgba(22,6,79,.04)}
+  .mteam{display:flex;align-items:center;justify-content:center;gap:12px;margin:9px 0}
+  .mteam .code{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:-.3px}
+  .mteam .vs{font-size:10px;color:#a0a0b4;font-weight:bold}
+  .between{display:flex;align-items:center;justify-content:space-between}
+
+  /* score input oversized atletico */
+  .scorewrap{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0}
+  .scol{text-align:center}
+  .scol .fl{margin:0 auto 6px}
+  .scol .cd{font-size:11px;font-weight:bold;color:var(--navy)}
+  .sbox{border:2px solid var(--navy);border-radius:12px;width:46px;height:54px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-1px;background:#fff}
+  .sbox.pink{border-color:var(--pink);color:var(--pink)}
+  .sbox.lock{border-color:#cdd0da;color:#a0a0b4;border-style:dashed}
+  .sx{font-size:18px;color:#a0a0b4;font-weight:bold}
+
+  .prog{height:8px;background:#eceef4;border-radius:5px;overflow:hidden;margin:8px 0}
+  .prog i{display:block;height:100%}
+  .note{font-size:10px;color:#8a8a9e;margin-top:8px}
+
+  /* ranking refinado: lista densa, podio */
+  .myrank{background:var(--grad-deep);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .myrank .p{color:#fff;font-size:22px;font-weight:bold;letter-spacing:-1px}
+  .myrank .nm{color:#fff;font-size:13px;font-weight:bold;flex:1}
+  .myrank .pt{color:#fff;font-size:17px;font-weight:bold}
+  .myrank small{display:block;color:rgba(255,255,255,.8);font-size:8px;text-transform:uppercase;letter-spacing:.5px;font-weight:bold}
+  .rk{display:flex;align-items:center;gap:11px;padding:11px 6px;border-bottom:1px solid #eef0f6}
+  .rk .pos{min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;background:#eef0f6;color:var(--navy)}
+  .rk .pos.g1{background:linear-gradient(135deg,#FFE259,#FFD700);color:#5a4a00;box-shadow:0 2px 8px rgba(255,215,0,.4)}
+  .rk .pos.g2{background:linear-gradient(135deg,#E8E8E8,#C0C0C0);color:#444}
+  .rk .pos.g3{background:linear-gradient(135deg,#E0A56A,#CD7F32);color:#fff}
+  .rk .nm{font-size:13px;color:var(--black);flex:1;font-weight:500}
+  .rk .pt{font-size:14px;font-weight:bold;color:var(--navy);letter-spacing:-.3px}
+  .rk.me{background:#e7f6ee;border-radius:9px;border-bottom:none}
+  .seg{display:flex;border-bottom:2px solid #eef0f6;margin-bottom:10px}
+  .seg div{flex:1;text-align:center;font-size:11px;padding:9px 0;color:#9a9aae;font-weight:bold;text-transform:uppercase;letter-spacing:.3px}
+  .seg div.on{color:var(--navy);border-bottom:3px solid var(--pink);margin-bottom:-2px}
+
+  .empty{text-align:center;color:#9a9aae;font-size:12px;padding:40px 14px}
+  .empty .eico{width:42px;height:42px;border:2.5px solid #d4d6e0;border-radius:12px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#c0c2ce}
+
+  table.mini{width:100%;border-collapse:collapse;font-size:10px;margin:8px 0;border-radius:8px;overflow:hidden}
+  table.mini th{background:var(--navy);color:#fff;text-align:left;padding:7px 9px;font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+  table.mini td{padding:7px 9px;border-bottom:1px solid #eef0f6}
+  table.mini tr:nth-child(even) td{background:var(--off)}
+  .miles{color:var(--pink);font-weight:bold}
+  .miles .ic{width:11px;height:11px;border:1.5px solid var(--pink);border-radius:50%;display:inline-block;vertical-align:middle;margin-right:3px}
+
+  .tabbar{display:flex;border-top:1px solid #e4e6ee;background:#fff}
+  .tabbar div{flex:1;text-align:center;padding:9px 0;font-size:8px;color:#a0a0b4;font-weight:bold}
+  .tabbar div .ic{width:18px;height:18px;border:2px solid currentColor;border-radius:5px;margin:0 auto 4px;opacity:.7}
+  .tabbar div.on{color:var(--pink)}.tabbar div.on .ic{opacity:1;background:rgba(254,49,115,.12)}
+
+  .badge3{display:flex;gap:6px;margin:8px 0}
+  .badge3 .b{flex:1;text-align:center;padding:8px 4px;border-radius:9px;font-size:8px;font-weight:bold;text-transform:uppercase}
+  .badge3 .b.g{background:linear-gradient(135deg,#FFE259,#FFD700);color:#5a4a00}
+  .badge3 .b.s{background:linear-gradient(135deg,#E8E8E8,#C0C0C0);color:#444}
+  .badge3 .b.br{background:linear-gradient(135deg,#E0A56A,#CD7F32);color:#fff}
+
+  .foot{max-width:1320px;margin:0 auto;padding:10px 22px 50px;text-align:center;color:var(--cap);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="mk"></span>
+  <div>
+    <h1>Bolao LATAM Pass</h1>
+    <div class="sub">Wireframe refinado &middot; Copa 2026 Mata-Mata &middot; design system aplicado</div>
+  </div>
+  <div class="gbar"></div>
+</div>
+
+<div class="intro">
+  <h2>Preview de alta fidelidade</h2>
+  <p>Doze telas no LATAM Pass Elevate Design System: paleta Elevate (indigo, rosa, teal, lima, roxo) em Plus Jakarta Sans, regra de cor 60.30.10 com acento por fundo (rosa em claro, teal em escuro), badges de podio ouro/prata/bronze no ranking, score-input oversized e premio em milhas. Identidade Elevate traduzida para app pelas skills impeccable, tripled-ui e ui-ux-pro-max. Aprovar antes do desenvolvimento.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--navy)"></i>Indigo domina</span>
+    <span><i class="sw" style="background:var(--pink)"></i>Acento por fundo</span>
+    <span><i class="sw" style="background:var(--green)"></i>Acerto</span>
+    <span class="podio"><i style="background:var(--gold)"></i><i style="background:var(--silver)"></i><i style="background:var(--bronze)"></i> Podio do ranking</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 1 HOME -->
+  <div class="screen">
+    <div class="cap"><span class="n">1</span> Home <span class="rt">/</span></div>
+    <div class="phone">
+      <div class="st"><b>9:06</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Bolao LATAM Pass</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body" style="padding-top:14px">
+        <div class="hero"><div class="kick">Copa 2026 &middot; Mata-Mata</div><h4>Vem palpitar e ganhar milhas</h4><p>Acerte os placares, suba no ranking, dispute o topo.</p></div>
+        <div class="btn"><span class="ico"></span>Palpitar agora</div>
+        <div class="lbl">Proximos jogos</div>
+        <div class="mcard">
+          <div class="between"><span class="pill navy">Oitavas x1,4</span><span class="pill gray">Hoje 17:00</span></div>
+          <div class="mteam"><span class="flag"></span><span class="code">BRA</span><span class="vs">VS</span><span class="code">CHI</span><span class="flag"></span></div>
+        </div>
+        <div class="mcard">
+          <div class="between"><span class="pill pink">x2 Brasil</span><span class="pill yellow">21:00</span></div>
+          <div class="mteam"><span class="flag"></span><span class="code">BRA</span><span class="vs">VS</span><span class="code">URU</span><span class="flag"></span></div>
+        </div>
+      </div>
+      <div class="tabbar"><div class="on"><div class="ic"></div>Inicio</div><div><div class="ic"></div>Jogos</div><div><div class="ic"></div>Ranking</div><div><div class="ic"></div>Ligas</div><div><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 2 CADASTRO -->
+  <div class="screen">
+    <div class="cap"><span class="n">2</span> Cadastro <span class="rt">/cadastro</span></div>
+    <div class="phone">
+      <div class="st"><b>9:06</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Criar conta</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="lbl">Email</div><div class="field">voce@email.com</div>
+        <div class="lbl">Senha</div><div class="field">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div>
+        <div class="lbl">Apelido (nome no ranking)</div><div class="field">Mazinho</div>
+        <div class="check"><span class="bx">v</span><span>Tenho 16 anos ou mais</span></div>
+        <div class="check"><span class="bx">v</span><span>Aceito os termos</span></div>
+        <div class="btn">Criar conta</div>
+        <div class="btn sec">Ja tenho conta</div>
+        <div class="note">Apelido unico, validado no servidor.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 PARTIDAS -->
+  <div class="screen">
+    <div class="cap"><span class="n">3</span> Partidas <span class="rt">/partidas</span></div>
+    <div class="phone">
+      <div class="st"><b>9:06</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Partidas</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="lbl">Oitavas de final</div>
+        <div class="mcard">
+          <div class="between"><span class="pill navy">Oitavas x1,4</span><span class="pill gray">Agendada</span></div>
+          <div class="mteam"><span class="flag"></span><span class="code">BRA</span><span class="vs">VS</span><span class="code">CHI</span><span class="flag"></span></div>
+          <div class="between" style="margin-top:6px"><span class="note" style="margin:0">Voce palpitou</span><span class="pill gold">2 x 0</span></div>
+        </div>
+        <div class="mcard">
+          <div class="between"><span class="pill pink">x2 Brasil</span><span class="pill yellow">Faltam 2h</span></div>
+          <div class="mteam"><span class="flag"></span><span class="code">BRA</span><span class="vs">VS</span><span class="code">URU</span><span class="flag"></span></div>
+          <div class="btn" style="min-height:38px;margin:8px 0 0">Fazer palpite</div>
+        </div>
+        <div class="mcard">
+          <div class="between"><span class="pill navy">Oitavas x1,4</span><span class="pill green">Encerrada</span></div>
+          <div class="mteam"><span class="flag"></span><span class="code">ARG</span><span class="vs">VS</span><span class="code">MEX</span><span class="flag"></span></div>
+          <div class="between" style="margin-top:6px"><span class="note" style="margin:0">Placar 1 x 1</span><span class="pill green">+28 pts</span></div>
+        </div>
+      </div>
+      <div class="tabbar"><div><div class="ic"></div>Inicio</div><div class="on"><div class="ic"></div>Jogos</div><div><div class="ic"></div>Ranking</div><div><div class="ic"></div>Ligas</div><div><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 4 PALPITE -->
+  <div class="screen">
+    <div class="cap"><span class="n">4</span> Palpite <span class="rt">/partidas/[id]</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Palpite o placar</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="mcard">
+          <div class="between"><span class="pill pink">x2 Brasil</span><span class="pill navy">Oitavas x1,4</span></div>
+          <div class="note" style="text-align:center;margin-top:8px">Estadio MetLife &middot; 21:00 (Brasilia)</div>
+        </div>
+        <div class="lbl" style="text-align:center">Seu palpite</div>
+        <div class="scorewrap">
+          <div class="scol"><div class="flag fl"></div><div class="cd">BRA</div></div>
+          <div class="sbox pink">2</div><span class="sx">x</span><div class="sbox">0</div>
+          <div class="scol"><div class="flag fl"></div><div class="cd">URU</div></div>
+        </div>
+        <div class="btn">Salvar palpite</div>
+        <div class="prog"><i style="width:68%;background:var(--yellow)"></i></div>
+        <div class="note">Prazo: trava no apito inicial, 21:00. Vale o ultimo palpite.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 PALPITE ENCERRADO -->
+  <div class="screen">
+    <div class="cap"><span class="n">5</span> Resultado <span class="rt">/partidas/[id]</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Resultado</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="between" style="margin-bottom:8px"><span class="pill navy">Oitavas x1,4</span><span class="pill green">Encerrada</span></div>
+        <div class="lbl" style="text-align:center">Voce palpitou</div>
+        <div class="scorewrap" style="opacity:.55">
+          <div class="scol"><div class="flag fl"></div><div class="cd">ARG</div></div>
+          <div class="sbox">1</div><span class="sx">x</span><div class="sbox">0</div>
+          <div class="scol"><div class="flag fl"></div><div class="cd">MEX</div></div>
+        </div>
+        <div class="lbl" style="text-align:center">O placar foi</div>
+        <div class="scorewrap">
+          <div class="scol"><div class="flag fl"></div><div class="cd">ARG</div></div>
+          <div class="sbox" style="border-color:var(--green);color:var(--green)">1</div><span class="sx">x</span><div class="sbox" style="border-color:var(--green);color:var(--green)">1</div>
+          <div class="scol"><div class="flag fl"></div><div class="cd">MEX</div></div>
+        </div>
+        <div class="mcard" style="background:#e7f6ee;border-color:var(--green);margin-top:12px">
+          <div class="between"><span style="font-size:12px;color:var(--navy);font-weight:bold">Pontos nesta partida</span><span class="pill green">+28 pts</span></div>
+          <div class="note" style="color:var(--cap)">Acertou vencedor e gols, 20 base x 1,4 fase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 RANKING -->
+  <div class="screen">
+    <div class="cap"><span class="n">6</span> Ranking geral <span class="rt">/ranking</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Ranking geral</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="myrank"><div class="p">42</div><div class="nm">Mazinho<small>sua posicao</small></div><div class="pt">1.230<small style="text-align:right">pts</small></div></div>
+        <div class="rk"><span class="pos g1">1</span><span class="nm">Karolzinha</span><span class="pt">1.880</span></div>
+        <div class="rk"><span class="pos g2">2</span><span class="nm">Vitor1322</span><span class="pt">1.875</span></div>
+        <div class="rk"><span class="pos g3">3</span><span class="nm">Romulo</span><span class="pt">1.830</span></div>
+        <div class="rk"><span class="pos">4</span><span class="nm">Danilo F.</span><span class="pt">1.815</span></div>
+        <div class="rk"><span class="pos">5</span><span class="nm">Arthur R.</span><span class="pt">1.810</span></div>
+        <div class="rk"><span class="pos">5</span><span class="nm">Marco C.</span><span class="pt">1.810</span></div>
+        <div class="rk me"><span class="pos">42</span><span class="nm">Mazinho (voce)</span><span class="pt">1.230</span></div>
+        <div class="note">Posicoes 5 empatadas dividem o lugar. Podio em ouro, prata, bronze.</div>
+      </div>
+      <div class="tabbar"><div><div class="ic"></div>Inicio</div><div><div class="ic"></div>Jogos</div><div class="on"><div class="ic"></div>Ranking</div><div><div class="ic"></div>Ligas</div><div><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 7 LIGAS -->
+  <div class="screen">
+    <div class="cap"><span class="n">7</span> Ligas <span class="rt">/ligas</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Ligas</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="seg"><div class="on">Liga publica</div><div>Liga privada</div></div>
+        <div class="lbl">Minhas ligas</div>
+        <div class="mcard">
+          <div class="between"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:13px">F</div><div><div style="font-size:13px;font-weight:bold;color:var(--navy)">Familia FC</div><div class="note" style="margin:0">8 participantes</div></div></div><span class="sx" style="font-size:14px">&rsaquo;</span></div>
+        </div>
+        <div class="btn"><span class="ico"></span>Criar nova liga</div>
+        <div class="btn sec"><span class="ico cir"></span>Entrar no grupo</div>
+        <div class="note">Plano basico: 1 liga. Socio LATAM Pass: ate 100.</div>
+      </div>
+      <div class="tabbar"><div><div class="ic"></div>Inicio</div><div><div class="ic"></div>Jogos</div><div><div class="ic"></div>Ranking</div><div class="on"><div class="ic"></div>Ligas</div><div><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 8 RANKING DA LIGA -->
+  <div class="screen">
+    <div class="cap"><span class="n">8</span> Ranking da liga <span class="rt">/ligas/[id]</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Familia FC</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="mcard" style="background:var(--off)">
+          <div class="between"><span style="font-size:11px;font-weight:bold;color:var(--navy)">Convite da liga</span><span class="pill pink"><span class="ico" style="width:11px;height:11px"></span>Copiar link</span></div>
+          <div class="note" style="margin-top:6px">claude.../ligas/entrar/9fK2aXq7</div>
+        </div>
+        <div class="lbl">Classificacao interna</div>
+        <div class="rk"><span class="pos g1">1</span><span class="nm">Tio Beto</span><span class="pt">980</span></div>
+        <div class="rk"><span class="pos g2">2</span><span class="nm">Prima Lu</span><span class="pt">910</span></div>
+        <div class="rk me"><span class="pos g3">3</span><span class="nm">Voce</span><span class="pt">870</span></div>
+        <div class="rk"><span class="pos">4</span><span class="nm">Vovo Ana</span><span class="pt">640</span></div>
+        <div class="note">Mesma pontuacao do ranking geral, so entre membros.</div>
+      </div>
+      <div class="tabbar"><div><div class="ic"></div>Inicio</div><div><div class="ic"></div>Jogos</div><div><div class="ic"></div>Ranking</div><div class="on"><div class="ic"></div>Ligas</div><div><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 9 CONVITE -->
+  <div class="screen">
+    <div class="cap"><span class="n">9</span> Convite <span class="rt">/ligas/entrar/[token]</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Convite de liga</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="hero" style="text-align:center;padding:26px 16px"><div class="kick">Voce foi convidado</div><h4>Familia FC</h4><p>Liga privada do Bolao LATAM Pass</p></div>
+        <div class="mcard"><div class="between"><span class="pill gray">8 participantes</span><span class="pill navy">Privada</span></div><div class="ln m" style="margin-top:9px"></div><div class="ln s"></div></div>
+        <div class="btn">Entrar na liga</div>
+        <div class="btn ghost">Agora nao</div>
+        <div class="note">Token validado no servidor. Inscreve voce automaticamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 PERFIL -->
+  <div class="screen">
+    <div class="cap"><span class="n">10</span> Perfil <span class="rt">/perfil</span></div>
+    <div class="phone">
+      <div class="st"><b>9:07</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Perfil</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="hero" style="text-align:center;padding:20px 16px"><div style="width:52px;height:52px;border-radius:50%;background:#fff;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-weight:bold;font-size:18px;position:relative;z-index:1">M</div><h4 style="font-size:20px">Mazinho</h4></div>
+        <div style="display:flex;gap:9px;margin:12px 0">
+          <div style="flex:1;background:var(--off);border-radius:11px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:bold;color:var(--navy);letter-spacing:-1px">1.230</div><div class="note" style="margin:0;text-transform:uppercase;letter-spacing:.4px">Pontos</div></div>
+          <div style="flex:1;background:var(--off);border-radius:11px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:bold;color:var(--navy);letter-spacing:-1px">42</div><div class="note" style="margin:0;text-transform:uppercase;letter-spacing:.4px">Posicao</div></div>
+        </div>
+        <div class="lbl">Apelido</div><div class="field">Mazinho <span class="pill gray">editar</span></div>
+        <div class="lbl">Time do coracao</div><div class="field">Brasil <span class="pill gray">editar</span></div>
+        <div class="btn sec">Sair da conta</div>
+      </div>
+      <div class="tabbar"><div><div class="ic"></div>Inicio</div><div><div class="ic"></div>Jogos</div><div><div class="ic"></div>Ranking</div><div><div class="ic"></div>Ligas</div><div class="on"><div class="ic"></div>Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- 11 REGRAS -->
+  <div class="screen">
+    <div class="cap"><span class="n">11</span> Regras e premios <span class="rt">/regras</span></div>
+    <div class="phone">
+      <div class="st"><b>9:08</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Regras e premios</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="lbl">Pontuacao base</div>
+        <table class="mini"><tr><th>Resultado</th><th>Pts</th></tr><tr><td>Placar exato</td><td>50</td></tr><tr><td>Vencedor e gols</td><td>35</td></tr><tr><td>Vencedor</td><td>20</td></tr><tr><td>Empate correto</td><td>20</td></tr></table>
+        <div class="lbl">Multiplicadores</div>
+        <table class="mini"><tr><th>Fase / regra</th><th>Mult</th></tr><tr><td>Jogo do Brasil</td><td>x2</td></tr><tr><td>Oitavas</td><td>x1,4</td></tr><tr><td>Quartas</td><td>x1,6</td></tr><tr><td>Final</td><td>x2</td></tr></table>
+        <div class="lbl">Premiacao</div>
+        <table class="mini"><tr><th>Posicao</th><th>Premio</th></tr><tr><td>1</td><td class="miles"><span class="ic"></span>a definir</td></tr><tr><td>2 e 3</td><td class="miles"><span class="ic"></span>a definir</td></tr><tr><td>4 ao 100</td><td class="miles"><span class="ic"></span>a definir</td></tr></table>
+        <div class="note">Premio em milhas LATAM Pass.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 ADMIN -->
+  <div class="screen">
+    <div class="cap"><span class="n">12</span> Admin resultado <span class="rt">/admin/partidas/[id]</span></div>
+    <div class="phone">
+      <div class="st"><b>9:08</b><span class="ic"><i></i><i></i><i></i><i class="l"></i><span class="bat">93</span></span></div>
+      <div class="hd"><h3>Admin &middot; Inserir placar</h3><span class="mark"></span><span class="wing"></span><span class="gb"></span></div>
+      <div class="body">
+        <div class="mcard" style="background:var(--off)"><div class="between"><span class="pill pink">Acesso admin</span><span class="note" style="margin:0">role protegido</span></div></div>
+        <div class="lbl" style="text-align:center">Placar final</div>
+        <div class="scorewrap">
+          <div class="scol"><div class="flag fl"></div><div class="cd">ARG</div></div>
+          <div class="sbox">1</div><span class="sx">x</span><div class="sbox">1</div>
+          <div class="scol"><div class="flag fl"></div><div class="cd">MEX</div></div>
+        </div>
+        <div class="lbl">Status</div><div class="field">Encerrada <span class="pill green">selecionado</span></div>
+        <div class="btn">Salvar e calcular pontos</div>
+        <div class="note">Ao salvar, percorre os palpites, chama lib/scoring e grava pontos. Idempotente.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="foot">Wireframe para aprovacao. Apos o ok, segue para a Task 0.1 do desenvolvimento. Este arquivo vira a referencia visual oficial das telas.</div>
+
+</body>
+</html>
