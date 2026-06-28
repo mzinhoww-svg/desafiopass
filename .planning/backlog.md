@@ -45,7 +45,7 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### SLICE 2 COMPLETO (codigo, build/test verdes). Tambem: navegacao (tab bar, breadcrumbs, empty-state).
 
 ### Slice 3: Ranking
-- [ ] Task 3.1 Ranking geral
+- [x] Task 3.1 Ranking geral (competition ranking, desempate travado, faixa pessoal, /ranking)
 
 ### Slice 4: Ligas privadas
 - [ ] Task 4.1 Criar liga
