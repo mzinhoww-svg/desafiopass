@@ -27,7 +27,8 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### SLICE 0 COMPLETO. Proximo: Slice 1 (Auth e perfil) — Task 1.1 NextAuth Credentials.
 
 ### Slice 1: Auth e perfil
-- [~] Task 1.1 NextAuth Credentials (implementado e build-verde; login funcional pende AUTH_SECRET na Vercel + seed dos usuarios de teste via db.yml)
+- [x] Task 1.1 NextAuth Credentials (mergeado; AUTH_SECRET na Vercel + usuarios semeados)
+- [~] Task 1.2 Cadastro (implementado e build-verde; /cadastro + /login + signup action)
 - [ ] Task 1.2 Cadastro
 - [ ] Task 1.3 Perfil
 
