@@ -57,8 +57,8 @@ export default async function AdminMatchPage({
               defaultAway={match.awayScore ?? undefined}
             />
             <p className="t-caption mt-3 text-center text-muted">
-              Ao salvar, percorre os palpites, chama lib/scoring e grava os pontos.
-              Operação idempotente.
+              Ao salvar, os pontos de todos os palpites desta partida são
+              calculados e atualizados automaticamente.
             </p>
           </Card>
         </div>

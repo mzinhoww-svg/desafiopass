@@ -58,9 +58,12 @@ export async function updateProfile(
     avatarUpdate.avatarUrl = avatarRaw;
   }
 
+  // Opt-out de lembretes por e-mail (#5). Checkbox marcado = quer receber.
+  const emailReminders = formData.get("emailReminders") === "on";
+
   await db
     .update(users)
-    .set({ nickname, favoriteTeam, ...avatarUpdate })
+    .set({ nickname, favoriteTeam, emailReminders, ...avatarUpdate })
     .where(eq(users.id, current.id));
 
   revalidatePath("/perfil");

@@ -52,10 +52,15 @@ export default async function PerfilPage() {
               nickname={user.nickname}
               favoriteTeam={user.favoriteTeam}
               avatarUrl={user.avatarUrl}
+              emailReminders={user.emailReminders}
               teams={realTeams}
             />
           </Card>
         </div>
+
+        <LinkButton href="/palpites-especiais" variant="secondary" className="mt-4 w-full">
+          Palpites especiais (campeão e artilheiro)
+        </LinkButton>
 
         {sessionUser.role === "admin" ? (
           <LinkButton href="/admin" className="mt-4 w-full">

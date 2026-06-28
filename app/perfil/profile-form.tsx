@@ -16,11 +16,13 @@ export function ProfileForm({
   nickname,
   favoriteTeam,
   avatarUrl,
+  emailReminders,
   teams,
 }: {
   nickname: string;
   favoriteTeam: string | null;
   avatarUrl: string | null;
+  emailReminders: boolean;
   teams: { code: string; name: string }[];
 }) {
   const [state, formAction, pending] = useActionState(updateProfile, initial);
@@ -108,6 +110,17 @@ export function ProfileForm({
           ))}
         </select>
       </div>
+
+      <label className="t-body flex items-center gap-2 text-ink">
+        <input
+          type="checkbox"
+          name="emailReminders"
+          defaultChecked={emailReminders}
+          className="size-5"
+          style={{ accentColor: "var(--rose)" }}
+        />
+        Quero receber lembretes de palpite por e-mail
+      </label>
 
       {state?.error ? (
         <p className="t-body font-bold text-rose" role="alert">

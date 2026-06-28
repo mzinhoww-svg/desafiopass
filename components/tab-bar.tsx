@@ -20,7 +20,8 @@ const items = [
 
 export function TabBar({ pendingCount = 0 }: { pendingCount?: number }) {
   const pathname = usePathname();
-  if (pathname.startsWith("/login") || pathname.startsWith("/cadastro")) {
+  const authRoutes = ["/login", "/cadastro", "/esqueci-senha", "/redefinir-senha"];
+  if (authRoutes.some((r) => pathname.startsWith(r))) {
     return null;
   }
 
