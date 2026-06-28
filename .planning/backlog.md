@@ -20,9 +20,11 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### Slice 0: Fundacao
 - [x] Task 0.1 Scaffold
 - [x] Task 0.2 Tokens de marca / sistema de design Elevate
-- [~] Task 0.3 Banco e ORM (codigo pronto + migracao gerada; falta aplicar em Postgres real)
-- [~] Task 0.4 Seed Copa 2026 (codigo pronto: copa2026, flags, flag.tsx, seed.ts; run pendente, B2)
-- [x] Task 0.5 Deploy (producao no ar; CI GitHub Actions ainda pendente)
+- [x] Task 0.3 Banco e ORM (migracao 0000 aplicada no Neon via GitHub Actions, run 28332601479)
+- [x] Task 0.4 Seed Copa 2026 (db:seed rodou no mesmo run; upsert idempotente por PK)
+- [x] Task 0.5 Deploy + CI (producao no ar; ci.yml lint/typecheck/test/build; db.yml migrate+seed)
+
+### SLICE 0 COMPLETO. Proximo: Slice 1 (Auth e perfil) — Task 1.1 NextAuth Credentials.
 
 ### Slice 1: Auth e perfil
 - [ ] Task 1.1 NextAuth Credentials
@@ -151,7 +153,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - B1. (RESOLVIDO) Push/PR: usuario forneceu token GitHub; push via token direto,
   PR #1 criado e mergeado na main. MCP do GitHub segue read-only (app de org nao
   conectado), mas a API direta com o token funciona por egress direto.
-- B2. db:migrate e db:seed nao rodam DESTE ambiente: Postgres e TCP cru (porta 5432),
+- B2. (RESOLVIDO via CI) db:migrate e db:seed nao rodam deste ambiente (egress da rede
+  bloqueia o Neon: TCP 5432 e o host api.*.neon.tech fora da allowlist). Solucao: o
+  workflow .github/workflows/db.yml roda no GitHub Actions (egress livre) com o secret
+  POSTGRES_URL. Run 28332601479 aplicou migracao + seed com sucesso. Para reaplicar:
+  dispatch do workflow "Database". Detalhe historico abaixo.
+- B2-hist. Postgres e TCP cru (porta 5432),
   que o proxy de egress nao suporta ("raw-TCP databases"). A migracao 0000 esta gerada
   e validada (SQL). Aplicar em Postgres real precisa acontecer na Vercel/CI ou na
   maquina do usuario. Opcoes: (a) usuario provisiona Vercel Postgres (adiciona
