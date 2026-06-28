@@ -1,4 +1,4 @@
-import { asc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { specialPredictions, settings, matches } from "@/drizzle/schema";
 
@@ -46,12 +46,13 @@ export async function getSpecialResults(): Promise<{
   };
 }
 
-// Prazo dos palpites especiais: travam no primeiro apito do mata-mata.
+// Prazo dos palpites especiais (campeao/artilheiro): travam no apito da FINAL,
+// ou seja, ficam abertos enquanto a Copa nao terminou. Usa o ultimo kickoff.
 export async function getSpecialDeadline(): Promise<Date | null> {
   const rows = await db
     .select({ kickoffAt: matches.kickoffAt })
     .from(matches)
-    .orderBy(asc(matches.kickoffAt))
+    .orderBy(desc(matches.kickoffAt))
     .limit(1);
   return rows[0]?.kickoffAt ?? null;
 }
