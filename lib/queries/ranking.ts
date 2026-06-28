@@ -92,9 +92,10 @@ export async function getGlobalRanking(args: {
       t.is_premium,
       t.points,
       t.exact_count,
-      1 + (SELECT COUNT(*) FROM totals t2 WHERE t2.points > t.points) AS position
+      CASE WHEN t.points = 0 THEN NULL
+           ELSE 1 + (SELECT COUNT(*) FROM totals t2 WHERE t2.points > t.points)
+      END AS position
     FROM totals t
-    WHERE t.points > 0
     ORDER BY t.points DESC, t.exact_count DESC, t.created_at ASC, t.user_id ASC
     LIMIT ${limit} OFFSET ${offset}
   `);
@@ -106,7 +107,7 @@ export async function getGlobalRanking(args: {
       is_premium: boolean;
       points: number | string;
       exact_count: number | string;
-      position: number | string;
+      position: number | string | null;
     }>
   ).map((r) => ({
     userId: r.user_id,
@@ -114,7 +115,7 @@ export async function getGlobalRanking(args: {
     isPremium: r.is_premium,
     points: Number(r.points),
     exactCount: Number(r.exact_count),
-    position: Number(r.position),
+    position: r.position == null ? null : Number(r.position),
     isCurrentUser: r.user_id === args.currentUserId,
   }));
 }

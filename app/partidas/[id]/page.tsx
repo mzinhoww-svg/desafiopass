@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { LinkButton } from "@/components/ui/link-button";
 import { ScoreInput } from "@/components/score-input";
+import { MatchTabs } from "@/components/match-tabs";
 import { PredictForm } from "./predict-form";
 import {
   getMatchById,
@@ -42,6 +43,116 @@ export default async function PartidaPage({
   const community = reveal ? await getMatchPredictionsWithUsers(id) : [];
   const others = community.filter((c) => c.userId !== user?.id);
 
+  const palpiteBlock = (
+    <Card>
+      {closed ? (
+        <div className="flex flex-col gap-4">
+          <p className="t-kicker text-center text-indigo">Você palpitou</p>
+          <ScoreInput
+            home={home}
+            away={away}
+            defaultHome={prediction?.homeGuess ?? 0}
+            defaultAway={prediction?.awayGuess ?? 0}
+            disabled
+          />
+          {!prediction ? (
+            <p className="t-caption text-center text-muted">
+              Você não palpitou nesta partida.
+            </p>
+          ) : null}
+          <p className="t-kicker text-center text-indigo">O placar foi</p>
+          <div className="t-score flex items-center justify-center gap-3 text-indigo">
+            <span>{match.homeScore}</span>
+            <span className="text-muted">x</span>
+            <span>{match.awayScore}</span>
+          </div>
+          {prediction ? (
+            <div className="flex items-center justify-center gap-2">
+              <Pill variant="lime">+{prediction.points} pts</Pill>
+              <span className="t-caption text-muted">
+                {CRITERION_LABEL[(prediction.criterion as Criterion) ?? "errado"]}
+              </span>
+            </div>
+          ) : null}
+        </div>
+      ) : open ? (
+        user ? (
+          <>
+            <p className="t-kicker mb-3 text-center text-indigo">Seu palpite</p>
+            <PredictForm
+              matchId={match.id}
+              home={home}
+              away={away}
+              defaultHome={prediction?.homeGuess}
+              defaultAway={prediction?.awayGuess}
+            />
+            <p className="t-caption mt-3 text-center text-muted">
+              Prazo: trava no apito inicial,{" "}
+              {formatBrasilia(new Date(match.kickoffAt))}. Vale o último.
+            </p>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-3 text-center">
+            <p className="t-body text-muted">
+              Entre para registrar seu palpite.
+            </p>
+            <LinkButton href="/login">Entrar</LinkButton>
+          </div>
+        )
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-center gap-2 text-muted">
+            <Lock size={18} aria-hidden="true" />
+            <span className="t-body font-bold">Prazo encerrado</span>
+          </div>
+          <ScoreInput
+            home={home}
+            away={away}
+            defaultHome={prediction?.homeGuess ?? 0}
+            defaultAway={prediction?.awayGuess ?? 0}
+            disabled
+          />
+          <p className="t-caption text-center text-muted">
+            {prediction
+              ? "Seu palpite está travado."
+              : "Você não palpitou a tempo."}
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+
+  const comunidadeBlock = (
+    <Card>
+      {!reveal ? (
+        <p className="t-body text-center text-muted">
+          Faça seu palpite para ver os palpites da comunidade.
+        </p>
+      ) : others.length === 0 ? (
+        <p className="t-body text-center text-muted">
+          Ninguém mais palpitou nesta partida ainda.
+        </p>
+      ) : (
+        <div className="flex flex-col">
+          {others.map((c) => (
+            <div
+              key={c.userId}
+              className="flex items-center justify-between border-b border-black/5 px-1 py-2 last:border-0"
+            >
+              <span className="t-body text-ink">{c.nickname}</span>
+              <span className="flex items-center gap-2">
+                <span className="t-body font-extrabold text-indigo">
+                  {c.homeGuess} x {c.awayGuess}
+                </span>
+                {closed ? <Pill variant="lime">+{c.points}</Pill> : null}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+
   return (
     <>
       <Header title="Palpite" subtitle="Copa 2026 · Mata-mata" />
@@ -65,107 +176,8 @@ export default async function PartidaPage({
         </Card>
 
         <div className="mt-4">
-          <Card>
-            {closed ? (
-              <div className="flex flex-col gap-4">
-                <p className="t-kicker text-center text-indigo">Você palpitou</p>
-                <ScoreInput
-                  home={home}
-                  away={away}
-                  defaultHome={prediction?.homeGuess ?? 0}
-                  defaultAway={prediction?.awayGuess ?? 0}
-                  disabled
-                />
-                {!prediction ? (
-                  <p className="t-caption text-center text-muted">
-                    Você não palpitou nesta partida.
-                  </p>
-                ) : null}
-                <p className="t-kicker text-center text-indigo">O placar foi</p>
-                <div className="t-score flex items-center justify-center gap-3 text-indigo">
-                  <span>{match.homeScore}</span>
-                  <span className="text-muted">x</span>
-                  <span>{match.awayScore}</span>
-                </div>
-                {prediction ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Pill variant="lime">+{prediction.points} pts</Pill>
-                    <span className="t-caption text-muted">
-                      {CRITERION_LABEL[(prediction.criterion as Criterion) ?? "errado"]}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-            ) : open ? (
-              user ? (
-                <>
-                  <p className="t-kicker mb-3 text-center text-indigo">
-                    Seu palpite
-                  </p>
-                  <PredictForm
-                    matchId={match.id}
-                    home={home}
-                    away={away}
-                    defaultHome={prediction?.homeGuess}
-                    defaultAway={prediction?.awayGuess}
-                  />
-                  <p className="t-caption mt-3 text-center text-muted">
-                    Prazo: trava no apito inicial,{" "}
-                    {formatBrasilia(new Date(match.kickoffAt))}. Vale o último.
-                  </p>
-                </>
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <p className="t-body text-muted">
-                    Entre para registrar seu palpite.
-                  </p>
-                  <LinkButton href="/login">Entrar</LinkButton>
-                </div>
-              )
-            ) : (
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-center gap-2 text-muted">
-                  <Lock size={18} aria-hidden="true" />
-                  <span className="t-body font-bold">Prazo encerrado</span>
-                </div>
-                <ScoreInput
-                  home={home}
-                  away={away}
-                  defaultHome={prediction?.homeGuess ?? 0}
-                  defaultAway={prediction?.awayGuess ?? 0}
-                  disabled
-                />
-                <p className="t-caption text-center text-muted">
-                  {prediction
-                    ? "Seu palpite está travado."
-                    : "Você não palpitou a tempo."}
-                </p>
-              </div>
-            )}
-          </Card>
+          <MatchTabs palpite={palpiteBlock} comunidade={comunidadeBlock} />
         </div>
-
-        {reveal && others.length > 0 ? (
-          <section className="mt-4">
-            <p className="t-kicker mb-2 text-indigo">Palpites da comunidade</p>
-            <div className="rounded-2xl border border-black/10 bg-paper p-2">
-              {others.map((c) => (
-                <div
-                  key={c.userId}
-                  className="flex items-center justify-between border-b border-black/5 px-2 py-2 last:border-0"
-                >
-                  <span className="t-body text-ink">{c.nickname}</span>
-                  <span className="flex items-center gap-2">
-                    <span className="t-body font-extrabold text-indigo">
-                      {c.homeGuess} x {c.awayGuess}
-                    </span>
-                    {closed ? <Pill variant="lime">+{c.points}</Pill> : null}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
       </main>
     </>
   );
