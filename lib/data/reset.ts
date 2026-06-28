@@ -13,7 +13,7 @@ config();
 
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql as client } from "@vercel/postgres";
-import { sql } from "drizzle-orm";
+import { inArray, notInArray, sql } from "drizzle-orm";
 import {
   users,
   leagues,
@@ -35,16 +35,14 @@ async function main() {
   await db.delete(specialPredictions);
   await db.delete(predictions);
 
-  // Remove todos os usuarios fora da allowlist (case-insensitive).
-  await db
-    .delete(users)
-    .where(sql`lower(${users.email}) <> all(${keep}::text[])`);
+  // Remove todos os usuarios fora da allowlist (case-insensitive). inArray/
+  // notInArray parametrizam cada item (x in ($1, $2, ...)), evitando o bind de
+  // array unico que o driver rejeita.
+  const emailLower = sql`lower(${users.email})`;
+  await db.delete(users).where(notInArray(emailLower, keep));
 
   // Garante que os preservados sejam admin (nao cria conta nova).
-  await db
-    .update(users)
-    .set({ role: "admin" })
-    .where(sql`lower(${users.email}) = any(${keep}::text[])`);
+  await db.update(users).set({ role: "admin" }).where(inArray(emailLower, keep));
 
   const remaining = await db.select({ id: users.id }).from(users);
   console.log(
