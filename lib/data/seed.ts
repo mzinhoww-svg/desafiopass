@@ -14,8 +14,26 @@ config();
 
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
-import { teams, matches } from "../../drizzle/schema";
+import bcrypt from "bcryptjs";
+import { teams, matches, users } from "../../drizzle/schema";
 import { teams as seedTeams, matches as seedMatches } from "./copa2026";
+
+// Usuarios de teste (Task 1.1). Senha conhecida para validar login. Idempotente
+// por email; o passwordHash e regravado a cada seed para manter a credencial estavel.
+const testUsers = [
+  {
+    email: "admin@latampass.test",
+    nickname: "AdminBolao",
+    password: "bolao2026",
+    role: "admin",
+  },
+  {
+    email: "user@latampass.test",
+    nickname: "Mazinho",
+    password: "bolao2026",
+    role: "user",
+  },
+];
 
 async function main() {
   const db = drizzle(sql);
@@ -58,8 +76,25 @@ async function main() {
       });
   }
 
+  // Usuarios de teste (Task 1.1).
+  for (const u of testUsers) {
+    const passwordHash = await bcrypt.hash(u.password, 10);
+    await db
+      .insert(users)
+      .values({
+        email: u.email,
+        nickname: u.nickname,
+        passwordHash,
+        role: u.role,
+      })
+      .onConflictDoUpdate({
+        target: users.email,
+        set: { nickname: u.nickname, role: u.role, passwordHash },
+      });
+  }
+
   console.log(
-    `Seed concluido: ${seedTeams.length} selecoes, ${seedMatches.length} partidas.`,
+    `Seed concluido: ${seedTeams.length} selecoes, ${seedMatches.length} partidas, ${testUsers.length} usuarios de teste.`,
   );
 }
 

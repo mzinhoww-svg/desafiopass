@@ -27,7 +27,7 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 ### SLICE 0 COMPLETO. Proximo: Slice 1 (Auth e perfil) — Task 1.1 NextAuth Credentials.
 
 ### Slice 1: Auth e perfil
-- [ ] Task 1.1 NextAuth Credentials
+- [~] Task 1.1 NextAuth Credentials (implementado e build-verde; login funcional pende AUTH_SECRET na Vercel + seed dos usuarios de teste via db.yml)
 - [ ] Task 1.2 Cadastro
 - [ ] Task 1.3 Perfil
 
@@ -117,6 +117,12 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   exigia output dir public. Producao no ar (commit cb24bc6, READY). PRs ganham preview.
 - DI6. drizzle-orm 0.45: segundo arg do pgTable usa array (forma de objeto do DATA_SPEC
   foi deprecada na 0.36). Tabelas/colunas/constraints identicos ao DATA_SPEC.
+- D11. Auth (Task 1.1): Auth.js v5 (next-auth@5 beta), padrao edge-split (lib/auth.config.ts
+  sem db/bcrypt para o middleware; lib/auth.ts com Credentials + bcryptjs). Sessao JWT
+  com id e role. bcryptjs (puro JS) em vez de bcrypt nativo. Rotas protegidas no MVP:
+  /perfil e /ligas (login) e /admin (role admin); /partidas e /ranking ficam publicas.
+  Usuarios de teste semeados: admin@latampass.test e user@latampass.test, senha bolao2026.
+  AUTH_SECRET: dev em .env.local; producao usa um proprio na Vercel (nao precisa casar).
 
 ---
 
@@ -145,6 +151,13 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - 2026-06-28 | infra | Neon conectado; aplicacao da migracao/seed daqui bloqueada: a
   policy de rede do ambiente nao tem o host do Neon (api.sa-east-1.aws.neon.tech) na
   allowlist. Aplicar via CI/Vercel ou allowlist do host. Ver B2.
+- 2026-06-28 | Task 0.5 (CI) | ci.yml (lint/typecheck/test/build) + db.yml (migrate+seed),
+  vitest, secret POSTGRES_URL criado via API | run 28332601479 verde: migracao + seed
+  aplicados no Neon | PR #4 merge
+- 2026-06-28 | Task 1.1 | Auth.js v5 edge-split (auth.config/auth.ts), Credentials +
+  bcryptjs, route handler, middleware (/perfil,/ligas login; /admin role), getCurrentUser,
+  augmentacao de tipos, usuarios de teste no seed | typecheck/lint/build verdes (build ok
+  sem AUTH_SECRET; rota dinamica) | commit feat(auth); login funcional valida em prod
 
 ---
 
