@@ -3,7 +3,7 @@ import { type Phase, phaseMultiplier } from "@/lib/scoring";
 // Ordem e rotulos das fases do mata-mata (SCORING_SPEC secao 1).
 export const PHASE_ORDER: Phase[] = [
   "grupos",
-  "32avos",
+  "16avos",
   "oitavas",
   "quartas",
   "semi",
@@ -13,7 +13,7 @@ export const PHASE_ORDER: Phase[] = [
 
 export const PHASE_LABEL: Record<Phase, string> = {
   grupos: "Fase de grupos",
-  "32avos": "32-avos de final",
+  "16avos": "16 avos de final",
   oitavas: "Oitavas de final",
   quartas: "Quartas de final",
   semi: "Semifinal",

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Goal, ScrollText, Target, Trophy, Plane } from "lucide-react";
+import { Goal, ScrollText, Target, Trophy, Medal } from "lucide-react";
 import { Header } from "@/components/header";
 import { LinkButton } from "@/components/ui/link-button";
 import { MatchCard } from "@/components/match-card";
@@ -11,7 +11,7 @@ import { getCurrentUser } from "@/lib/auth-helpers";
 const STEPS = [
   { icon: Target, title: "Palpite", text: "Dê o placar de cada jogo do mata-mata antes do apito inicial." },
   { icon: Trophy, title: "Pontue", text: "Some pontos a cada rodada e suba no ranking geral e nas suas ligas." },
-  { icon: Plane, title: "Resgate", text: "Dispute o prêmio em milhas LATAM Pass com a galera." },
+  { icon: Medal, title: "Vença", text: "Termine no topo da classificação e ganhe o bolão." },
 ];
 
 // Home (Task 5.2): hero de marca, CTA para palpitar e proximos jogos do mata-mata
@@ -39,14 +39,14 @@ export default async function Home() {
         >
           <FadeIn>
             <p className="t-kicker text-teal">
-              Copa do Mundo FIFA 2026 · Mata-mata
+              Copa do Mundo 2026 · Mata-mata
             </p>
             <h2 className="t-display mt-2 text-white">
-              Seu palpite vale milhas.
+              Palpite. Pontue. Vença o bolão.
             </h2>
             <p className="t-body mt-3 max-w-[46ch] text-muted-dark">
               Acerte os placares do mata-mata, acumule pontos a cada rodada e
-              dispute o prêmio em milhas LATAM Pass com seus amigos.
+              fique no topo do ranking com seus amigos.
             </p>
             <LinkButton
               href={user ? "/partidas" : "/cadastro"}
@@ -105,7 +105,7 @@ export default async function Home() {
 
           <LinkButton href="/regras" variant="secondary" className="mt-6 w-full">
             <ScrollText size={18} strokeWidth={2.5} aria-hidden="true" />
-            Regras e prêmios
+            Regras e pontuação
           </LinkButton>
         </section>
       </main>
@@ -113,7 +113,7 @@ export default async function Home() {
       <footer className="border-t border-black/5 bg-paper px-5 py-6">
         <p className="t-caption text-muted">Bolão LATAM Pass · Copa 2026</p>
         <p className="t-caption mt-1 text-muted">
-          Prêmios em milhas LATAM Pass · Mata-mata
+          Palpite, pontue e vença o bolão · Mata-mata
         </p>
       </footer>
     </>
