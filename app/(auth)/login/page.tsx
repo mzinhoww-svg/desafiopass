@@ -12,7 +12,7 @@ export default async function LoginPage({
   const sp = await searchParams;
   return (
     <>
-      <Header title="Entrar" subtitle="Bolão LATAM Pass" />
+      <Header title="Entrar" subtitle="Bolão LATAM Pass" hideLogin />
       <main className="flex-1 px-5 py-8">
         <LoginForm registered={sp.registered === "1"} />
       </main>
