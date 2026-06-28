@@ -1,6 +1,6 @@
 // reference-code/lib/data/copa2026.ts
 //
-// Seed estatico da Copa do Mundo FIFA 2026, fase mata-mata. Implementa
+// Seed estatico da Copa do Mundo 2026, fase mata-mata. Implementa
 // specs/DATA_SPEC.md secao 6.
 //
 // Fonte do chaveamento: ge.globo.com (confrontos e datas reais da segunda fase).
@@ -11,7 +11,7 @@
 // Placeholders de avanco tem flagCode vazio; a UI mostra um escudo neutro.
 //
 // Estrutura:
-// - 32avos: 16 jogos com selecoes reais. Inclui Brasil x Japao (multiplicador x2).
+// - 16avos: 16 jogos com selecoes reais. Inclui Brasil x Japao (multiplicador x2).
 // - oitavas, quartas, semi, terceiro, final: chaveamento fixo com placeholders.
 //
 // Estadios: 'A confirmar'; nao constavam na fonte.
@@ -24,7 +24,7 @@ export interface Team {
 
 export interface SeedMatch {
   id: string;
-  phase: 'grupos' | '32avos' | 'oitavas' | 'quartas' | 'semi' | 'terceiro' | 'final';
+  phase: 'grupos' | '16avos' | 'oitavas' | 'quartas' | 'semi' | 'terceiro' | 'final';
   grp: string | null;
   homeCode: string;
   awayCode: string;
@@ -65,22 +65,22 @@ export const teams: Team[] = [
   { code: "ALG", name: "Argelia", flagCode: "dz" },
   { code: "COL", name: "Colombia", flagCode: "co" },
   { code: "GHA", name: "Gana", flagCode: "gh" },
-  { code: "W_R32_1", name: "Vencedor 32-avos 1", flagCode: "" },
-  { code: "W_R32_2", name: "Vencedor 32-avos 2", flagCode: "" },
-  { code: "W_R32_3", name: "Vencedor 32-avos 3", flagCode: "" },
-  { code: "W_R32_4", name: "Vencedor 32-avos 4", flagCode: "" },
-  { code: "W_R32_5", name: "Vencedor 32-avos 5", flagCode: "" },
-  { code: "W_R32_6", name: "Vencedor 32-avos 6", flagCode: "" },
-  { code: "W_R32_7", name: "Vencedor 32-avos 7", flagCode: "" },
-  { code: "W_R32_8", name: "Vencedor 32-avos 8", flagCode: "" },
-  { code: "W_R32_9", name: "Vencedor 32-avos 9", flagCode: "" },
-  { code: "W_R32_10", name: "Vencedor 32-avos 10", flagCode: "" },
-  { code: "W_R32_11", name: "Vencedor 32-avos 11", flagCode: "" },
-  { code: "W_R32_12", name: "Vencedor 32-avos 12", flagCode: "" },
-  { code: "W_R32_13", name: "Vencedor 32-avos 13", flagCode: "" },
-  { code: "W_R32_14", name: "Vencedor 32-avos 14", flagCode: "" },
-  { code: "W_R32_15", name: "Vencedor 32-avos 15", flagCode: "" },
-  { code: "W_R32_16", name: "Vencedor 32-avos 16", flagCode: "" },
+  { code: "W_R32_1", name: "Vencedor 16 avos 1", flagCode: "" },
+  { code: "W_R32_2", name: "Vencedor 16 avos 2", flagCode: "" },
+  { code: "W_R32_3", name: "Vencedor 16 avos 3", flagCode: "" },
+  { code: "W_R32_4", name: "Vencedor 16 avos 4", flagCode: "" },
+  { code: "W_R32_5", name: "Vencedor 16 avos 5", flagCode: "" },
+  { code: "W_R32_6", name: "Vencedor 16 avos 6", flagCode: "" },
+  { code: "W_R32_7", name: "Vencedor 16 avos 7", flagCode: "" },
+  { code: "W_R32_8", name: "Vencedor 16 avos 8", flagCode: "" },
+  { code: "W_R32_9", name: "Vencedor 16 avos 9", flagCode: "" },
+  { code: "W_R32_10", name: "Vencedor 16 avos 10", flagCode: "" },
+  { code: "W_R32_11", name: "Vencedor 16 avos 11", flagCode: "" },
+  { code: "W_R32_12", name: "Vencedor 16 avos 12", flagCode: "" },
+  { code: "W_R32_13", name: "Vencedor 16 avos 13", flagCode: "" },
+  { code: "W_R32_14", name: "Vencedor 16 avos 14", flagCode: "" },
+  { code: "W_R32_15", name: "Vencedor 16 avos 15", flagCode: "" },
+  { code: "W_R32_16", name: "Vencedor 16 avos 16", flagCode: "" },
   { code: "W_R16_1", name: "Vencedor Oitavas 1", flagCode: "" },
   { code: "W_R16_2", name: "Vencedor Oitavas 2", flagCode: "" },
   { code: "W_R16_3", name: "Vencedor Oitavas 3", flagCode: "" },
@@ -100,22 +100,22 @@ export const teams: Team[] = [
 ];
 
 export const matches: SeedMatch[] = [
-  { id: "R32-01", phase: "32avos", grp: null, homeCode: "GER", awayCode: "PAR", stadium: "A confirmar", kickoffAt: "2026-06-29T20:30:00Z" },
-  { id: "R32-02", phase: "32avos", grp: null, homeCode: "FRA", awayCode: "SWE", stadium: "A confirmar", kickoffAt: "2026-06-30T21:00:00Z" },
-  { id: "R32-03", phase: "32avos", grp: null, homeCode: "RSA", awayCode: "CAN", stadium: "A confirmar", kickoffAt: "2026-06-28T19:00:00Z" },
-  { id: "R32-04", phase: "32avos", grp: null, homeCode: "NED", awayCode: "MAR", stadium: "A confirmar", kickoffAt: "2026-06-30T01:00:00Z" },
-  { id: "R32-05", phase: "32avos", grp: null, homeCode: "POR", awayCode: "CRO", stadium: "A confirmar", kickoffAt: "2026-07-02T23:00:00Z" },
-  { id: "R32-06", phase: "32avos", grp: null, homeCode: "ESP", awayCode: "AUT", stadium: "A confirmar", kickoffAt: "2026-07-02T19:00:00Z" },
-  { id: "R32-07", phase: "32avos", grp: null, homeCode: "USA", awayCode: "BIH", stadium: "A confirmar", kickoffAt: "2026-07-02T00:00:00Z" },
-  { id: "R32-08", phase: "32avos", grp: null, homeCode: "BEL", awayCode: "SEN", stadium: "A confirmar", kickoffAt: "2026-07-01T20:00:00Z" },
-  { id: "R32-09", phase: "32avos", grp: null, homeCode: "BRA", awayCode: "JPN", stadium: "A confirmar", kickoffAt: "2026-06-29T17:00:00Z" },
-  { id: "R32-10", phase: "32avos", grp: null, homeCode: "CIV", awayCode: "NOR", stadium: "A confirmar", kickoffAt: "2026-06-30T17:00:00Z" },
-  { id: "R32-11", phase: "32avos", grp: null, homeCode: "MEX", awayCode: "ECU", stadium: "A confirmar", kickoffAt: "2026-07-01T01:00:00Z" },
-  { id: "R32-12", phase: "32avos", grp: null, homeCode: "ENG", awayCode: "COD", stadium: "A confirmar", kickoffAt: "2026-07-01T16:00:00Z" },
-  { id: "R32-13", phase: "32avos", grp: null, homeCode: "ARG", awayCode: "CPV", stadium: "A confirmar", kickoffAt: "2026-07-03T22:00:00Z" },
-  { id: "R32-14", phase: "32avos", grp: null, homeCode: "AUS", awayCode: "EGY", stadium: "A confirmar", kickoffAt: "2026-07-03T18:00:00Z" },
-  { id: "R32-15", phase: "32avos", grp: null, homeCode: "SUI", awayCode: "ALG", stadium: "A confirmar", kickoffAt: "2026-07-03T03:00:00Z" },
-  { id: "R32-16", phase: "32avos", grp: null, homeCode: "COL", awayCode: "GHA", stadium: "A confirmar", kickoffAt: "2026-07-04T01:30:00Z" },
+  { id: "R32-01", phase: "16avos", grp: null, homeCode: "GER", awayCode: "PAR", stadium: "A confirmar", kickoffAt: "2026-06-29T20:30:00Z" },
+  { id: "R32-02", phase: "16avos", grp: null, homeCode: "FRA", awayCode: "SWE", stadium: "A confirmar", kickoffAt: "2026-06-30T21:00:00Z" },
+  { id: "R32-03", phase: "16avos", grp: null, homeCode: "RSA", awayCode: "CAN", stadium: "A confirmar", kickoffAt: "2026-06-28T19:00:00Z" },
+  { id: "R32-04", phase: "16avos", grp: null, homeCode: "NED", awayCode: "MAR", stadium: "A confirmar", kickoffAt: "2026-06-30T01:00:00Z" },
+  { id: "R32-05", phase: "16avos", grp: null, homeCode: "POR", awayCode: "CRO", stadium: "A confirmar", kickoffAt: "2026-07-02T23:00:00Z" },
+  { id: "R32-06", phase: "16avos", grp: null, homeCode: "ESP", awayCode: "AUT", stadium: "A confirmar", kickoffAt: "2026-07-02T19:00:00Z" },
+  { id: "R32-07", phase: "16avos", grp: null, homeCode: "USA", awayCode: "BIH", stadium: "A confirmar", kickoffAt: "2026-07-02T00:00:00Z" },
+  { id: "R32-08", phase: "16avos", grp: null, homeCode: "BEL", awayCode: "SEN", stadium: "A confirmar", kickoffAt: "2026-07-01T20:00:00Z" },
+  { id: "R32-09", phase: "16avos", grp: null, homeCode: "BRA", awayCode: "JPN", stadium: "A confirmar", kickoffAt: "2026-06-29T17:00:00Z" },
+  { id: "R32-10", phase: "16avos", grp: null, homeCode: "CIV", awayCode: "NOR", stadium: "A confirmar", kickoffAt: "2026-06-30T17:00:00Z" },
+  { id: "R32-11", phase: "16avos", grp: null, homeCode: "MEX", awayCode: "ECU", stadium: "A confirmar", kickoffAt: "2026-07-01T01:00:00Z" },
+  { id: "R32-12", phase: "16avos", grp: null, homeCode: "ENG", awayCode: "COD", stadium: "A confirmar", kickoffAt: "2026-07-01T16:00:00Z" },
+  { id: "R32-13", phase: "16avos", grp: null, homeCode: "ARG", awayCode: "CPV", stadium: "A confirmar", kickoffAt: "2026-07-03T22:00:00Z" },
+  { id: "R32-14", phase: "16avos", grp: null, homeCode: "AUS", awayCode: "EGY", stadium: "A confirmar", kickoffAt: "2026-07-03T18:00:00Z" },
+  { id: "R32-15", phase: "16avos", grp: null, homeCode: "SUI", awayCode: "ALG", stadium: "A confirmar", kickoffAt: "2026-07-03T03:00:00Z" },
+  { id: "R32-16", phase: "16avos", grp: null, homeCode: "COL", awayCode: "GHA", stadium: "A confirmar", kickoffAt: "2026-07-04T01:30:00Z" },
   { id: "R16-01", phase: "oitavas", grp: null, homeCode: "W_R32_1", awayCode: "W_R32_2", stadium: "A confirmar", kickoffAt: "2026-07-04T21:00:00Z" },
   { id: "R16-02", phase: "oitavas", grp: null, homeCode: "W_R32_3", awayCode: "W_R32_4", stadium: "A confirmar", kickoffAt: "2026-07-04T17:00:00Z" },
   { id: "R16-03", phase: "oitavas", grp: null, homeCode: "W_R32_5", awayCode: "W_R32_6", stadium: "A confirmar", kickoffAt: "2026-07-06T19:00:00Z" },

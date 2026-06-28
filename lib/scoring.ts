@@ -14,7 +14,7 @@
 
 export type Phase =
   | 'grupos'
-  | '32avos'
+  | '16avos'
   | 'oitavas'
   | 'quartas'
   | 'semi'       // semifinal
@@ -55,7 +55,7 @@ export interface ScoreBreakdown {
 
 const PHASE_MULTIPLIER: Record<Phase, number> = {
   grupos: 1,
-  '32avos': 1.2,
+  '16avos': 1.2,
   oitavas: 1.4,
   quartas: 1.6,
   semi: 1.8,

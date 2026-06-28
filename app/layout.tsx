@@ -15,7 +15,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Bolão LATAM Pass · Copa 2026",
   description:
-    "Bolão de palpites da Copa do Mundo FIFA 2026, fase mata-mata, com identidade LATAM Pass. Palpite placares, acumule pontos e dispute prêmios em milhas LATAM Pass.",
+    "Bolão de palpites da Copa do Mundo 2026, fase mata-mata, com identidade LATAM Pass. Palpite os placares, acumule pontos e fique no topo do ranking.",
 };
 
 export default function RootLayout({

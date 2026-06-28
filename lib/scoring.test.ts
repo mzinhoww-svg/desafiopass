@@ -59,7 +59,7 @@ describe('basePoints (B1..B14)', () => {
 describe('phaseMultiplier', () => {
   const table: Array<[Phase, number]> = [
     ['grupos', 1],
-    ['32avos', 1.2],
+    ['16avos', 1.2],
     ['oitavas', 1.4],
     ['quartas', 1.6],
     ['semi', 1.8],
@@ -92,11 +92,11 @@ describe('finalPoints (F1..F13)', () => {
     { id: 'F6', phase: 'oitavas', brazil: true, home: 1, away: 1, gh: 2, ga: 2, final: 56 },
     { id: 'F7', phase: 'semi', brazil: true, home: 2, away: 1, gh: 2, ga: 0, final: 126 },
     { id: 'F8', phase: 'final', brazil: true, home: 2, away: 1, gh: 2, ga: 1, final: 200 },
-    { id: 'F9', phase: '32avos', brazil: false, home: 1, away: 0, gh: 1, ga: 0, final: 60 },
+    { id: 'F9', phase: '16avos', brazil: false, home: 1, away: 0, gh: 1, ga: 0, final: 60 },
     { id: 'F10', phase: 'terceiro', brazil: false, home: 2, away: 1, gh: 2, ga: 0, final: 63 },
-    { id: 'F11', phase: '32avos', brazil: false, home: 2, away: 0, gh: 2, ga: 1, final: 42 },
+    { id: 'F11', phase: '16avos', brazil: false, home: 2, away: 0, gh: 2, ga: 1, final: 42 },
     { id: 'F12', phase: 'oitavas', brazil: false, home: 1, away: 1, gh: 2, ga: 2, final: 28 },
-    { id: 'F13', phase: '32avos', brazil: false, home: 3, away: 1, gh: 3, ga: 2, final: 42 },
+    { id: 'F13', phase: '16avos', brazil: false, home: 3, away: 1, gh: 3, ga: 2, final: 42 },
   ];
 
   for (const c of cases) {
