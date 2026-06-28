@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { TabBar } from "@/components/tab-bar";
+import { getCurrentUser } from "@/lib/auth-helpers";
+import { getPendingPredictionCount } from "@/lib/queries/matches";
 import "./globals.css";
 
 // Fonte unica do app (decisao travada, DESIGN_SPEC secao 1): Plus Jakarta Sans,
@@ -16,13 +18,29 @@ export const metadata: Metadata = {
   title: "Bolão LATAM Pass · Copa 2026",
   description:
     "Bolão de palpites da Copa do Mundo 2026, fase mata-mata, com identidade LATAM Pass. Palpite os placares, acumule pontos e fique no topo do ranking.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Bolão LATAM",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  themeColor: "#16064F",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+  const pendingCount = user ? await getPendingPredictionCount(user.id) : 0;
+
   return (
     <html lang="pt-BR" className={`${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full bg-black/5">
@@ -30,7 +48,7 @@ export default function RootLayout({
         <div className="mx-auto flex min-h-full max-w-md flex-col bg-paper pb-16 shadow-sm">
           {children}
         </div>
-        <TabBar />
+        <TabBar pendingCount={pendingCount} />
       </body>
     </html>
   );

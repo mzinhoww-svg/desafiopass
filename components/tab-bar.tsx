@@ -18,7 +18,7 @@ const items = [
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 
-export function TabBar() {
+export function TabBar({ pendingCount = 0 }: { pendingCount?: number }) {
   const pathname = usePathname();
   if (pathname.startsWith("/login") || pathname.startsWith("/cadastro")) {
     return null;
@@ -32,6 +32,8 @@ export function TabBar() {
       {items.map(({ href, label, icon: Icon }) => {
         const active =
           href === "/" ? pathname === "/" : pathname.startsWith(href);
+        // Badge de palpites pendentes no item Jogos (#3).
+        const badge = href === "/partidas" && pendingCount > 0 ? pendingCount : 0;
         return (
           <Link
             key={href}
@@ -41,11 +43,21 @@ export function TabBar() {
               active ? "text-rose" : "text-muted"
             }`}
           >
-            <Icon
-              size={20}
-              strokeWidth={active ? 2.5 : 2}
-              aria-hidden="true"
-            />
+            <span className="relative">
+              <Icon
+                size={20}
+                strokeWidth={active ? 2.5 : 2}
+                aria-hidden="true"
+              />
+              {badge > 0 ? (
+                <span
+                  className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose px-1 text-[0.5625rem] font-bold leading-none text-white"
+                  aria-label={`${badge} palpites pendentes`}
+                >
+                  {badge > 9 ? "9+" : badge}
+                </span>
+              ) : null}
+            </span>
             {label}
           </Link>
         );

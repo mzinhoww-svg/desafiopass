@@ -228,3 +228,30 @@ Palpites especiais (campeao, artilheiro, +150 cada). Ranking exclusivo socio LAT
 Rankings por recorte. Estatistica da comunidade. API externa de futebol. Avanco dinamico
 de chaveamento. Saque/credito automatico de milhas. Sair/gerenciar membros de liga.
 Login social e recuperacao de senha. CRUD de partidas pela UI.
+
+---
+
+## Pós-lançamento: 13 melhorias em 3 slices (v1.1 → v1.3)
+
+Marcação: [ ] pendente, [~] em andamento, [x] concluída.
+
+### Slice 1 — Lançamento seguro + ganhos rápidos (v1.1) [x]
+Sem infraestrutura nova; frontend/dados existentes.
+- [x] #3 Indicador de palpites pendentes (banner na home + badge no menu Jogos + destaque no card)
+- [x] #4 Contagem regressiva do deadline (Countdown no card; trava no kickoff)
+- [x] #6 Detalhe da pontuação por jogo (breakdown base × Brasil × fase via motor puro)
+- [x] #7 Compartilhar liga (copiar link + QR code)
+- [x] #12 PWA instalável (manifest.webmanifest + ícones 192/512/apple-touch)
+- [x] #13 Privacidade/LGPD (página /privacidade + link no rodapé e no cadastro)
+
+### Slice 2 — E-mail, contas e bolão completo (v1.2) [ ]
+Decisão de infra: provedor de e-mail (Resend ou Brevo) — travar antes de codar.
+- [ ] #1 Recuperação de senha (tabela de tokens + fluxo esqueci/redefinir + e-mail)
+- [ ] #5 Lembretes antes do apito (job agendado; opt-out no perfil)
+- [ ] #2 Palpites de campeão e artilheiro (UI + action + scoring puro/testado + admin lança resultado)
+
+### Slice 3 — Dados, operação e performance (v1.3) [ ]
+- [ ] #8 Métricas no admin (usuários, palpites por jogo, taxa de participação)
+- [ ] #9 Alerta de jogos encerrados sem placar lançado
+- [ ] #10 Funil cadastro × palpite
+- [ ] #11 Avatar em Vercel Blob (tira data URL das queries de ranking)

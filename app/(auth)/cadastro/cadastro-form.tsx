@@ -57,7 +57,12 @@ export function CadastroForm() {
             className="size-5"
             style={{ accentColor: "var(--rose)" }}
           />
-          Aceito os termos
+          <span>
+            Aceito os termos e a{" "}
+            <Link href="/privacidade" className="font-bold text-rose">
+              política de privacidade
+            </Link>
+          </span>
         </label>
 
         {state?.error ? (

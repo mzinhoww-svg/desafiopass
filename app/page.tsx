@@ -23,11 +23,14 @@ export default async function Home() {
     getUserPredictionMap(user?.id ?? null),
   ]);
   const now = Date.now();
-  const upcoming = all
-    .filter(
-      (m) => m.status === "agendada" && new Date(m.kickoffAt).getTime() > now,
-    )
-    .slice(0, 3);
+  const openMatches = all.filter(
+    (m) => m.status === "agendada" && new Date(m.kickoffAt).getTime() > now,
+  );
+  const upcoming = openMatches.slice(0, 3);
+  // Palpites pendentes do usuario logado (#3): jogos abertos ainda sem palpite.
+  const pendingCount = user
+    ? openMatches.filter((m) => !predMap.has(m.id)).length
+    : 0;
 
   return (
     <>
@@ -58,6 +61,22 @@ export default async function Home() {
             </LinkButton>
           </FadeIn>
         </section>
+
+        {pendingCount > 0 ? (
+          <Link
+            href="/partidas"
+            className="mx-5 mt-4 flex items-center justify-between gap-3 rounded-2xl border border-rose/40 bg-rose/5 px-4 py-3"
+          >
+            <span className="t-body font-bold text-indigo">
+              {pendingCount === 1
+                ? "Falta 1 jogo para palpitar"
+                : `Faltam ${pendingCount} jogos para palpitar`}
+            </span>
+            <span className="t-caption flex-none font-bold text-rose">
+              Palpitar
+            </span>
+          </Link>
+        ) : null}
 
         <section className="px-5 py-6">
           <p className="t-kicker mb-3 text-indigo">Como funciona</p>
@@ -115,6 +134,9 @@ export default async function Home() {
         <p className="t-caption mt-1 text-muted">
           Palpite, pontue e vença o bolão · Mata-mata
         </p>
+        <Link href="/privacidade" className="t-caption mt-2 inline-block font-bold text-rose">
+          Privacidade
+        </Link>
       </footer>
     </>
   );
