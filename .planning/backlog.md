@@ -21,7 +21,7 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - [x] Task 0.1 Scaffold
 - [x] Task 0.2 Tokens de marca / sistema de design Elevate
 - [~] Task 0.3 Banco e ORM (codigo pronto + migracao gerada; falta aplicar em Postgres real)
-- [ ] Task 0.4 Seed Copa 2026
+- [~] Task 0.4 Seed Copa 2026 (codigo pronto: copa2026, flags, flag.tsx, seed.ts; run pendente, B2)
 - [x] Task 0.5 Deploy (producao no ar; CI GitHub Actions ainda pendente)
 
 ### Slice 1: Auth e perfil
@@ -136,7 +136,13 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
   Deployment Protection ate o usuario desligar) | commits chore/fix na main
 - 2026-06-28 | Task 0.3 | schema Drizzle do DATA_SPEC, drizzle.config.ts, lib/db.ts,
   .env.example; migracao 0000 gerada (7 tabelas) | typecheck/lint/build verdes;
-  db:generate ok; db:migrate pendente de Postgres real (B2) | commit feat(db)
+  db:generate ok; db:migrate pendente de Postgres real (B2) | commit feat(db); PR #2 merge
+- 2026-06-28 | Task 0.4 | copa2026.ts, 32 bandeiras SVG em public/flags, components/
+  flag.tsx e lib/data/seed.ts (upsert idempotente teams->matches) | typecheck/lint/build
+  verdes; db:seed nao roda deste ambiente (egress ao Neon bloqueado, B2) | commit feat(seed)
+- 2026-06-28 | infra | Neon conectado; aplicacao da migracao/seed daqui bloqueada: a
+  policy de rede do ambiente nao tem o host do Neon (api.sa-east-1.aws.neon.tech) na
+  allowlist. Aplicar via CI/Vercel ou allowlist do host. Ver B2.
 
 ---
 

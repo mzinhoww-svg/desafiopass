@@ -1,0 +1,71 @@
+// lib/data/seed.ts
+//
+// Script de seed (npm run db:seed). Le lib/data/copa2026.ts e popula as tabelas
+// teams e matches (DATA_SPEC secao 6). Idempotente: upsert por code (teams) e por
+// id (matches), entao rodar 2x nao duplica e nao sobrescreve placar/status ja
+// gravados. Insere teams antes de matches (FK home_code/away_code).
+//
+// kickoffAt vem como string ISO em UTC; convertido para Date. Nao reconverter
+// timezone (DATA_SPEC: horarios ja estao em UTC no seed).
+
+import { config } from "dotenv";
+config({ path: ".env.local" });
+config();
+
+import { drizzle } from "drizzle-orm/vercel-postgres";
+import { sql } from "@vercel/postgres";
+import { teams, matches } from "../../drizzle/schema";
+import { teams as seedTeams, matches as seedMatches } from "./copa2026";
+
+async function main() {
+  const db = drizzle(sql);
+
+  // Selecoes (inclui placeholders de avanco com flagCode vazio).
+  for (const t of seedTeams) {
+    await db
+      .insert(teams)
+      .values({ code: t.code, name: t.name, flagCode: t.flagCode })
+      .onConflictDoUpdate({
+        target: teams.code,
+        set: { name: t.name, flagCode: t.flagCode },
+      });
+  }
+
+  // Partidas. Nao toca em homeScore/awayScore/status no conflito, para nao apagar
+  // resultados ja lancados pelo admin numa reexecucao.
+  for (const m of seedMatches) {
+    await db
+      .insert(matches)
+      .values({
+        id: m.id,
+        phase: m.phase,
+        grp: m.grp,
+        homeCode: m.homeCode,
+        awayCode: m.awayCode,
+        stadium: m.stadium,
+        kickoffAt: new Date(m.kickoffAt),
+      })
+      .onConflictDoUpdate({
+        target: matches.id,
+        set: {
+          phase: m.phase,
+          grp: m.grp,
+          homeCode: m.homeCode,
+          awayCode: m.awayCode,
+          stadium: m.stadium,
+          kickoffAt: new Date(m.kickoffAt),
+        },
+      });
+  }
+
+  console.log(
+    `Seed concluido: ${seedTeams.length} selecoes, ${seedMatches.length} partidas.`,
+  );
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    console.error("Falha no seed:", e);
+    process.exit(1);
+  });
