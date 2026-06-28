@@ -1,10 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { matches, predictions } from "@/drizzle/schema";
-import { isAdmin } from "@/lib/auth-helpers";
+import {
+  matches,
+  predictions,
+  leagues,
+  leagueMembers,
+  users,
+} from "@/drizzle/schema";
+import { isAdmin, getCurrentUser } from "@/lib/auth-helpers";
 import { adminResultSchema } from "@/lib/validations";
 import { finalPoints, type Phase } from "@/lib/scoring";
 
@@ -66,4 +72,45 @@ export async function closeMatch(
   revalidatePath("/partidas");
   revalidatePath("/ranking");
   return { ok: true, scored: preds.length };
+}
+
+// --- Gestao admin (excluir usuario/liga, remover membro). Form actions. ---
+
+export async function deleteUser(formData: FormData): Promise<void> {
+  const current = await getCurrentUser();
+  if (current?.role !== "admin") return;
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId || userId === current.id) return; // nao exclui a si mesmo
+  // Remove primeiro as ligas que o usuario e dono (cascata nos membros). Depois o
+  // usuario, que cascateia predictions e league_members dele.
+  await db.delete(leagues).where(eq(leagues.ownerId, userId));
+  await db.delete(users).where(eq(users.id, userId));
+  revalidatePath("/admin/usuarios");
+  revalidatePath("/admin/ligas");
+  revalidatePath("/ranking");
+}
+
+export async function deleteLeague(formData: FormData): Promise<void> {
+  if (!(await isAdmin())) return;
+  const leagueId = String(formData.get("leagueId") ?? "");
+  if (!leagueId) return;
+  // Cascata remove os league_members da liga.
+  await db.delete(leagues).where(eq(leagues.id, leagueId));
+  revalidatePath("/admin/ligas");
+}
+
+export async function removeMember(formData: FormData): Promise<void> {
+  if (!(await isAdmin())) return;
+  const leagueId = String(formData.get("leagueId") ?? "");
+  const userId = String(formData.get("userId") ?? "");
+  if (!leagueId || !userId) return;
+  await db
+    .delete(leagueMembers)
+    .where(
+      and(
+        eq(leagueMembers.leagueId, leagueId),
+        eq(leagueMembers.userId, userId),
+      ),
+    );
+  revalidatePath(`/admin/ligas/${leagueId}`);
 }
