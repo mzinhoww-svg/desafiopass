@@ -49,13 +49,15 @@ export async function updateProfile(
 
   // Avatar opcional: data URL de imagem ja redimensionada no client. Vazio = sem
   // alteracao. Limite de tamanho como guarda (256px jpeg fica bem abaixo disso).
+  // #11: quando ha Vercel Blob configurado, sobe a imagem e guarda a URL (tira o
+  // data URL pesado das queries de ranking); senao, mantem o data URL (fallback).
   const avatarRaw = String(formData.get("avatarUrl") ?? "");
   const avatarUpdate: { avatarUrl?: string } = {};
   if (avatarRaw) {
     if (!avatarRaw.startsWith("data:image/") || avatarRaw.length > 400_000) {
       return { error: "Imagem invalida ou muito grande." };
     }
-    avatarUpdate.avatarUrl = avatarRaw;
+    avatarUpdate.avatarUrl = await storeAvatar(avatarRaw, current.id);
   }
 
   // Opt-out de lembretes por e-mail (#5). Checkbox marcado = quer receber.
@@ -72,4 +74,30 @@ export async function updateProfile(
 
 export async function logout() {
   await signOut({ redirectTo: "/" });
+}
+
+/*
+ * Persiste o avatar. Se BLOB_READ_WRITE_TOKEN estiver configurado, sobe o JPEG
+ * para o Vercel Blob e retorna a URL publica (mais leve no ranking). Sem token,
+ * cai para o data URL (comportamento atual), garantindo que o perfil sempre salve.
+ */
+async function storeAvatar(dataUrl: string, userId: string): Promise<string> {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return dataUrl;
+  try {
+    const comma = dataUrl.indexOf(",");
+    const buffer = Buffer.from(dataUrl.slice(comma + 1), "base64");
+    const { put } = await import("@vercel/blob");
+    // Caminho unico por upload evita conflito de sobrescrita; o blob antigo fica
+    // obsoleto (limpeza pode ser feita depois, fora do caminho critico).
+    const { url } = await put(`avatars/${userId}-${Date.now()}.jpg`, buffer, {
+      access: "public",
+      contentType: "image/jpeg",
+      token,
+    });
+    return url;
+  } catch (e) {
+    console.error("[avatar] falha ao subir para o Blob, usando data URL:", e);
+    return dataUrl;
+  }
 }
