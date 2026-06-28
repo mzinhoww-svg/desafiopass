@@ -14,9 +14,13 @@ config();
 
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { teams, matches, users } from "../../drizzle/schema";
 import { teams as seedTeams, matches as seedMatches } from "./copa2026";
+
+// E-mails promovidos a admin (se ja existirem no banco). Nao altera a senha.
+const ADMIN_EMAILS = ["mazinhoww@gmail.com"];
 
 // Usuarios de teste (Task 1.1). Senha conhecida para validar login. Idempotente
 // por email; o passwordHash e regravado a cada seed para manter a credencial estavel.
@@ -91,6 +95,11 @@ async function main() {
         target: users.email,
         set: { nickname: u.nickname, role: u.role, passwordHash },
       });
+  }
+
+  // Promove e-mails a admin, se ja existirem (nao altera senha).
+  for (const email of ADMIN_EMAILS) {
+    await db.update(users).set({ role: "admin" }).where(eq(users.email, email));
   }
 
   console.log(

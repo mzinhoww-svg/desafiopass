@@ -25,8 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${jakarta.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col pb-16">
-        {children}
+      <body className="min-h-full bg-black/5">
+        {/* App-shell: largura de telefone, centralizada em telas largas (web). */}
+        <div className="mx-auto flex min-h-full max-w-md flex-col bg-paper pb-16 shadow-sm">
+          {children}
+        </div>
         <TabBar />
       </body>
     </html>

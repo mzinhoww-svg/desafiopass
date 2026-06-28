@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { matches, predictions, users } from "@/drizzle/schema";
 
@@ -53,6 +53,19 @@ export interface CommunityPrediction {
   homeGuess: number;
   awayGuess: number;
   points: number;
+}
+
+// Quantos palpites cada partida recebeu (mapa matchId -> total). Base da pagina
+// Comunidade, para mostrar onde a galera esta jogando.
+export async function getMatchPredictionCounts(): Promise<Map<string, number>> {
+  const rows = await db
+    .select({
+      matchId: predictions.matchId,
+      count: sql<number>`count(*)`,
+    })
+    .from(predictions)
+    .groupBy(predictions.matchId);
+  return new Map(rows.map((r) => [r.matchId, Number(r.count)]));
 }
 
 export async function getMatchPredictionsWithUsers(

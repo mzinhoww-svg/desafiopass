@@ -9,6 +9,7 @@ import { logout } from "@/app/actions/profile";
 import { Header } from "@/components/header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 import { ProfileForm } from "./profile-form";
 
 // /perfil: Server Component. Apelido, time do coracao e total de pontos/posicao
@@ -55,6 +56,12 @@ export default async function PerfilPage() {
             />
           </Card>
         </div>
+
+        {sessionUser.role === "admin" ? (
+          <LinkButton href="/admin" className="mt-4 w-full">
+            Painel admin
+          </LinkButton>
+        ) : null}
 
         <form action={logout} className="mt-4">
           <Button type="submit" variant="secondary" className="w-full">

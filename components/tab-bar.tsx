@@ -7,12 +7,14 @@ import { Home, ListChecks, Trophy, Users, User } from "lucide-react";
 /*
  * Navegacao inferior (mobile-first), espelhando o tabbar do wireframe. Item ativo
  * em rosa (acento em fundo claro). Oculta em telas de auth (login/cadastro).
+ * Comunidade no lugar de Ligas para dar visibilidade ao que a galera esta
+ * palpitando (as ligas continuam acessiveis dentro de Comunidade).
  */
 const items = [
   { href: "/", label: "Início", icon: Home },
   { href: "/partidas", label: "Jogos", icon: ListChecks },
   { href: "/ranking", label: "Ranking", icon: Trophy },
-  { href: "/ligas", label: "Ligas", icon: Users },
+  { href: "/comunidade", label: "Comunidade", icon: Users },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
 
@@ -25,7 +27,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-50 flex border-t border-black/10 bg-paper"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-w-md border-t border-black/10 bg-paper"
     >
       {items.map(({ href, label, icon: Icon }) => {
         const active =
