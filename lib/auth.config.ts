@@ -1,6 +1,13 @@
 import type { NextAuthConfig } from "next-auth";
 
 /*
+ * Lista de emails sempre tratados como admin, independente do valor em banco.
+ * Edge-safe (sem db): aplicada no callback jwt em TODA requisicao, entao a
+ * promocao vale para sessoes existentes sem precisar de novo login nem seed.
+ */
+const ADMIN_EMAILS = ["mazinhoww@gmail.com"];
+
+/*
  * Config edge-safe do Auth.js v5: SEM bcrypt e SEM acesso a banco, para poder rodar
  * no middleware (edge). O Credentials provider (que usa db + bcrypt) fica em lib/auth.ts.
  *
@@ -17,6 +24,12 @@ export const authConfig = {
       if (user) {
         token.id = user.id;
         token.role = user.role ?? "user";
+      }
+      // Allowlist por email: roda em toda chamada (login e refresh), promovendo
+      // tambem sessoes ja abertas sem exigir novo login.
+      const email = (user?.email ?? token.email) as string | undefined;
+      if (email && ADMIN_EMAILS.includes(email.toLowerCase())) {
+        token.role = "admin";
       }
       return token;
     },
