@@ -36,7 +36,7 @@ Marcacao: [ ] pendente, [~] em andamento, [x] concluida.
 - [ ] Task 1.3 Perfil
 
 ### Slice 2: Palpites e pontuacao
-- [ ] Task 2.1 Logica de pontuacao (isolada, testada)
+- [x] Task 2.1 Logica de pontuacao (lib/scoring.ts + 38 testes verdes, F8=200)
 - [ ] Task 2.2 Lista de partidas
 - [ ] Task 2.3 Registrar palpite
 - [ ] Task 2.4 Encerrar e pontuar (admin)
