@@ -58,6 +58,7 @@ export interface RankRow {
   exactCount: number;
   position: number | null; // null quando points === 0 (travessao)
   isCurrentUser: boolean;
+  avatarUrl: string | null;
 }
 
 const TOTALS_CTE = `
@@ -66,13 +67,14 @@ const TOTALS_CTE = `
       u.id AS user_id,
       u.nickname AS nickname,
       u.is_premium AS is_premium,
+      u.avatar_url AS avatar_url,
       u.created_at AS created_at,
       COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points,
       COUNT(*) FILTER (WHERE m.status = 'encerrada' AND p.criterion = 'placar_exato') AS exact_count
     FROM users u
     LEFT JOIN predictions p ON p.user_id = u.id
     LEFT JOIN matches m ON m.id = p.match_id
-    GROUP BY u.id, u.nickname, u.is_premium, u.created_at
+    GROUP BY u.id, u.nickname, u.is_premium, u.avatar_url, u.created_at
   )
 `;
 
@@ -90,6 +92,7 @@ export async function getGlobalRanking(args: {
       t.user_id,
       t.nickname,
       t.is_premium,
+      t.avatar_url,
       t.points,
       t.exact_count,
       CASE WHEN t.points = 0 THEN NULL
@@ -105,6 +108,7 @@ export async function getGlobalRanking(args: {
       user_id: string;
       nickname: string;
       is_premium: boolean;
+      avatar_url: string | null;
       points: number | string;
       exact_count: number | string;
       position: number | string | null;
@@ -113,6 +117,7 @@ export async function getGlobalRanking(args: {
     userId: r.user_id,
     nickname: r.nickname,
     isPremium: r.is_premium,
+    avatarUrl: r.avatar_url ?? null,
     points: Number(r.points),
     exactCount: Number(r.exact_count),
     position: r.position == null ? null : Number(r.position),
@@ -173,6 +178,7 @@ export async function getLeagueRanking(args: {
         u.id AS user_id,
         u.nickname AS nickname,
         u.is_premium AS is_premium,
+        u.avatar_url AS avatar_url,
         u.created_at AS created_at,
         COALESCE(SUM(CASE WHEN m.status = 'encerrada' THEN p.points ELSE 0 END), 0) AS points,
         COUNT(*) FILTER (WHERE m.status = 'encerrada' AND p.criterion = 'placar_exato') AS exact_count
@@ -181,12 +187,13 @@ export async function getLeagueRanking(args: {
       LEFT JOIN predictions p ON p.user_id = u.id
       LEFT JOIN matches m ON m.id = p.match_id
       WHERE lm.league_id = ${args.leagueId}
-      GROUP BY u.id, u.nickname, u.is_premium, u.created_at
+      GROUP BY u.id, u.nickname, u.is_premium, u.avatar_url, u.created_at
     )
     SELECT
       user_id,
       nickname,
       is_premium,
+      avatar_url,
       points,
       exact_count,
       CASE WHEN points = 0 THEN NULL
@@ -202,6 +209,7 @@ export async function getLeagueRanking(args: {
       user_id: string;
       nickname: string;
       is_premium: boolean;
+      avatar_url: string | null;
       points: number | string;
       exact_count: number | string;
       position: number | string | null;
@@ -210,6 +218,7 @@ export async function getLeagueRanking(args: {
     userId: r.user_id,
     nickname: r.nickname,
     isPremium: r.is_premium,
+    avatarUrl: r.avatar_url ?? null,
     points: Number(r.points),
     exactCount: Number(r.exact_count),
     position: r.position == null ? null : Number(r.position),
