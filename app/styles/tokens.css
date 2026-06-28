@@ -1,0 +1,75 @@
+/* app/styles/tokens.css
+ *
+ * Design tokens do Bolao LATAM Pass, derivados do LATAM Pass Elevate Design System
+ * (LLM_SYSTEM_GUIDE.md). Fonte unica de cor do app. Importado no globals.css.
+ *
+ * Regra de cor Elevate 60.30.10: 60% neutro (cloud/paper), 30% indigo, 10% acento.
+ * Um acento por superficie. Acento muda com o fundo: rosa em claro, teal em escuro.
+ * Fonte: Plus Jakarta Sans (carregada via next/font no layout, variavel --font-jakarta).
+ */
+
+:root {
+  /* Marca Elevate (valores exatos do guia, secao 2) */
+  --indigo: #16064f; /* base escura, tinta primaria */
+  --indigo-light: #2c1183; /* parceiro de gradiente */
+  --indigo-deep: #0c0233; /* fundo ink, momentos-heroi */
+  --rose: #fe3173; /* acento em fundo CLARO */
+  --teal: #0ae7c6; /* acento em fundo ESCURO */
+  --lime: #c2f24a; /* positivo / destaque pontual */
+  --purple: #9e4cfe; /* acento 2 / gradiente decorativo */
+
+  /* Neutros / superficie */
+  --cloud: #f3f2f8; /* fundo de tela claro */
+  --paper: #ffffff; /* cards, superficie de leitura */
+  --ink: #18112e; /* texto em fundo claro */
+  --muted: #6b6586; /* texto secundario (claro) */
+  --muted-dark: #b9b2d6; /* texto secundario (escuro) */
+
+  /* Gradientes de marca */
+  --grad: linear-gradient(135deg, var(--indigo-light), var(--rose));
+  --grad-deep: linear-gradient(160deg, #0c0233 0%, #16064f 55%, #2c1183 100%);
+
+  /* Ranking (ui-ux-pro-max, decisao travada) */
+  --rank-gold: #ffd700; /* 1o lugar */
+  --rank-silver: #c0c0c0; /* 2o lugar */
+  --rank-bronze: #cd7f32; /* 3o lugar */
+
+  /* Semantica de acao por fundo */
+  --action-on-light: var(--rose);
+  --action-on-dark: var(--teal);
+
+  /* Tipografia (Plus Jakarta Sans via next/font; fallback de sistema) */
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* Toque e foco (impeccable) */
+  --tap-min: 44px;
+  --focus-ring-light: var(--rose);
+  --focus-ring-dark: var(--teal);
+}
+
+/* Superficie clara padrao */
+.surface-light {
+  background: var(--cloud);
+  color: var(--ink);
+}
+.surface-paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Superficie escura de marca / impacto */
+.surface-dark {
+  background: var(--indigo);
+  color: #fff;
+}
+.surface-ink {
+  background: var(--indigo-deep);
+  color: #fff;
+}
+
+/* Barra gradiente Elevate (borda inferior de header, quebras) */
+.brand-bar {
+  height: 4px;
+  background: var(--grad);
+  border: 0;
+}

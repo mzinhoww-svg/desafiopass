@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+/*
+ * Sistema de design LATAM Pass Elevate. Tokens em app/styles/tokens.css.
+ * Aqui: exposicao dos tokens ao Tailwind v4 (@theme) e escala tipografica
+ * (DESIGN_SPEC secao 3). Regra Elevate 60.30.10, acento por fundo.
+ */
+
+@theme inline {
+  /* Cores Elevate expostas como utilities (bg-indigo, text-rose, text-teal, ...) */
+  --color-indigo: var(--indigo);
+  --color-indigo-light: var(--indigo-light);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-rose: var(--rose);
+  --color-teal: var(--teal);
+  --color-lime: var(--lime);
+  --color-purple: var(--purple);
+  --color-cloud: var(--cloud);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-muted-dark: var(--muted-dark);
+  --color-rank-gold: var(--rank-gold);
+  --color-rank-silver: var(--rank-silver);
+  --color-rank-bronze: var(--rank-bronze);
+
+  /* Fonte do app */
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+body {
+  background: var(--cloud);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ----------------------------------------------------------------------------
+ * Escala tipografica (DESIGN_SPEC secao 3). Estetica atletica via peso 800,
+ * tracking negativo em titulos grandes, caixa alta em kickers, oversized em
+ * placar e pontos. Toda prosa >= 4.5:1 de contraste.
+ * ------------------------------------------------------------------------- */
+
+.t-display {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.t-screen-title {
+  font-size: 1.625rem; /* 26px */
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-kicker {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.t-card-title {
+  font-size: 1rem; /* 16px */
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.t-lead {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500;
+  text-wrap: pretty;
+}
+.t-body {
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+}
+.t-score {
+  font-size: clamp(2rem, 9vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-points {
+  font-size: 2rem; /* 32px */
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.t-caption {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+}
+
+/* Barra gradiente Elevate vem de tokens.css (.brand-bar). */
+
+/* Foco visivel para teclado (impeccable): rosa em fundo claro. Superficies
+ * escuras aplicam o anel teal via utilitario .focus-on-dark. */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-light);
+  outline-offset: 2px;
+}
+.focus-on-dark:focus-visible {
+  outline-color: var(--focus-ring-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
