@@ -139,7 +139,7 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
         {deadline ? (
           <p className="t-caption mt-2 text-muted">
             {open
-              ? `Prazo: até o primeiro jogo, ${formatBrasilia(deadline)} (Brasília).`
+              ? `Você pode ajustar até a final, ${formatBrasilia(deadline)} (Brasília).`
               : "O prazo já encerrou. Seus palpites estão travados."}
           </p>
         ) : null}
