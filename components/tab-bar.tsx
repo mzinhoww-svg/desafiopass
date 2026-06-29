@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ListChecks, Trophy, Users, User } from "lucide-react";
+import { useT } from "@/components/i18n/locale-provider";
 
 /*
  * Navegacao inferior (mobile-first), espelhando o tabbar do wireframe. Item ativo
@@ -10,16 +11,16 @@ import { Home, ListChecks, Trophy, Users, User } from "lucide-react";
  * Comunidade no lugar de Ligas para dar visibilidade ao que a galera esta
  * palpitando (as ligas continuam acessiveis dentro de Comunidade).
  */
-const items = [
-  { href: "/", label: "Início", icon: Home },
-  { href: "/partidas", label: "Palpites", icon: ListChecks },
-  { href: "/ranking", label: "Ranking", icon: Trophy },
-  { href: "/comunidade", label: "Comunidade", icon: Users },
-  { href: "/perfil", label: "Perfil", icon: User },
-];
-
 export function TabBar({ pendingCount = 0 }: { pendingCount?: number }) {
   const pathname = usePathname();
+  const t = useT();
+  const items = [
+    { href: "/", label: t("Início", "Inicio"), icon: Home },
+    { href: "/partidas", label: t("Palpites", "Pronósticos"), icon: ListChecks },
+    { href: "/ranking", label: t("Ranking", "Ranking"), icon: Trophy },
+    { href: "/comunidade", label: t("Comunidade", "Comunidad"), icon: Users },
+    { href: "/perfil", label: t("Perfil", "Perfil"), icon: User },
+  ];
   const authRoutes = ["/login", "/cadastro", "/esqueci-senha", "/redefinir-senha"];
   if (authRoutes.some((r) => pathname.startsWith(r))) {
     return null;

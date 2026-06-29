@@ -17,8 +17,9 @@ import {
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getTeamMap, resolveTeam } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
-import { CRITERION_LABEL } from "@/lib/scoring-labels";
+import { criterionLabel } from "@/lib/scoring-labels";
 import { formatBrasilia, isPredictionOpen } from "@/lib/utils/dates";
+import { getLocale, tr } from "@/lib/i18n";
 import { finalPoints, type Criterion, type Phase } from "@/lib/scoring";
 
 export default async function PartidaPage({
@@ -30,6 +31,7 @@ export default async function PartidaPage({
   const match = await getMatchById(id);
   if (!match) notFound();
 
+  const locale = await getLocale();
   const user = await getCurrentUser();
   const prediction = user ? await getUserPrediction(user.id, id) : null;
   const teamMap = await getTeamMap();
@@ -64,7 +66,9 @@ export default async function PartidaPage({
     <Card>
       {closed ? (
         <div className="flex flex-col gap-4">
-          <p className="t-kicker text-center text-indigo">Você palpitou</p>
+          <p className="t-kicker text-center text-indigo">
+            {tr(locale, "Você palpitou", "Tú pronosticaste")}
+          </p>
           <ScoreInput
             home={home}
             away={away}
@@ -74,10 +78,16 @@ export default async function PartidaPage({
           />
           {!prediction ? (
             <p className="t-caption text-center text-muted">
-              Você não palpitou nesta partida.
+              {tr(
+                locale,
+                "Você não palpitou nesta partida.",
+                "No pronosticaste este partido.",
+              )}
             </p>
           ) : null}
-          <p className="t-kicker text-center text-indigo">O placar foi</p>
+          <p className="t-kicker text-center text-indigo">
+            {tr(locale, "O placar foi", "El marcador fue")}
+          </p>
           <div className="t-score flex items-center justify-center gap-3 text-indigo">
             <span>{match.homeScore}</span>
             <span className="text-muted">x</span>
@@ -87,20 +97,25 @@ export default async function PartidaPage({
             <div className="flex items-center justify-center gap-2">
               <Pill variant="lime">+{prediction.points} pts</Pill>
               <span className="t-caption text-muted">
-                {CRITERION_LABEL[(prediction.criterion as Criterion) ?? "errado"]}
+                {criterionLabel(
+                  (prediction.criterion as Criterion) ?? "errado",
+                  locale,
+                )}
               </span>
             </div>
           ) : null}
           {breakdown ? (
             <div className="rounded-xl bg-cloud px-3 py-2 text-center">
-              <p className="t-caption text-muted">Como você pontuou</p>
+              <p className="t-caption text-muted">
+                {tr(locale, "Como você pontuou", "Cómo sumaste")}
+              </p>
               <p className="t-body mt-1 font-bold text-indigo">
-                {breakdown.base} base
+                {breakdown.base} {tr(locale, "base", "base")}
                 {breakdown.brazilMultiplier > 1
-                  ? ` · ×${breakdown.brazilMultiplier} Brasil`
+                  ? ` · ×${breakdown.brazilMultiplier} ${tr(locale, "Brasil", "Brasil")}`
                   : ""}
                 {breakdown.phaseMultiplier !== 1
-                  ? ` · ×${breakdown.phaseMultiplier.toLocaleString("pt-BR")} fase`
+                  ? ` · ×${breakdown.phaseMultiplier.toLocaleString(locale === "es" ? "es-CL" : "pt-BR")} ${tr(locale, "fase", "fase")}`
                   : ""}{" "}
                 = {breakdown.final}
               </p>
@@ -110,7 +125,9 @@ export default async function PartidaPage({
       ) : open ? (
         user ? (
           <>
-            <p className="t-kicker mb-3 text-center text-indigo">Seu palpite</p>
+            <p className="t-kicker mb-3 text-center text-indigo">
+              {tr(locale, "Seu palpite", "Tu pronóstico")}
+            </p>
             <PredictForm
               matchId={match.id}
               home={home}
@@ -119,23 +136,32 @@ export default async function PartidaPage({
               defaultAway={prediction?.awayGuess}
             />
             <p className="t-caption mt-3 text-center text-muted">
-              Prazo: trava no apito inicial,{" "}
-              {formatBrasilia(new Date(match.kickoffAt))}. Vale o último.
+              {tr(
+                locale,
+                `Prazo: trava no apito inicial, ${formatBrasilia(new Date(match.kickoffAt))}. Vale o último.`,
+                `Plazo: se bloquea al pitazo inicial, ${formatBrasilia(new Date(match.kickoffAt))}. Vale el último.`,
+              )}
             </p>
           </>
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
             <p className="t-body text-muted">
-              Entre para registrar seu palpite.
+              {tr(
+                locale,
+                "Entre para registrar seu palpite.",
+                "Entra para registrar tu pronóstico.",
+              )}
             </p>
-            <LinkButton href="/login">Entrar</LinkButton>
+            <LinkButton href="/login">{tr(locale, "Entrar", "Entrar")}</LinkButton>
           </div>
         )
       ) : (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-center gap-2 text-muted">
             <Lock size={18} aria-hidden="true" />
-            <span className="t-body font-bold">Prazo encerrado</span>
+            <span className="t-body font-bold">
+              {tr(locale, "Prazo encerrado", "Plazo cerrado")}
+            </span>
           </div>
           <ScoreInput
             home={home}
@@ -146,8 +172,16 @@ export default async function PartidaPage({
           />
           <p className="t-caption text-center text-muted">
             {prediction
-              ? "Seu palpite está travado."
-              : "Você não palpitou a tempo."}
+              ? tr(
+                  locale,
+                  "Seu palpite está travado.",
+                  "Tu pronóstico quedó bloqueado.",
+                )
+              : tr(
+                  locale,
+                  "Você não palpitou a tempo.",
+                  "No pronosticaste a tiempo.",
+                )}
           </p>
         </div>
       )}
@@ -166,11 +200,19 @@ export default async function PartidaPage({
       <Card>
       {!reveal ? (
         <p className="t-body text-center text-muted">
-          Faça seu palpite para ver os palpites da comunidade.
+          {tr(
+            locale,
+            "Faça seu palpite para ver os palpites da comunidade.",
+            "Haz tu pronóstico para ver los pronósticos de la comunidad.",
+          )}
         </p>
       ) : community.length === 0 ? (
         <p className="t-body text-center text-muted">
-          Ninguém palpitou nesta partida ainda.
+          {tr(
+            locale,
+            "Ninguém palpitou nesta partida ainda.",
+            "Nadie ha pronosticado este partido todavía.",
+          )}
         </p>
       ) : (
         <div className="flex flex-col">
@@ -185,7 +227,7 @@ export default async function PartidaPage({
               >
                 <span className="t-body text-ink">
                   {c.nickname}
-                  {isMe ? " (você)" : ""}
+                  {isMe ? tr(locale, " (você)", " (tú)") : ""}
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="t-body font-extrabold text-indigo">
@@ -204,19 +246,22 @@ export default async function PartidaPage({
 
   return (
     <>
-      <Header title="Palpite" subtitle="Copa 2026 · Mata-mata" />
+      <Header
+        title={tr(locale, "Palpite", "Pronóstico")}
+        subtitle={tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminación directa")}
+      />
       <Breadcrumbs
         items={[
-          { label: "Início", href: "/" },
-          { label: "Palpites", href: "/partidas" },
+          { label: tr(locale, "Início", "Inicio"), href: "/" },
+          { label: tr(locale, "Palpites", "Pronósticos"), href: "/partidas" },
           { label: `${match.homeCode} x ${match.awayCode}` },
         ]}
       />
       <main className="flex-1 px-5 py-6">
         <Card>
           <div className="flex items-center justify-between gap-2">
-            <Pill variant="neutral">{phaseBadge(match.phase as Phase)}</Pill>
-            {isBrazil ? <Pill variant="rose">x2 Brasil</Pill> : null}
+            <Pill variant="neutral">{phaseBadge(match.phase as Phase, locale)}</Pill>
+            {isBrazil ? <Pill variant="rose">{tr(locale, "x2 Brasil", "x2 Brasil")}</Pill> : null}
           </div>
           <p className="t-caption mt-2 text-center text-muted">
             {home.name} x {away.name} · {formatBrasilia(new Date(match.kickoffAt))}{" "}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Flag } from "@/components/flag";
+import { useT } from "@/components/i18n/locale-provider";
 
 /*
  * Score-input (DESIGN_SPEC 6, wireframe tela 4). Dois numeros grandes (oversized)
@@ -25,6 +26,7 @@ export function ScoreInput({
   defaultAway?: number;
   disabled?: boolean;
 }) {
+  const t = useT();
   const box = `h-16 w-14 rounded-xl border-2 text-center text-3xl font-extrabold ${
     disabled
       ? "border-black/15 bg-cloud text-muted"
@@ -50,7 +52,7 @@ export function ScoreInput({
         defaultValue={defaultHome ?? 0}
         disabled={disabled}
         onFocus={selectOnFocus}
-        aria-label={`Gols ${home.name}`}
+        aria-label={t(`Gols ${home.name}`, `Goles ${home.name}`)}
         className={box}
       />
       <span className="t-score text-muted">x</span>
@@ -64,7 +66,7 @@ export function ScoreInput({
         defaultValue={defaultAway ?? 0}
         disabled={disabled}
         onFocus={selectOnFocus}
-        aria-label={`Gols ${away.name}`}
+        aria-label={t(`Gols ${away.name}`, `Goles ${away.name}`)}
         className={box}
       />
       <div className="flex flex-col items-center gap-2">

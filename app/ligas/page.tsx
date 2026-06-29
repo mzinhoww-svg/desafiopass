@@ -9,29 +9,31 @@ import { Card } from "@/components/ui/card";
 import { LinkButton } from "@/components/ui/link-button";
 import { CreateLeagueForm } from "./create-league-form";
 import { JoinForm } from "./join-form";
+import { getLocale, tr } from "@/lib/i18n";
 
 // /ligas (Task 4.1/4.3): liga publica (link p/ ranking geral) + minhas ligas
 // privadas, criar liga e entrar por convite.
 export default async function LigasPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const locale = await getLocale();
   const myLeagues = await getUserLeagues(user.id);
 
   return (
     <>
-      <Header title="Ligas" subtitle="Copa 2026 · Mata-mata" />
-      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Ligas" }]} />
+      <Header title="Ligas" subtitle={tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminación directa")} />
+      <Breadcrumbs items={[{ label: tr(locale, "Início", "Inicio"), href: "/" }, { label: "Ligas" }]} />
       <main className="flex flex-1 flex-col gap-4 px-5 py-4">
         <LinkButton href="/ranking" variant="secondary" className="w-full">
           <Trophy size={18} strokeWidth={2.5} aria-hidden="true" />
-          Ranking geral (liga pública)
+          {tr(locale, "Ranking geral (liga pública)", "Ranking general (liga pública)")}
         </LinkButton>
 
         <div>
-          <p className="t-kicker mb-2 text-indigo">Minhas ligas</p>
+          <p className="t-kicker mb-2 text-indigo">{tr(locale, "Minhas ligas", "Mis ligas")}</p>
           {myLeagues.length === 0 ? (
             <p className="t-body text-muted">
-              Você ainda não entrou em nenhuma liga privada.
+              {tr(locale, "Você ainda não entrou em nenhuma liga privada.", "Todavía no te has unido a ninguna liga privada.")}
             </p>
           ) : (
             <div className="flex flex-col gap-2">
@@ -44,7 +46,7 @@ export default async function LigasPage() {
                   <span>
                     <span className="t-card-title text-indigo">{league.name}</span>
                     <span className="t-caption block text-muted">
-                      {members} participante(s)
+                      {members} {tr(locale, "participante(s)", "participante(s)")}
                     </span>
                   </span>
                   <ChevronRight size={16} className="text-muted" aria-hidden="true" />
@@ -55,18 +57,17 @@ export default async function LigasPage() {
         </div>
 
         <Card>
-          <p className="t-kicker mb-2 text-indigo">Criar liga</p>
+          <p className="t-kicker mb-2 text-indigo">{tr(locale, "Criar liga", "Crear liga")}</p>
           <CreateLeagueForm />
         </Card>
 
         <Card>
-          <p className="t-kicker mb-2 text-indigo">Entrar em uma liga</p>
+          <p className="t-kicker mb-2 text-indigo">{tr(locale, "Entrar em uma liga", "Unirse a una liga")}</p>
           <JoinForm />
         </Card>
 
         <p className="t-caption text-muted">
-          Crie uma liga para disputar com seus amigos ou entre em uma com o link
-          de convite.
+          {tr(locale, "Crie uma liga para disputar com seus amigos ou entre em uma com o link de convite.", "Crea una liga para competir con tus amigos o únete a una con el enlace de invitación.")}
         </p>
       </main>
     </>

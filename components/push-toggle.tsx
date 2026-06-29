@@ -6,6 +6,7 @@ import {
   savePushSubscription,
   removePushSubscription,
 } from "@/app/actions/push";
+import { useT } from "@/components/i18n/locale-provider";
 
 // Converte a chave VAPID (base64url) para o formato exigido pelo PushManager.
 function urlBase64ToUint8Array(base64: string): BufferSource {
@@ -21,6 +22,7 @@ function urlBase64ToUint8Array(base64: string): BufferSource {
 type Status = "loading" | "unsupported" | "ios" | "off" | "on" | "denied";
 
 export function PushToggle() {
+  const t = useT();
   const [status, setStatus] = useState<Status>("loading");
   const [busy, setBusy] = useState(false);
   const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -103,8 +105,14 @@ export function PushToggle() {
   if (status === "ios") {
     return (
       <p className="t-caption mt-4 text-center text-muted">
-        Para receber notificações no iPhone, toque em Compartilhar →{" "}
-        <strong>Adicionar à Tela de Início</strong> e abra o app por lá.
+        {t(
+          "Para receber notificações no iPhone, toque em Compartilhar →",
+          "Para recibir notificaciones en el iPhone, toca en Compartir →",
+        )}{" "}
+        <strong>
+          {t("Adicionar à Tela de Início", "Agregar a pantalla de inicio")}
+        </strong>{" "}
+        {t("e abra o app por lá.", "y abre la app desde ahí.")}
       </p>
     );
   }
@@ -112,8 +120,10 @@ export function PushToggle() {
   if (status === "denied") {
     return (
       <p className="t-caption mt-4 text-center text-muted">
-        Notificações bloqueadas no navegador. Libere nas configurações do site
-        para receber avisos de jogo e resultado.
+        {t(
+          "Notificações bloqueadas no navegador. Libere nas configurações do site para receber avisos de jogo e resultado.",
+          "Notificaciones bloqueadas en el navegador. Habilítalas en la configuración del sitio para recibir avisos de partido y resultado.",
+        )}
       </p>
     );
   }
@@ -132,10 +142,10 @@ export function PushToggle() {
         <Bell size={18} strokeWidth={2.5} aria-hidden="true" />
       )}
       {busy
-        ? "Aguarde…"
+        ? t("Aguarde…", "Espera…")
         : on
-          ? "Desativar notificações"
-          : "Ativar notificações"}
+          ? t("Desativar notificações", "Desactivar notificaciones")
+          : t("Ativar notificações", "Activar notificaciones")}
     </button>
   );
 }

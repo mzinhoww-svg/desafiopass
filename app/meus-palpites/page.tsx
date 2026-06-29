@@ -7,9 +7,10 @@ import { Pill } from "@/components/ui/pill";
 import { Target } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getUserPredictionsWithMatches } from "@/lib/queries/matches";
-import { PHASE_LABEL } from "@/lib/phases";
-import { CRITERION_LABEL } from "@/lib/scoring-labels";
+import { phaseLabel } from "@/lib/phases";
+import { criterionLabel } from "@/lib/scoring-labels";
 import { formatBrasilia } from "@/lib/utils/dates";
+import { getLocale, tr } from "@/lib/i18n";
 import type { Phase, Criterion } from "@/lib/scoring";
 
 function Stat({ value, label }: { value: string | number; label: string }) {
@@ -23,6 +24,7 @@ function Stat({ value, label }: { value: string | number; label: string }) {
 
 // /meus-palpites (#4): histórico dos palpites do usuário, com placar real e pontos.
 export default async function MeusPalpitesPage() {
+  const locale = await getLocale();
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
@@ -38,17 +40,17 @@ export default async function MeusPalpitesPage() {
 
   return (
     <>
-      <Header title="Meus palpites" subtitle="Copa 2026 · Mata-mata" />
+      <Header title={tr(locale, "Meus palpites", "Mis pronósticos")} subtitle={tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminatorias")} />
       <Breadcrumbs
-        items={[{ label: "Início", href: "/" }, { label: "Meus palpites" }]}
+        items={[{ label: tr(locale, "Início", "Inicio"), href: "/" }, { label: tr(locale, "Meus palpites", "Mis pronósticos") }]}
       />
       <main className="flex-1 px-5 py-4">
         {rows.length === 0 ? (
-          <EmptyState icon={Target} title="Você ainda não palpitou">
+          <EmptyState icon={Target} title={tr(locale, "Você ainda não palpitou", "Todavía no hiciste ningún pronóstico")}>
             <Link href="/partidas" className="font-bold text-rose">
-              Faça seu primeiro palpite
+              {tr(locale, "Faça seu primeiro palpite", "Haz tu primer pronóstico")}
             </Link>{" "}
-            e ele aparece aqui com os pontos.
+            {tr(locale, "e ele aparece aqui com os pontos.", "y aparece aquí con los puntos.")}
           </EmptyState>
         ) : (
           <>
@@ -56,17 +58,17 @@ export default async function MeusPalpitesPage() {
               className="mb-3 flex items-center justify-between rounded-2xl px-4 py-3 text-white"
               style={{ background: "var(--grad-deep)" }}
             >
-              <span className="t-body font-bold">Total de pontos</span>
+              <span className="t-body font-bold">{tr(locale, "Total de pontos", "Total de puntos")}</span>
               <span className="text-lg font-extrabold text-teal">
-                {total.toLocaleString("pt-BR")}
+                {total.toLocaleString(locale === "es" ? "es-CL" : "pt-BR")}
               </span>
             </div>
 
             {closedRows.length > 0 ? (
               <div className="mb-4 grid grid-cols-3 gap-2">
-                <Stat value={`${accuracy}%`} label="Aproveitamento" />
-                <Stat value={exactCount} label="Placares exatos" />
-                <Stat value={best} label="Melhor jogo" />
+                <Stat value={`${accuracy}%`} label={tr(locale, "Aproveitamento", "Efectividad")} />
+                <Stat value={exactCount} label={tr(locale, "Placares exatos", "Marcadores exactos")} />
+                <Stat value={best} label={tr(locale, "Melhor jogo", "Mejor partido")} />
               </div>
             ) : null}
 
@@ -81,7 +83,7 @@ export default async function MeusPalpitesPage() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="t-caption text-muted">
-                        {PHASE_LABEL[r.phase as Phase] ?? r.phase}
+                        {phaseLabel(r.phase as Phase, locale) ?? r.phase}
                       </span>
                       <span className="t-caption text-muted">
                         {formatBrasilia(new Date(r.kickoffAt))}
@@ -94,13 +96,13 @@ export default async function MeusPalpitesPage() {
                       {closed ? (
                         <Pill variant="lime">+{r.points} pts</Pill>
                       ) : (
-                        <Pill variant="neutral">Aguardando</Pill>
+                        <Pill variant="neutral">{tr(locale, "Aguardando", "Esperando")}</Pill>
                       )}
                     </div>
                     {closed ? (
                       <p className="t-caption mt-1 text-muted">
-                        Placar: {r.homeScore} x {r.awayScore} ·{" "}
-                        {CRITERION_LABEL[(r.criterion as Criterion) ?? "errado"]}
+                        {tr(locale, "Placar", "Marcador")}: {r.homeScore} x {r.awayScore} ·{" "}
+                        {criterionLabel((r.criterion as Criterion) ?? "errado", locale)}
                       </p>
                     ) : null}
                   </Link>

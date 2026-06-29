@@ -15,8 +15,13 @@ export default function GlobalError({
     console.error("[global-error]", error);
   }, [error]);
 
+  // Sem acesso confiável ao contexto de locale aqui (renderiza o próprio
+  // <html>/<body>): lê o cookie "locale" para escolher o idioma.
+  const isEs =
+    typeof document !== "undefined" && document.cookie.includes("locale=es");
+
   return (
-    <html lang="pt-BR">
+    <html lang={isEs ? "es-CL" : "pt-BR"}>
       <body
         style={{
           margin: 0,
@@ -35,10 +40,12 @@ export default function GlobalError({
         }}
       >
         <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>
-          Algo deu errado
+          {isEs ? "Algo salió mal" : "Algo deu errado"}
         </h1>
         <p style={{ maxWidth: "40ch", color: "#C9C5E6", margin: 0 }}>
-          Tivemos um problema inesperado. Tente novamente.
+          {isEs
+            ? "Tuvimos un problema inesperado. Inténtalo de nuevo."
+            : "Tivemos um problema inesperado. Tente novamente."}
         </p>
         <button
           type="button"
@@ -55,7 +62,7 @@ export default function GlobalError({
             cursor: "pointer",
           }}
         >
-          Tentar de novo
+          {isEs ? "Intentar de nuevo" : "Tentar de novo"}
         </button>
       </body>
     </html>

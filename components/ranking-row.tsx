@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import type { RankRow } from "@/lib/queries/ranking";
+import { getLocale, tr } from "@/lib/i18n";
 
 /*
  * Linha do ranking (DESIGN_SPEC 6, wireframe tela 6). Lista densa, sem card por
@@ -7,7 +8,8 @@ import type { RankRow } from "@/lib/queries/ranking";
  * lima suave (estado, nao posicao). Pontos em peso 800. Avatar (ou iniciais) a
  * esquerda do apelido.
  */
-export function RankingRow({ row }: { row: RankRow }) {
+export async function RankingRow({ row }: { row: RankRow }) {
+  const locale = await getLocale();
   const badge =
     row.position === 1
       ? "bg-rank-gold text-indigo-deep"
@@ -43,7 +45,7 @@ export function RankingRow({ row }: { row: RankRow }) {
       </span>
       <span className="t-body flex-1 font-medium text-ink">
         {row.nickname}
-        {row.isCurrentUser ? " (você)" : ""}
+        {row.isCurrentUser ? tr(locale, " (você)", " (tú)") : ""}
       </span>
       <span className="t-body font-extrabold text-indigo">
         {row.points.toLocaleString("pt-BR")}

@@ -4,18 +4,20 @@ import { useActionState } from "react";
 import { joinLeague, type LeagueState } from "@/app/actions/liga";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/locale-provider";
 
 const initial: LeagueState = {};
 
 export function JoinForm() {
+  const t = useT();
   const [state, formAction, pending] = useActionState(joinLeague, initial);
   return (
     <form action={formAction} className="flex flex-col gap-3">
       <Input
         id="join-token"
         name="token"
-        label="Código ou link do convite"
-        placeholder="cole aqui o convite da liga"
+        label={t("Código ou link do convite", "Código o enlace de invitación")}
+        placeholder={t("cole aqui o convite da liga", "pega aquí la invitación de la liga")}
         required
       />
       {state?.error ? (
@@ -24,7 +26,7 @@ export function JoinForm() {
         </p>
       ) : null}
       <Button type="submit" variant="secondary" disabled={pending}>
-        {pending ? "Entrando" : "Entrar no grupo"}
+        {pending ? t("Entrando", "Uniéndote") : t("Entrar no grupo", "Unirse al grupo")}
       </Button>
     </form>
   );

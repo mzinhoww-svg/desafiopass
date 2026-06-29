@@ -1,11 +1,12 @@
 import type { CommunityPrediction } from "@/lib/queries/matches";
+import { getLocale, tr } from "@/lib/i18n";
 
 /*
  * Termômetro da comunidade (#2): probabilidades implícitas a partir dos próprios
  * palpites — sem API, sem aposta. Mostra % de palpites em vitória mandante /
  * empate / vitória visitante e o placar mais palpitado.
  */
-export function CommunityStats({
+export async function CommunityStats({
   predictions,
   homeCode,
   awayCode,
@@ -14,6 +15,7 @@ export function CommunityStats({
   homeCode: string;
   awayCode: string;
 }) {
+  const locale = await getLocale();
   const total = predictions.length;
   if (total === 0) return null;
 
@@ -33,7 +35,9 @@ export function CommunityStats({
 
   return (
     <div className="mb-3 rounded-2xl border border-black/10 bg-paper p-3">
-      <p className="t-kicker mb-2 text-indigo">Termômetro da comunidade</p>
+      <p className="t-kicker mb-2 text-indigo">
+        {tr(locale, "Termômetro da comunidade", "Termómetro de la comunidad")}
+      </p>
       <div className="flex h-2.5 overflow-hidden rounded-full bg-cloud">
         <span style={{ width: `${pct(home)}%` }} className="bg-indigo" />
         <span style={{ width: `${pct(draw)}%` }} className="bg-muted" />
@@ -41,13 +45,14 @@ export function CommunityStats({
       </div>
       <div className="mt-2 flex justify-between text-[0.6875rem] font-bold">
         <span className="text-indigo">{homeCode} {pct(home)}%</span>
-        <span className="text-muted">Empate {pct(draw)}%</span>
+        <span className="text-muted">{tr(locale, "Empate", "Empate")} {pct(draw)}%</span>
         <span className="text-rose">{awayCode} {pct(away)}%</span>
       </div>
       {top ? (
         <p className="t-caption mt-2 text-muted">
-          Placar mais palpitado: <strong className="text-ink">{top[0]}</strong>{" "}
-          ({top[1]} de {total})
+          {tr(locale, "Placar mais palpitado:", "Marcador más pronosticado:")}{" "}
+          <strong className="text-ink">{top[0]}</strong>{" "}
+          ({top[1]} {tr(locale, "de", "de")} {total})
         </p>
       ) : null}
     </div>

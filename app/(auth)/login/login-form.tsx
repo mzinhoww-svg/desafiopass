@@ -6,8 +6,10 @@ import { signIn } from "next-auth/react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/locale-provider";
 
 export function LoginForm({ registered }: { registered: boolean }) {
+  const t = useT();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -22,7 +24,7 @@ export function LoginForm({ registered }: { registered: boolean }) {
       redirect: false,
     });
     if (res?.error) {
-      setError("Email ou senha invalidos.");
+      setError(t("Email ou senha invalidos.", "Correo o contraseña inválidos."));
       setPending(false);
     } else {
       window.location.href = "/";
@@ -33,7 +35,10 @@ export function LoginForm({ registered }: { registered: boolean }) {
     <Card>
       {registered ? (
         <p className="t-body mb-3 font-bold text-ink">
-          Conta criada. Entre para começar a palpitar.
+          {t(
+            "Conta criada. Entre para começar a palpitar.",
+            "Cuenta creada. Ingresa para empezar a pronosticar.",
+          )}
         </p>
       ) : null}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -50,7 +55,7 @@ export function LoginForm({ registered }: { registered: boolean }) {
           id="password"
           name="password"
           type="password"
-          label="Senha"
+          label={t("Senha", "Contraseña")}
           autoComplete="current-password"
           required
         />
@@ -60,20 +65,20 @@ export function LoginForm({ registered }: { registered: boolean }) {
           </p>
         ) : null}
         <Button type="submit" disabled={pending}>
-          {pending ? "Entrando" : "Entrar"}
+          {pending ? t("Entrando", "Ingresando") : t("Entrar", "Ingresar")}
         </Button>
       </form>
 
       <p className="t-caption mt-4 text-muted">
-        Não tem conta?{" "}
+        {t("Não tem conta?", "¿No tienes cuenta?")}{" "}
         <Link href="/cadastro" className="font-bold text-rose">
-          Criar conta
+          {t("Criar conta", "Crear cuenta")}
         </Link>
       </p>
       <p className="t-caption mt-1 text-muted">
-        Esqueceu a senha?{" "}
+        {t("Esqueceu a senha?", "¿Olvidaste la contraseña?")}{" "}
         <Link href="/esqueci-senha" className="font-bold text-rose">
-          Recuperar acesso
+          {t("Recuperar acesso", "Recuperar acceso")}
         </Link>
       </p>
     </Card>

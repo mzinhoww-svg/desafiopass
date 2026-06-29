@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { updateMatch, type AdminState } from "@/app/actions/admin";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/locale-provider";
 
 const initial: AdminState = {};
 
@@ -26,6 +27,7 @@ export function EditMatchForm({
   awayName: string;
   teams: { code: string; name: string }[];
 }) {
+  const t = useT();
   const [state, formAction, pending] = useActionState(updateMatch, initial);
 
   // Garante que o valor atual (mesmo placeholder de avanço) apareça no select.
@@ -42,7 +44,7 @@ export function EditMatchForm({
         id="kickoffLocal"
         name="kickoffLocal"
         type="datetime-local"
-        label="Data e hora (Brasília)"
+        label={t("Data e hora (Brasília)", "Fecha y hora (Brasilia)")}
         defaultValue={kickoffLocal}
         required
       />
@@ -50,14 +52,14 @@ export function EditMatchForm({
       <Input
         id="stadium"
         name="stadium"
-        label="Estádio"
+        label={t("Estádio", "Estadio")}
         defaultValue={stadium}
-        placeholder="A confirmar"
+        placeholder={t("A confirmar", "Por confirmar")}
       />
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="homeCode" className="t-kicker text-indigo">
-          Mandante
+          {t("Mandante", "Local")}
         </label>
         <select
           id="homeCode"
@@ -75,7 +77,7 @@ export function EditMatchForm({
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="awayCode" className="t-kicker text-indigo">
-          Visitante
+          {t("Visitante", "Visitante")}
         </label>
         <select
           id="awayCode"
@@ -98,12 +100,14 @@ export function EditMatchForm({
       ) : null}
       {state.ok ? (
         <p className="t-body font-bold text-ink" role="status">
-          Partida atualizada.
+          {t("Partida atualizada.", "Partido actualizado.")}
         </p>
       ) : null}
 
       <Button type="submit" variant="secondary" disabled={pending}>
-        {pending ? "Salvando" : "Salvar dados da partida"}
+        {pending
+          ? t("Salvando", "Guardando")
+          : t("Salvar dados da partida", "Guardar datos del partido")}
       </Button>
     </form>
   );
