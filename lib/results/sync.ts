@@ -12,7 +12,7 @@ import {
   fetchTopScorer,
   type Fixture,
 } from "@/lib/integrations/football-data";
-import { applyResult, setLiveScore, updateKickoff } from "@/lib/results/apply";
+import { applyResult, setLiveScore, updateSchedule } from "@/lib/results/apply";
 import { applySpecialResults } from "@/lib/results/special";
 
 export interface SyncSummary {
@@ -64,17 +64,23 @@ export async function syncResults(): Promise<SyncSummary> {
       const s = oriented(m, f);
       await setLiveScore(m.id, s.home, s.away);
       live++;
-    } else if (
-      (f.status === "SCHEDULED" || f.status === "TIMED") &&
-      f.utcDate
-    ) {
-      // Corrige o horário oficial do jogo agendado (o prazo acompanha).
-      const apiDate = new Date(f.utcDate);
-      if (
-        !Number.isNaN(apiDate.getTime()) &&
-        apiDate.getTime() !== new Date(m.kickoffAt).getTime()
-      ) {
-        await updateKickoff(m.id, apiDate);
+    } else if (f.status === "SCHEDULED" || f.status === "TIMED") {
+      // Corrige horário e/ou estádio oficiais do jogo agendado (o prazo acompanha).
+      const fields: { kickoffAt?: Date; stadium?: string } = {};
+      if (f.utcDate) {
+        const apiDate = new Date(f.utcDate);
+        if (
+          !Number.isNaN(apiDate.getTime()) &&
+          apiDate.getTime() !== new Date(m.kickoffAt).getTime()
+        ) {
+          fields.kickoffAt = apiDate;
+        }
+      }
+      if (f.venue && f.venue !== m.stadium) {
+        fields.stadium = f.venue;
+      }
+      if (Object.keys(fields).length > 0) {
+        await updateSchedule(m.id, fields);
         rescheduled++;
       }
     }
