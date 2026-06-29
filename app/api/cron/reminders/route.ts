@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { matches, predictions, users } from "@/drizzle/schema";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { reminderEmail } from "@/lib/email/templates";
+import { pushToUsers } from "@/lib/push/notify";
 import { formatBrasilia } from "@/lib/utils/dates";
 
 /*
@@ -64,9 +65,11 @@ export async function GET(request: Request) {
   const matchesUrl = `${appUrl()}/partidas`;
 
   let sent = 0;
+  const pushTargets: string[] = [];
   for (const user of recipients) {
     const pending = windowMatches.filter((m) => !done.has(`${user.id}:${m.id}`));
     if (pending.length === 0) continue;
+    pushTargets.push(user.id);
 
     const mail = reminderEmail({
       nickname: user.nickname,
@@ -84,6 +87,17 @@ export async function GET(request: Request) {
       text: mail.text,
     });
     if (r.ok) sent++;
+  }
+
+  // Push para os mesmos usuários com palpites pendentes (#4).
+  try {
+    await pushToUsers(pushTargets, {
+      title: "Não esqueça de palpitar",
+      body: "Há jogos abrindo em breve esperando o seu palpite.",
+      url: "/partidas",
+    });
+  } catch (e) {
+    console.error("[reminders] falha no push:", e);
   }
 
   return NextResponse.json({ sent, candidates: recipients.length });

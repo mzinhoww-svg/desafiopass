@@ -12,6 +12,7 @@ import { advancement } from "@/lib/data/copa2026";
 import { getMyGlobalRank } from "@/lib/queries/ranking";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { resultEmail } from "@/lib/email/templates";
+import { pushToUsers } from "@/lib/push/notify";
 
 // Propaga o vencedor (ou perdedor, p/ 3º lugar) para o confronto seguinte (#1).
 async function propagateWinner(
@@ -133,14 +134,27 @@ export async function applyResult(
     });
   }
 
+  const matchLabel = `${match.homeCode} x ${match.awayCode}`;
+  const scoreLabel = `${homeScore} x ${awayScore}`;
+
   try {
-    await notifyResults(
-      `${match.homeCode} x ${match.awayCode}`,
-      `${homeScore} x ${awayScore}`,
-      scored,
+    await notifyResults(matchLabel, scoreLabel, scored);
+  } catch (e) {
+    console.error("[results] falha ao notificar e-mail:", e);
+  }
+
+  // Push para quem palpitou (#4).
+  try {
+    await pushToUsers(
+      scored.map((s) => s.userId),
+      {
+        title: "Resultado saiu!",
+        body: `${matchLabel} terminou ${scoreLabel}. Veja seus pontos.`,
+        url: "/ranking",
+      },
     );
   } catch (e) {
-    console.error("[results] falha ao notificar:", e);
+    console.error("[results] falha ao notificar push:", e);
   }
 
   return { scored: preds.length };
