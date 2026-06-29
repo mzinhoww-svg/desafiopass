@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Download } from "lucide-react";
 import { importBracketAction, type ImportState } from "@/app/actions/admin";
+import { useT } from "@/components/i18n/locale-provider";
 
 const initial: ImportState = {};
 
@@ -10,6 +11,7 @@ const initial: ImportState = {};
 // confrontos reais da Copa vindos da football-data.org. Destrutivo — pede
 // confirmação antes de enviar (apaga partidas/palpites fora do chaveamento real).
 export function ImportButton() {
+  const t = useT();
   const [state, formAction, pending] = useActionState(
     importBracketAction,
     initial,
@@ -35,15 +37,23 @@ export function ImportButton() {
       >
         <Download size={16} strokeWidth={2.5} aria-hidden="true" />
         {pending
-          ? "Importando…"
+          ? t("Importando…", "Importando…")
           : armed
-            ? "Confirmar: apaga o chaveamento atual"
-            : "Importar mata-mata real (API)"}
+            ? t(
+                "Confirmar: apaga o chaveamento atual",
+                "Confirmar: elimina el cuadro actual",
+              )
+            : t(
+                "Importar mata-mata real (API)",
+                "Importar fase eliminatoria real (API)",
+              )}
       </button>
       {armed && !pending ? (
         <p className="t-caption text-center text-muted">
-          Substitui as partidas pelos jogos reais da API. Palpites no chaveamento
-          fictício serão perdidos. Clique de novo para confirmar.
+          {t(
+            "Substitui as partidas pelos jogos reais da API. Palpites no chaveamento fictício serão perdidos. Clique de novo para confirmar.",
+            "Reemplaza los partidos por los reales de la API. Los pronósticos del cuadro ficticio se perderán. Hacé clic de nuevo para confirmar.",
+          )}
         </p>
       ) : null}
       {state.message ? (

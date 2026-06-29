@@ -4,10 +4,12 @@
 import { useEffect, useState } from "react";
 import { Copy, Check } from "lucide-react";
 import QRCode from "qrcode";
+import { useT } from "@/components/i18n/locale-provider";
 
 // Mostra o link de convite, copia a URL completa e gera um QR code (#7) para
 // quem quiser entrar pelo celular escaneando.
 export function InviteLink({ token }: { token: string }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
   const path = `/ligas/entrar/${token}`;
@@ -43,11 +45,11 @@ export function InviteLink({ token }: { token: string }) {
         >
           {copied ? (
             <>
-              <Check size={14} aria-hidden="true" /> Copiado
+              <Check size={14} aria-hidden="true" /> {t("Copiado", "Copiado")}
             </>
           ) : (
             <>
-              <Copy size={14} aria-hidden="true" /> Copiar link
+              <Copy size={14} aria-hidden="true" /> {t("Copiar link", "Copiar enlace")}
             </>
           )}
         </button>
@@ -57,11 +59,11 @@ export function InviteLink({ token }: { token: string }) {
         <div className="flex flex-col items-center gap-1">
           <img
             src={qr}
-            alt="QR code do convite da liga"
+            alt={t("QR code do convite da liga", "Código QR de la invitación de la liga")}
             className="h-40 w-40 rounded-xl border border-black/10"
           />
           <span className="t-caption text-muted">
-            Aponte a câmera para entrar
+            {t("Aponte a câmera para entrar", "Apunta la cámara para unirte")}
           </span>
         </div>
       ) : null}

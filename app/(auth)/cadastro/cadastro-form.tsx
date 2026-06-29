@@ -6,10 +6,12 @@ import { signup, type SignupState } from "@/app/actions/auth";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/locale-provider";
 
 const initial: SignupState = {};
 
 export function CadastroForm() {
+  const t = useT();
   const [state, formAction, pending] = useActionState(signup, initial);
 
   return (
@@ -28,15 +30,15 @@ export function CadastroForm() {
           id="password"
           name="password"
           type="password"
-          label="Senha"
-          placeholder="mínimo 8 caracteres"
+          label={t("Senha", "Contraseña")}
+          placeholder={t("mínimo 8 caracteres", "mínimo 8 caracteres")}
           autoComplete="new-password"
           required
         />
         <Input
           id="nickname"
           name="nickname"
-          label="Apelido (nome no ranking)"
+          label={t("Apelido (nome no ranking)", "Apodo (nombre en el ranking)")}
           placeholder="Mazinho"
           required
         />
@@ -48,7 +50,7 @@ export function CadastroForm() {
             className="size-5"
             style={{ accentColor: "var(--rose)" }}
           />
-          Tenho 16 anos ou mais
+          {t("Tenho 16 anos ou mais", "Tengo 16 años o más")}
         </label>
         <label className="t-body flex items-center gap-2 text-ink">
           <input
@@ -58,9 +60,9 @@ export function CadastroForm() {
             style={{ accentColor: "var(--rose)" }}
           />
           <span>
-            Aceito os termos e a{" "}
+            {t("Aceito os termos e a", "Acepto los términos y la")}{" "}
             <Link href="/privacidade" className="font-bold text-rose">
-              política de privacidade
+              {t("política de privacidade", "política de privacidad")}
             </Link>
           </span>
         </label>
@@ -72,14 +74,16 @@ export function CadastroForm() {
         ) : null}
 
         <Button type="submit" disabled={pending}>
-          {pending ? "Criando conta" : "Criar conta"}
+          {pending
+            ? t("Criando conta", "Creando cuenta")
+            : t("Criar conta", "Crear cuenta")}
         </Button>
       </form>
 
       <p className="t-caption mt-4 text-muted">
-        Já tem conta?{" "}
+        {t("Já tem conta?", "¿Ya tienes cuenta?")}{" "}
         <Link href="/login" className="font-bold text-rose">
-          Entrar
+          {t("Entrar", "Ingresar")}
         </Link>
       </p>
     </Card>

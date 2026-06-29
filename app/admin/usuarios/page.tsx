@@ -6,20 +6,25 @@ import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Pill } from "@/components/ui/pill";
 import { ConfirmButton } from "@/components/confirm-button";
+import { getLocale, tr } from "@/lib/i18n";
 
 // /admin/usuarios: tabela de usuarios com exclusao (cascateia palpites e ligas).
 export default async function AdminUsersPage() {
   if (!(await isAdmin())) redirect("/login");
+  const locale = await getLocale();
   const list = await getAllUsers();
 
   return (
     <>
-      <Header title="Admin · Usuários" subtitle="Gestão" />
+      <Header
+        title={tr(locale, "Admin · Usuários", "Admin · Usuarios")}
+        subtitle={tr(locale, "Gestão", "Gestión")}
+      />
       <Breadcrumbs
         items={[
-          { label: "Início", href: "/" },
+          { label: tr(locale, "Início", "Inicio"), href: "/" },
           { label: "Admin", href: "/admin" },
-          { label: "Usuários" },
+          { label: tr(locale, "Usuários", "Usuarios") },
         ]}
       />
       <main className="flex flex-1 flex-col gap-2 px-5 py-4">
@@ -39,10 +44,14 @@ export default async function AdminUsersPage() {
               <form action={deleteUser}>
                 <input type="hidden" name="userId" value={u.id} />
                 <ConfirmButton
-                  message={`Excluir ${u.nickname}? Remove os palpites e as ligas que ele criou.`}
+                  message={tr(
+                    locale,
+                    `Excluir ${u.nickname}? Remove os palpites e as ligas que ele criou.`,
+                    `¿Eliminar ${u.nickname}? Quita los pronósticos y las ligas que creó.`,
+                  )}
                   className="t-caption font-bold text-rose"
                 >
-                  Excluir
+                  {tr(locale, "Excluir", "Eliminar")}
                 </ConfirmButton>
               </form>
             </div>

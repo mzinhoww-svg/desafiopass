@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { setSpecialResult, type SpecialState } from "@/app/actions/special";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/locale-provider";
 
 const initial: SpecialState = {};
 
@@ -16,13 +17,14 @@ export function SpecialResultForm({
   champion: string | null;
   topScorer: string | null;
 }) {
+  const t = useT();
   const [state, formAction, pending] = useActionState(setSpecialResult, initial);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <label htmlFor="champion" className="t-kicker text-indigo">
-          Campeão oficial
+          {t("Campeão oficial", "Campeón oficial")}
         </label>
         <select
           id="champion"
@@ -30,7 +32,7 @@ export function SpecialResultForm({
           defaultValue={champion ?? ""}
           className="min-h-12 rounded-xl border border-black/10 bg-paper px-3 text-ink"
         >
-          <option value="">Ainda não definido</option>
+          <option value="">{t("Ainda não definido", "Aún no definido")}</option>
           {teams.map((t) => (
             <option key={t.code} value={t.code}>
               {t.name}
@@ -42,8 +44,8 @@ export function SpecialResultForm({
       <Input
         id="topScorer"
         name="topScorer"
-        label="Artilheiro oficial"
-        placeholder="Nome do jogador"
+        label={t("Artilheiro oficial", "Goleador oficial")}
+        placeholder={t("Nome do jogador", "Nombre del jugador")}
         defaultValue={topScorer ?? ""}
       />
 
@@ -54,12 +56,17 @@ export function SpecialResultForm({
       ) : null}
       {state.ok ? (
         <p className="t-body font-bold text-ink" role="status">
-          Resultado salvo e pontos recalculados.
+          {t(
+            "Resultado salvo e pontos recalculados.",
+            "Resultado guardado y puntos recalculados.",
+          )}
         </p>
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Salvando" : "Salvar e recalcular"}
+        {pending
+          ? t("Salvando", "Guardando")
+          : t("Salvar e recalcular", "Guardar y recalcular")}
       </Button>
     </form>
   );

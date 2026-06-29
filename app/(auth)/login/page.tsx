@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+import { getLocale, tr } from "@/lib/i18n";
 import { LoginForm } from "./login-form";
 
 // Pagina de login (signIn do Auth.js v5). E o destino de pages.signIn do middleware
@@ -10,9 +11,14 @@ export default async function LoginPage({
   searchParams: Promise<{ registered?: string }>;
 }) {
   const sp = await searchParams;
+  const locale = await getLocale();
   return (
     <>
-      <Header title="Entrar" subtitle="Bolão LATAM Pass" hideLogin />
+      <Header
+        title={tr(locale, "Entrar", "Ingresar")}
+        subtitle={tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}
+        hideLogin
+      />
       <main className="flex-1 px-5 py-8">
         <LoginForm registered={sp.registered === "1"} />
       </main>

@@ -9,9 +9,10 @@ import { Pill } from "@/components/ui/pill";
 import { LinkButton } from "@/components/ui/link-button";
 import { getAllMatches, getUserPredictionMap } from "@/lib/queries/matches";
 import { getCurrentUser } from "@/lib/auth-helpers";
-import { PHASE_ORDER, PHASE_LABEL } from "@/lib/phases";
+import { PHASE_ORDER, phaseLabel } from "@/lib/phases";
 import { teams as seedTeams } from "@/lib/data/copa2026";
 import { teamOf, getTeamMap, resolveTeam } from "@/lib/teams";
+import { getLocale, tr } from "@/lib/i18n";
 import { formatBrasilia } from "@/lib/utils/dates";
 import {
   getSpecialPredictions,
@@ -30,6 +31,7 @@ export default async function PartidasPage({
   const { aba } = await searchParams;
   const especiais = aba === "especiais";
   const user = await getCurrentUser();
+  const locale = await getLocale();
 
   const tabCls = (active: boolean) =>
     `flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold ${
@@ -38,19 +40,25 @@ export default async function PartidasPage({
 
   return (
     <>
-      <Header title="Palpites" subtitle="Copa 2026 · Mata-mata" />
+      <Header
+        title={tr(locale, "Palpites", "Pronósticos")}
+        subtitle={tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminación directa")}
+      />
       <Breadcrumbs
-        items={[{ label: "Início", href: "/" }, { label: "Palpites" }]}
+        items={[
+          { label: tr(locale, "Início", "Inicio"), href: "/" },
+          { label: tr(locale, "Palpites", "Pronósticos") },
+        ]}
       />
       <main className="flex-1 px-5 py-4">
         <div className="mb-4 flex gap-2">
           <Link href="/partidas?aba=jogos" className={tabCls(!especiais)}>
             <Goal size={16} strokeWidth={2.5} aria-hidden="true" />
-            Jogos
+            {tr(locale, "Jogos", "Partidos")}
           </Link>
           <Link href="/partidas?aba=especiais" className={tabCls(especiais)}>
             <Medal size={16} strokeWidth={2.5} aria-hidden="true" />
-            Artilharia e outros
+            {tr(locale, "Artilharia e outros", "Goleadores y más")}
           </Link>
         </div>
 
@@ -65,6 +73,7 @@ export default async function PartidasPage({
 }
 
 async function JogosTab({ userId }: { userId: string | null }) {
+  const locale = await getLocale();
   const [all, predMap, teamMap] = await Promise.all([
     getAllMatches(),
     getUserPredictionMap(userId),
@@ -72,14 +81,21 @@ async function JogosTab({ userId }: { userId: string | null }) {
   ]);
   const groups = PHASE_ORDER.map((phase) => ({
     phase,
-    label: PHASE_LABEL[phase],
+    label: phaseLabel(phase, locale),
     list: all.filter((m) => m.phase === phase),
   })).filter((g) => g.list.length > 0);
 
   if (all.length === 0) {
     return (
-      <EmptyState icon={CalendarClock} title="Sem jogos ainda">
-        Os jogos do mata-mata aparecem aqui assim que o banco for semeado.
+      <EmptyState
+        icon={CalendarClock}
+        title={tr(locale, "Sem jogos ainda", "Aún no hay partidos")}
+      >
+        {tr(
+          locale,
+          "Os jogos do mata-mata aparecem aqui assim que o banco for semeado.",
+          "Los partidos de la eliminación directa aparecen aquí apenas se cargue la base.",
+        )}
       </EmptyState>
     );
   }
@@ -107,14 +123,19 @@ async function JogosTab({ userId }: { userId: string | null }) {
 }
 
 async function EspeciaisTab({ userId }: { userId: string | null }) {
+  const locale = await getLocale();
   if (!userId) {
     return (
       <Card>
         <p className="t-body text-muted">
-          Entre para palpitar campeão e artilheiro.
+          {tr(
+            locale,
+            "Entre para palpitar campeão e artilheiro.",
+            "Entra para pronosticar campeón y goleador.",
+          )}
         </p>
         <LinkButton href="/login" className="mt-3">
-          Entrar
+          {tr(locale, "Entrar", "Entrar")}
         </LinkButton>
       </Card>
     );
@@ -135,15 +156,28 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
     <div className="flex flex-col gap-4">
       <Card>
         <p className="t-body text-ink">
-          Acerte quem leva a taça e quem termina como artilheiro. Vale pontos
-          extras no ranking: <strong>campeão 300</strong> e{" "}
-          <strong>artilheiro 200</strong>.
+          {tr(
+            locale,
+            "Acerte quem leva a taça e quem termina como artilheiro. Vale pontos extras no ranking: ",
+            "Acierta quién levanta la copa y quién termina como goleador. Da puntos extra en el ranking: ",
+          )}
+          <strong>{tr(locale, "campeão 300", "campeón 300")}</strong>
+          {tr(locale, " e ", " y ")}
+          <strong>{tr(locale, "artilheiro 200", "goleador 200")}</strong>.
         </p>
         {deadline ? (
           <p className="t-caption mt-2 text-muted">
             {open
-              ? `Você pode ajustar até a final, ${formatBrasilia(deadline)} (Brasília).`
-              : "O prazo já encerrou. Seus palpites estão travados."}
+              ? tr(
+                  locale,
+                  `Você pode ajustar até a final, ${formatBrasilia(deadline)} (Brasília).`,
+                  `Puedes ajustar hasta la final, ${formatBrasilia(deadline)} (Brasilia).`,
+                )
+              : tr(
+                  locale,
+                  "O prazo já encerrou. Seus palpites estão travados.",
+                  "El plazo ya cerró. Tus pronósticos quedaron bloqueados.",
+                )}
           </p>
         ) : null}
       </Card>
@@ -158,14 +192,16 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
         </Card>
       ) : (
         <Card>
-          <p className="t-kicker mb-2 text-indigo">Seus palpites</p>
+          <p className="t-kicker mb-2 text-indigo">
+            {tr(locale, "Seus palpites", "Tus pronósticos")}
+          </p>
           <SpecialRow
-            label="Campeão"
+            label={tr(locale, "Campeão", "Campeón")}
             value={picks.campeao ? teamOf(picks.campeao).name : "—"}
             points={hasResults ? picks.campeaoPoints : null}
           />
           <SpecialRow
-            label="Artilheiro"
+            label={tr(locale, "Artilheiro", "Goleador")}
             value={picks.artilheiro ?? "—"}
             points={hasResults ? picks.artilheiroPoints : null}
           />

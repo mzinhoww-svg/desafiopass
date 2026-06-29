@@ -11,6 +11,7 @@ import {
 } from "@/lib/queries/ranking";
 import { getUserLeagues } from "@/lib/queries/leagues";
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { getLocale, tr } from "@/lib/i18n";
 
 // /ranking (Task 3.1): faixa pessoal + lista com competition ranking e desempate
 // deterministico (RANKING_SPEC). Toggle entre o ranking geral (liga publica) e os
@@ -21,6 +22,7 @@ export default async function RankingPage({
   searchParams: Promise<{ view?: string }>;
 }) {
   const { view } = await searchParams;
+  const locale = await getLocale();
   const user = await getCurrentUser();
   const showLeagues = view === "ligas" && !!user;
 
@@ -59,27 +61,30 @@ export default async function RankingPage({
 
   return (
     <>
-      <Header title="Ranking" subtitle="Copa 2026 · Mata-mata" />
-      <Breadcrumbs items={[{ label: "Início", href: "/" }, { label: "Ranking" }]} />
+      <Header title="Ranking" subtitle={tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminatorias")} />
+      <Breadcrumbs items={[{ label: tr(locale, "Início", "Inicio"), href: "/" }, { label: "Ranking" }]} />
       <main className="flex-1 px-5 py-4">
         {user ? (
           <div className="mb-4 flex gap-2">
             <Link href="/ranking?view=geral" className={tab(!showLeagues)}>
               <Trophy size={16} strokeWidth={2.5} aria-hidden="true" />
-              Geral
+              {tr(locale, "Geral", "General")}
             </Link>
             <Link href="/ranking?view=ligas" className={tab(showLeagues)}>
               <Users size={16} strokeWidth={2.5} aria-hidden="true" />
-              Minhas ligas
+              {tr(locale, "Minhas ligas", "Mis ligas")}
             </Link>
           </div>
         ) : null}
 
         {showLeagues ? (
           leagueRankings.length === 0 ? (
-            <EmptyState icon={Users} title="Você ainda não está em uma liga">
-              Entre em uma liga ou crie a sua em Comunidade para disputar um
-              ranking privado com os amigos.
+            <EmptyState icon={Users} title={tr(locale, "Você ainda não está em uma liga", "Todavía no estás en ninguna liga")}>
+              {tr(
+                locale,
+                "Entre em uma liga ou crie a sua em Comunidade para disputar um ranking privado com os amigos.",
+                "Únete a una liga o crea la tuya en Comunidad para competir en un ranking privado con tus amigos.",
+              )}
             </EmptyState>
           ) : (
             <div className="flex flex-col gap-6">
@@ -107,13 +112,13 @@ export default async function RankingPage({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="t-caption uppercase tracking-wide text-muted-dark">
-                    Sua posição
+                    {tr(locale, "Sua posição", "Tu posición")}
                   </p>
                   <p className="t-card-title">{myRank.nickname}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-extrabold text-teal">
-                    {myRank.points.toLocaleString("pt-BR")}
+                    {myRank.points.toLocaleString(locale === "es" ? "es-CL" : "pt-BR")}
                   </p>
                   <p className="t-caption text-muted-dark">pts</p>
                 </div>
@@ -121,9 +126,12 @@ export default async function RankingPage({
             ) : null}
 
             {rows.length === 0 ? (
-              <EmptyState icon={Trophy} title="O ranking ainda está inativo">
-                Assim que as primeiras partidas forem encerradas, a
-                classificação aparece aqui.
+              <EmptyState icon={Trophy} title={tr(locale, "O ranking ainda está inativo", "El ranking todavía está inactivo")}>
+                {tr(
+                  locale,
+                  "Assim que as primeiras partidas forem encerradas, a classificação aparece aqui.",
+                  "En cuanto terminen los primeros partidos, la clasificación aparece aquí.",
+                )}
               </EmptyState>
             ) : (
               <div className="rounded-2xl border border-black/10 bg-paper p-2">
@@ -135,7 +143,11 @@ export default async function RankingPage({
 
             {myRank && myRank.position === null ? (
               <p className="t-caption mt-3 text-center text-muted">
-                Você ainda não pontuou. Faça palpites para entrar no ranking.
+                {tr(
+                  locale,
+                  "Você ainda não pontuou. Faça palpites para entrar no ranking.",
+                  "Todavía no sumaste puntos. Haz tus pronósticos para entrar al ranking.",
+                )}
               </p>
             ) : null}
           </>

@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { getLocale, tr } from "@/lib/i18n";
 
 // Trilha simples (Inicio / Secao / Atual). Ultimo item sem href = pagina atual.
-export function Breadcrumbs({
+export async function Breadcrumbs({
   items,
 }: {
   items: { label: string; href?: string }[];
 }) {
+  const locale = await getLocale();
   return (
     <nav
-      aria-label="Trilha de navegação"
+      aria-label={tr(locale, "Trilha de navegação", "Ruta de navegación")}
       className="t-caption flex items-center gap-1 px-5 pt-4 text-muted"
     >
       {items.map((it, i) => (

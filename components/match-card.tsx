@@ -4,10 +4,11 @@ import { Countdown } from "@/components/countdown";
 import { Pill } from "@/components/ui/pill";
 import type { Team } from "@/lib/data/copa2026";
 import { phaseBadge } from "@/lib/phases";
-import { CRITERION_LABEL } from "@/lib/scoring-labels";
+import { criterionLabel } from "@/lib/scoring-labels";
 import { formatBrasilia, isPredictionOpen, isLive } from "@/lib/utils/dates";
 import type { Criterion, Phase } from "@/lib/scoring";
 import type { MatchRow, PredictionRow } from "@/lib/queries/matches";
+import { getLocale, tr } from "@/lib/i18n";
 
 /*
  * Match-card (DESIGN_SPEC 6). Superficie paper, borda completa. O placar fica SEMPRE
@@ -29,7 +30,7 @@ function Num({ value, tone }: { value: number | null; tone: "guess" | "result" |
   );
 }
 
-export function MatchCard({
+export async function MatchCard({
   match,
   prediction,
   home,
@@ -40,6 +41,7 @@ export function MatchCard({
   home: Team;
   away: Team;
 }) {
+  const locale = await getLocale();
   const isBrazil = match.homeCode === "BRA" || match.awayCode === "BRA";
   const closed = match.status === "encerrada";
   const open =
@@ -68,11 +70,11 @@ export function MatchCard({
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <Pill variant="neutral">{phaseBadge(match.phase as Phase)}</Pill>
+        <Pill variant="neutral">{phaseBadge(match.phase as Phase, locale)}</Pill>
         {live ? (
           <span className="flex items-center gap-1.5 rounded-full bg-rose px-2.5 py-1 text-xs font-bold text-white">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-            Ao vivo
+            {tr(locale, "Ao vivo", "En vivo")}
           </span>
         ) : isBrazil ? (
           <Pill variant="rose">x2 Brasil</Pill>
@@ -94,25 +96,29 @@ export function MatchCard({
           <>
             <span className="t-caption text-muted">
               {prediction
-                ? `Você palpitou ${prediction.homeGuess} x ${prediction.awayGuess}`
-                : "Sem palpite"}
+                ? tr(
+                    locale,
+                    `Você palpitou ${prediction.homeGuess} x ${prediction.awayGuess}`,
+                    `Pronosticaste ${prediction.homeGuess} x ${prediction.awayGuess}`,
+                  )
+                : tr(locale, "Sem palpite", "Sin pronóstico")}
             </span>
             {prediction ? (
               <Pill variant="lime">+{prediction.points} pts</Pill>
             ) : (
-              <Pill variant="neutral">Encerrada</Pill>
+              <Pill variant="neutral">{tr(locale, "Encerrada", "Finalizado")}</Pill>
             )}
           </>
         ) : (
           <>
             <span className={`t-caption ${pending ? "font-bold text-rose" : "text-muted"}`}>
               {prediction
-                ? "Seu palpite salvo"
+                ? tr(locale, "Seu palpite salvo", "Tu pronóstico guardado")
                 : open
-                  ? "Palpite pendente"
+                  ? tr(locale, "Palpite pendente", "Pronóstico pendiente")
                   : live
-                    ? "Em andamento"
-                    : "Prazo encerrado"}
+                    ? tr(locale, "Em andamento", "En curso")
+                    : tr(locale, "Prazo encerrado", "Plazo cerrado")}
             </span>
             <Pill variant="neutral">
               {open ? (
@@ -121,9 +127,9 @@ export function MatchCard({
                   fallback={formatBrasilia(new Date(match.kickoffAt))}
                 />
               ) : live ? (
-                "Aguardando resultado"
+                tr(locale, "Aguardando resultado", "Esperando resultado")
               ) : (
-                "Prazo encerrado"
+                tr(locale, "Prazo encerrado", "Plazo cerrado")
               )}
             </Pill>
           </>
@@ -132,7 +138,7 @@ export function MatchCard({
 
       {closed && prediction ? (
         <p className="t-caption mt-2 text-muted">
-          {CRITERION_LABEL[(prediction.criterion as Criterion) ?? "errado"]}
+          {criterionLabel((prediction.criterion as Criterion) ?? "errado", locale)}
         </p>
       ) : null}
     </Link>

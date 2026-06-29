@@ -12,6 +12,7 @@ import { EditMatchForm } from "./edit-match-form";
 import { teams as seedTeams } from "@/lib/data/copa2026";
 import { toBrasiliaInput } from "@/lib/utils/dates";
 import type { Phase } from "@/lib/scoring";
+import { getLocale, tr } from "@/lib/i18n";
 
 export default async function AdminMatchPage({
   params,
@@ -19,6 +20,7 @@ export default async function AdminMatchPage({
   params: Promise<{ id: string }>;
 }) {
   if (!(await isAdmin())) redirect("/login");
+  const locale = await getLocale();
   const { id } = await params;
   const match = await getMatchById(id);
   if (!match) notFound();
@@ -39,10 +41,13 @@ export default async function AdminMatchPage({
 
   return (
     <>
-      <Header title="Admin · Resultado" subtitle="Inserir placar" />
+      <Header
+        title={tr(locale, "Admin · Resultado", "Admin · Resultado")}
+        subtitle={tr(locale, "Inserir placar", "Ingresar marcador")}
+      />
       <Breadcrumbs
         items={[
-          { label: "Início", href: "/" },
+          { label: tr(locale, "Início", "Inicio"), href: "/" },
           { label: "Admin", href: "/admin" },
           { label: `${match.homeCode} x ${match.awayCode}` },
         ]}
@@ -50,9 +55,11 @@ export default async function AdminMatchPage({
       <main className="flex-1 px-5 py-6">
         <Card>
           <div className="flex items-center justify-between gap-2">
-            <Pill variant="neutral">{phaseBadge(match.phase as Phase)}</Pill>
+            <Pill variant="neutral">{phaseBadge(match.phase as Phase, locale)}</Pill>
             <Pill variant={match.status === "encerrada" ? "lime" : "neutral"}>
-              {match.status}
+              {match.status === "encerrada"
+                ? tr(locale, "encerrada", "finalizado")
+                : tr(locale, "agendada", "programado")}
             </Pill>
           </div>
           <p className="t-caption mt-2 text-center text-muted">
@@ -62,7 +69,9 @@ export default async function AdminMatchPage({
 
         <div className="mt-4">
           <Card>
-            <p className="t-kicker mb-3 text-center text-indigo">Placar final</p>
+            <p className="t-kicker mb-3 text-center text-indigo">
+              {tr(locale, "Placar final", "Marcador final")}
+            </p>
             <AdminForm
               matchId={match.id}
               home={home}
@@ -71,9 +80,11 @@ export default async function AdminMatchPage({
               defaultAway={match.awayScore ?? undefined}
             />
             <p className="t-caption mt-3 text-center text-muted">
-              Ao salvar, os pontos de todos os palpites desta partida são
-              calculados e quem avançou segue no chaveamento. Em empate decidido
-              nos pênaltis, escolha quem avançou no seletor acima.
+              {tr(
+                locale,
+                "Ao salvar, os pontos de todos os palpites desta partida são calculados e quem avançou segue no chaveamento. Em empate decidido nos pênaltis, escolha quem avançou no seletor acima.",
+                "Al guardar, los puntos de todos los pronósticos de este partido se calculan y quien avanzó sigue en el cuadro. En empate decidido por penales, elegí quién avanzó en el selector de arriba.",
+              )}
             </p>
           </Card>
         </div>
@@ -81,7 +92,7 @@ export default async function AdminMatchPage({
         <div className="mt-4">
           <Card>
             <p className="t-kicker mb-3 text-center text-indigo">
-              Editar partida
+              {tr(locale, "Editar partida", "Editar partido")}
             </p>
             <EditMatchForm
               matchId={match.id}
@@ -94,8 +105,11 @@ export default async function AdminMatchPage({
               teams={teamOptions}
             />
             <p className="t-caption mt-3 text-center text-muted">
-              Ajuste data/hora (o prazo de palpite acompanha), estádio e as
-              seleções — útil para resolver confrontos decididos nos pênaltis.
+              {tr(
+                locale,
+                "Ajuste data/hora (o prazo de palpite acompanha), estádio e as seleções — útil para resolver confrontos decididos nos pênaltis.",
+                "Ajustá fecha/hora (el plazo de pronóstico se actualiza), estadio y las selecciones — útil para resolver cruces decididos por penales.",
+              )}
             </p>
           </Card>
         </div>

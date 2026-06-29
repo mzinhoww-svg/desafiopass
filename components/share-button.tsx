@@ -1,6 +1,7 @@
 "use client";
 
 import { Share2 } from "lucide-react";
+import { useT } from "@/components/i18n/locale-provider";
 
 /*
  * Botao de compartilhar (#7). Usa a Web Share API nativa quando disponivel
@@ -10,7 +11,7 @@ import { Share2 } from "lucide-react";
 export function ShareButton({
   text,
   path = "/",
-  label = "Compartilhar",
+  label,
   className = "",
 }: {
   text: string;
@@ -18,6 +19,8 @@ export function ShareButton({
   label?: string;
   className?: string;
 }) {
+  const t = useT();
+  const resolvedLabel = label ?? t("Compartilhar", "Compartir");
   async function share() {
     const url =
       typeof window !== "undefined" ? window.location.origin + path : path;
@@ -44,7 +47,7 @@ export function ShareButton({
       className={`flex items-center justify-center gap-2 ${className}`}
     >
       <Share2 size={18} strokeWidth={2.5} aria-hidden="true" />
-      {label}
+      {resolvedLabel}
     </button>
   );
 }

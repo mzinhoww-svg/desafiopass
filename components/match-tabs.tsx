@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useT } from "@/components/i18n/locale-provider";
 
 // Abas da partida: "Seu palpite" e "Comunidade" (palpites de outros usuarios).
 export function MatchTabs({
@@ -10,6 +11,7 @@ export function MatchTabs({
   palpite: ReactNode;
   comunidade: ReactNode;
 }) {
+  const t = useT();
   const [tab, setTab] = useState<"palpite" | "comunidade">("palpite");
   const base =
     "flex-1 py-2 text-sm font-bold uppercase tracking-wide -mb-0.5 border-b-2";
@@ -22,7 +24,7 @@ export function MatchTabs({
           aria-current={tab === "palpite" ? "true" : undefined}
           className={`${base} ${tab === "palpite" ? "border-rose text-indigo" : "border-transparent text-muted"}`}
         >
-          Seu palpite
+          {t("Seu palpite", "Tu pronóstico")}
         </button>
         <button
           type="button"
@@ -30,7 +32,7 @@ export function MatchTabs({
           aria-current={tab === "comunidade" ? "true" : undefined}
           className={`${base} ${tab === "comunidade" ? "border-rose text-indigo" : "border-transparent text-muted"}`}
         >
-          Comunidade
+          {t("Comunidade", "Comunidad")}
         </button>
       </div>
       {tab === "palpite" ? palpite : comunidade}

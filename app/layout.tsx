@@ -3,6 +3,9 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { TabBar } from "@/components/tab-bar";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getPendingPredictionCount } from "@/lib/queries/matches";
+import { getLocale, htmlLang } from "@/lib/i18n";
+import { LocaleProvider } from "@/components/i18n/locale-provider";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 import "./globals.css";
 
 // Fonte unica do app (decisao travada, DESIGN_SPEC secao 1): Plus Jakarta Sans,
@@ -41,20 +44,27 @@ export default async function RootLayout({
   const user = await getCurrentUser();
   const loggedIn = !!user;
   const pendingCount = user ? await getPendingPredictionCount(user.id) : 0;
+  const locale = await getLocale();
 
   return (
-    <html lang="pt-BR" className={`${jakarta.variable} h-full antialiased`}>
+    <html
+      lang={htmlLang(locale)}
+      className={`${jakarta.variable} h-full antialiased`}
+    >
       <body className="min-h-full bg-black/5">
-        {/* App-shell: largura de telefone, centralizada em telas largas (web). A
-            barra inferior (e seu espaco) so existe para usuarios logados. */}
-        <div
-          className={`mx-auto flex min-h-full max-w-md flex-col bg-paper shadow-sm ${
-            loggedIn ? "pb-16" : ""
-          }`}
-        >
-          {children}
-        </div>
-        {loggedIn ? <TabBar pendingCount={pendingCount} /> : null}
+        <LocaleProvider locale={locale}>
+          {/* App-shell: largura de telefone, centralizada em telas largas (web). A
+              barra inferior (e seu espaco) so existe para usuarios logados. */}
+          <div
+            className={`mx-auto flex min-h-full max-w-md flex-col bg-paper shadow-sm ${
+              loggedIn ? "pb-16" : ""
+            }`}
+          >
+            {children}
+          </div>
+          {loggedIn ? <TabBar pendingCount={pendingCount} /> : null}
+          <InstallPrompt loggedIn={loggedIn} />
+        </LocaleProvider>
       </body>
     </html>
   );
