@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { importBracketAction, type ImportState } from "@/app/actions/admin";
 import { useT } from "@/components/i18n/locale-provider";
 
@@ -35,7 +35,11 @@ export function ImportButton() {
             : "border-indigo/30 text-indigo"
         }`}
       >
-        <Download size={16} strokeWidth={2.5} aria-hidden="true" />
+        {pending ? (
+          <Loader2 size={16} strokeWidth={2.5} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <Download size={16} strokeWidth={2.5} aria-hidden="true" />
+        )}
         {pending
           ? t("Importando…", "Importando…")
           : armed

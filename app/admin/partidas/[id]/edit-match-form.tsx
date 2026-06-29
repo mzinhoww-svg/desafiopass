@@ -104,7 +104,7 @@ export function EditMatchForm({
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" loading={pending}>
         {pending
           ? t("Salvando", "Guardando")
           : t("Salvar dados da partida", "Guardar datos del partido")}

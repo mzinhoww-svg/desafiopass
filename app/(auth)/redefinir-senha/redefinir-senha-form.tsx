@@ -77,7 +77,7 @@ export function RedefinirSenhaForm({ token }: { token: string }) {
             {state.error}
           </p>
         ) : null}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" loading={pending}>
           {pending
             ? t("Salvando", "Guardando")
             : t("Salvar nova senha", "Guardar nueva contraseña")}

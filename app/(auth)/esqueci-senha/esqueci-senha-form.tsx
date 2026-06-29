@@ -64,7 +64,7 @@ export function EsqueciSenhaForm() {
             {state.error}
           </p>
         ) : null}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" loading={pending}>
           {pending ? t("Enviando", "Enviando") : t("Enviar link", "Enviar enlace")}
         </Button>
       </form>

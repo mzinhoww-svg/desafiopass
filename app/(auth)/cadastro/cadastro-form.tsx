@@ -73,7 +73,7 @@ export function CadastroForm() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" loading={pending}>
           {pending
             ? t("Criando conta", "Creando cuenta")
             : t("Criar conta", "Crear cuenta")}

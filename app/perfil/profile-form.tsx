@@ -135,7 +135,7 @@ export function ProfileForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending ? t("Salvando", "Guardando") : t("Salvar", "Guardar")}
       </Button>
     </form>
