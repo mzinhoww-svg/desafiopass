@@ -16,6 +16,7 @@ export interface Fixture {
   homeScore: number | null;
   awayScore: number | null;
   utcDate: string | null; // horário oficial (ISO UTC)
+  venue: string | null; // estádio
 }
 
 export async function fetchFixtures(): Promise<Fixture[]> {
@@ -43,6 +44,7 @@ export async function fetchFixtures(): Promise<Fixture[]> {
       matches?: Array<{
         status: string;
         utcDate?: string | null;
+        venue?: string | null;
         homeTeam?: { tla?: string | null };
         awayTeam?: { tla?: string | null };
         score?: { fullTime?: { home: number | null; away: number | null } };
@@ -60,6 +62,7 @@ export async function fetchFixtures(): Promise<Fixture[]> {
         homeScore: m.score?.fullTime?.home ?? null,
         awayScore: m.score?.fullTime?.away ?? null,
         utcDate: m.utcDate ?? null,
+        venue: m.venue ?? null,
       });
     }
     return out;

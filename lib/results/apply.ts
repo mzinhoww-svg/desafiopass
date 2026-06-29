@@ -173,11 +173,15 @@ export async function setLiveScore(
     .where(and(eq(matches.id, matchId), ne(matches.status, "encerrada")));
 }
 
-// Corrige o horário oficial da partida pela API. Só em jogos ainda não encerrados
-// (o prazo de palpite acompanha o novo kickoff).
-export async function updateKickoff(matchId: string, kickoffAt: Date) {
+// Atualiza dados de agenda da partida pela API (horário e/ou estádio). Só em jogos
+// ainda não encerrados (o prazo de palpite acompanha o novo kickoff).
+export async function updateSchedule(
+  matchId: string,
+  fields: { kickoffAt?: Date; stadium?: string },
+) {
+  if (Object.keys(fields).length === 0) return;
   await db
     .update(matches)
-    .set({ kickoffAt })
+    .set(fields)
     .where(and(eq(matches.id, matchId), ne(matches.status, "encerrada")));
 }
