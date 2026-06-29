@@ -38,7 +38,7 @@ export default async function PerfilPage() {
 
   return (
     <>
-      <Header title="Perfil" subtitle="Bolão LATAM Pass" />
+      <Header title="Perfil" subtitle={tr(locale, "Bolão Pass", "Polla Pass")} />
       <main className="flex-1 px-5 py-8">
         <div className="flex gap-3">
           <Card className="flex-1 text-center">
@@ -56,13 +56,13 @@ export default async function PerfilPage() {
             rank.position
               ? tr(
                   locale,
-                  `Estou em ${rank.position}º no Bolão LATAM Pass da Copa 2026 com ${rank.points} pts! Vem disputar:`,
-                  `¡Estoy en el puesto ${rank.position} de la Polla LATAM Pass de la Copa 2026 con ${rank.points} pts! Vení a competir:`,
+                  `Estou em ${rank.position}º no Bolão Pass da Copa 2026 com ${rank.points} pts! Vem disputar:`,
+                  `¡Estoy en el puesto ${rank.position} de la Polla Pass de la Copa 2026 con ${rank.points} pts! Vení a competir:`,
                 )
               : tr(
                   locale,
-                  "Tô no Bolão LATAM Pass da Copa 2026! Vem palpitar:",
-                  "¡Estoy en la Polla LATAM Pass de la Copa 2026! Vení a pronosticar:",
+                  "Tô no Bolão Pass da Copa 2026! Vem palpitar:",
+                  "¡Estoy en la Polla Pass de la Copa 2026! Vení a pronosticar:",
                 )
           }
           path="/"

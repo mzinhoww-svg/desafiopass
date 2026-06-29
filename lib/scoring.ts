@@ -1,6 +1,6 @@
 // reference-code/lib/scoring.ts
 //
-// Logica de pontuacao do Bolao LATAM Pass. FUNCAO PURA.
+// Logica de pontuacao do Bolao Pass. FUNCAO PURA.
 // Implementa specs/SCORING_SPEC.md ao pe da letra.
 //
 // Regras invioláveis:

@@ -5,14 +5,14 @@ import { getLocale, tr } from "@/lib/i18n";
 // /privacidade (#13): aviso curto de privacidade/LGPD. Projeto pessoal, sem fins
 // comerciais; coleta minima (e-mail, apelido e palpites) para operar o bolao.
 export const metadata = {
-  title: "Privacidade · Bolão LATAM Pass",
+  title: "Privacidade · Bolão Pass",
 };
 
 export default async function PrivacidadePage() {
   const locale = await getLocale();
   return (
     <>
-      <Header title={tr(locale, "Privacidade", "Privacidad")} subtitle="Bolão LATAM Pass" />
+      <Header title={tr(locale, "Privacidade", "Privacidad")} subtitle={tr(locale, "Bolão Pass", "Polla Pass")} />
       <Breadcrumbs
         items={[{ label: tr(locale, "Início", "Inicio"), href: "/" }, { label: tr(locale, "Privacidade", "Privacidad") }]}
       />

@@ -16,7 +16,7 @@ export default async function LoginPage({
     <>
       <Header
         title={tr(locale, "Entrar", "Ingresar")}
-        subtitle={tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}
+        subtitle={tr(locale, "Bolão Pass", "Polla Pass")}
         hideLogin
       />
       <main className="flex-1 px-5 py-8">

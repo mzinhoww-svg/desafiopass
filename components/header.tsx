@@ -7,7 +7,7 @@ import { getLocale, tr } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/i18n/locale-toggle";
 
 /*
- * Header LATAM Pass. Superficie indigo (gradiente profundo Elevate), logo oficial,
+ * Header Bolão Pass. Superficie indigo (gradiente profundo), logo (cauda LATAM),
  * titulo em caixa alta peso 800 e barra gradiente Elevate na borda inferior. Quando
  * ha usuario logado, mostra a foto (ou iniciais) a direita, com link para /perfil.
  * Asa decorativa opcional so na home.
@@ -29,7 +29,7 @@ export async function Header({
   const avatar = user ? await getUserAvatar(user.id) : null;
   const initials = (user?.name ?? "").trim().slice(0, 2).toUpperCase();
   const locale = await getLocale();
-  const titleText = title ?? tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass");
+  const titleText = title ?? tr(locale, "Bolão Pass", "Polla Pass");
   const subtitleText =
     subtitle ?? tr(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminatorias");
 
@@ -55,11 +55,11 @@ export async function Header({
 
       <div className="relative flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          {/* Logo oficial LATAM Pass (branco), sobre o header indigo. */}
+          {/* Cauda LATAM (lembrança da marca), sobre o header indigo. */}
           <img
-            src="/brand/latam-white-2k23.png"
-            alt="LATAM Pass"
-            className="h-7 w-auto flex-none"
+            src="/brand/tail.png"
+            alt="Bolão Pass"
+            className="h-8 w-auto flex-none"
           />
           <div className="min-w-0">
             <h1 className="text-lg font-extrabold uppercase leading-tight tracking-tight">

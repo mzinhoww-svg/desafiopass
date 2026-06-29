@@ -26,7 +26,7 @@ export default async function InvitePage({
 
   return (
     <>
-      <Header title={tr(locale, "Convite de liga", "Invitación de liga")} subtitle="Bolão LATAM Pass" />
+      <Header title={tr(locale, "Convite de liga", "Invitación de liga")} subtitle={tr(locale, "Bolão Pass", "Polla Pass")} />
       <main className="flex-1 px-5 py-8">
         {!league ? (
           <Card>

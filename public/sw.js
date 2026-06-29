@@ -1,4 +1,4 @@
-/* Service worker do Bolão LATAM Pass — recebe Web Push e abre o app ao clicar. */
+/* Service worker do Bolão Pass — recebe Web Push e abre o app ao clicar. */
 self.addEventListener("push", (event) => {
   let data = {};
   try {
@@ -6,7 +6,7 @@ self.addEventListener("push", (event) => {
   } catch {
     data = {};
   }
-  const title = data.title || "Bolão LATAM Pass";
+  const title = data.title || "Bolão Pass";
   const options = {
     body: data.body || "",
     icon: "/icon-192.png",

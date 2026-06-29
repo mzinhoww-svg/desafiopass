@@ -191,7 +191,7 @@ export default async function Home() {
 
       <footer className="border-t border-black/5 bg-paper px-5 py-6">
         <p className="t-caption text-muted">
-          {tr(locale, "Bolão LATAM Pass · Copa 2026", "Polla LATAM Pass · Copa 2026")}
+          {tr(locale, "Bolão Pass · Copa 2026", "Polla Pass · Copa 2026")}
         </p>
         <p className="t-caption mt-1 text-muted">
           {tr(

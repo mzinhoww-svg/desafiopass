@@ -8,7 +8,7 @@ export default async function CadastroPage() {
     <>
       <Header
         title={tr(locale, "Criar conta", "Crear cuenta")}
-        subtitle={tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}
+        subtitle={tr(locale, "Bolão Pass", "Polla Pass")}
       />
       <main className="flex-1 px-5 py-8">
         <CadastroForm />

@@ -1,7 +1,7 @@
 // lib/email/templates.ts
 //
 // HTML de e-mail responsivo e à prova de clients (tabelas + estilos inline).
-// Identidade LATAM Pass Elevate: índigo #16064F, rosa #FE3173, teal #0AE7C6.
+// Identidade visual: índigo #16064F, rosa #FE3173, teal #0AE7C6.
 // Sem emoji, sem imagens externas pesadas (logo em texto para máxima entrega).
 //
 // Bilíngue: cada template recebe o locale do destinatário ('pt' | 'es') e escolhe
@@ -50,7 +50,7 @@ function shell({ locale, title, preheader, bodyHtml }: ShellOptions): string {
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:${PAPER};border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(22,6,79,0.10);">
   <tr>
     <td style="background:linear-gradient(135deg, ${INDIGO} 0%, ${INDIGO_DEEP} 100%);padding:28px 32px;">
-      <span style="font-family:${FONT};font-size:18px;font-weight:800;letter-spacing:.5px;color:#FFFFFF;text-transform:uppercase;">${L(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}</span>
+      <span style="font-family:${FONT};font-size:18px;font-weight:800;letter-spacing:.5px;color:#FFFFFF;text-transform:uppercase;">${L(locale, "Bolão Pass", "Polla Pass")}</span>
       <div style="font-family:${FONT};font-size:13px;color:#C9C5E6;margin-top:2px;">${L(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminatorias")}</div>
     </td>
   </tr>
@@ -62,7 +62,7 @@ function shell({ locale, title, preheader, bodyHtml }: ShellOptions): string {
   </tr>
   <tr>
     <td style="padding:20px 32px;background:${CLOUD};font-family:${FONT};font-size:12px;color:${MUTED};">
-      ${L(locale, "Bolão LATAM Pass · Copa 2026", "Polla LATAM Pass · Copa 2026")}<br>
+      ${L(locale, "Bolão Pass · Copa 2026", "Polla Pass · Copa 2026")}<br>
       ${L(locale, "Você recebeu este e-mail porque tem uma conta no bolão.", "Recibiste este correo porque tienes una cuenta en la polla.")}
     </td>
   </tr>
@@ -97,8 +97,8 @@ export function passwordResetEmail(args: {
   const locale = args.locale ?? "pt";
   const subject = L(
     locale,
-    "Redefina sua senha · Bolão LATAM Pass",
-    "Restablece tu contraseña · Polla LATAM Pass",
+    "Redefina sua senha · Bolão Pass",
+    "Restablece tu contraseña · Polla Pass",
   );
   const body = `
     ${heading(L(locale, "Redefinir senha", "Restablecer contraseña"))}
@@ -110,14 +110,14 @@ export function passwordResetEmail(args: {
   `;
   const text = L(
     locale,
-    `Redefinir senha - Bolão LATAM Pass
+    `Redefinir senha - Bolão Pass
 
 Olá, ${args.nickname}.
 Recebemos um pedido para redefinir sua senha. Acesse o link abaixo (válido por 1 hora):
 ${args.resetUrl}
 
 Se você não pediu isso, ignore este e-mail.`,
-    `Restablecer contraseña - Polla LATAM Pass
+    `Restablecer contraseña - Polla Pass
 
 Hola, ${args.nickname}.
 Recibimos una solicitud para restablecer tu contraseña. Entra al enlace de abajo (válido por 1 hora):
@@ -152,11 +152,11 @@ export function reminderEmail(args: {
   const count = args.games.length;
   const subject =
     count === 1
-      ? L(locale, "Falta 1 palpite · Bolão LATAM Pass", "Falta 1 pronóstico · Polla LATAM Pass")
+      ? L(locale, "Falta 1 palpite · Bolão Pass", "Falta 1 pronóstico · Polla Pass")
       : L(
           locale,
-          `Faltam ${count} palpites · Bolão LATAM Pass`,
-          `Faltan ${count} pronósticos · Polla LATAM Pass`,
+          `Faltam ${count} palpites · Bolão Pass`,
+          `Faltan ${count} pronósticos · Polla Pass`,
         );
 
   const rows = args.games
@@ -229,8 +229,8 @@ export function resultEmail(args: {
   const locale = args.locale ?? "pt";
   const subject = L(
     locale,
-    `Você fez ${args.points} pts em ${args.matchLabel} · Bolão LATAM Pass`,
-    `Hiciste ${args.points} pts en ${args.matchLabel} · Polla LATAM Pass`,
+    `Você fez ${args.points} pts em ${args.matchLabel} · Bolão Pass`,
+    `Hiciste ${args.points} pts en ${args.matchLabel} · Polla Pass`,
   );
   const posLine =
     args.position != null
