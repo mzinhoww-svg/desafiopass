@@ -11,8 +11,41 @@ import {
   users,
 } from "@/drizzle/schema";
 import { isAdmin, getCurrentUser } from "@/lib/auth-helpers";
-import { adminResultSchema } from "@/lib/validations";
+import { adminResultSchema, updateMatchSchema } from "@/lib/validations";
 import { finalPoints, type Phase } from "@/lib/scoring";
+import { advancement, teams as seedTeams } from "@/lib/data/copa2026";
+
+const allTeamCodes = new Set(seedTeams.map((t) => t.code));
+
+// Propaga o vencedor (ou perdedor) de uma partida encerrada para o confronto
+// seguinte, trocando o placeholder (ex 'W_R32_1') pelo time real (#1). Empate no
+// mata-mata nao define avanco automatico — fica para o admin ajustar (editar jogo).
+async function propagateWinner(
+  matchId: string,
+  homeCode: string,
+  awayCode: string,
+  homeScore: number,
+  awayScore: number,
+) {
+  const winner =
+    homeScore > awayScore ? homeCode : awayScore > homeScore ? awayCode : null;
+  const loser =
+    homeScore > awayScore ? awayCode : awayScore > homeScore ? homeCode : null;
+
+  for (const [placeholder, info] of Object.entries(advancement)) {
+    if (info.fromMatch !== matchId) continue;
+    const resolved = info.takes === "winner" ? winner : loser;
+    if (!resolved) continue;
+    await db
+      .update(matches)
+      .set({ homeCode: resolved })
+      .where(eq(matches.homeCode, placeholder));
+    await db
+      .update(matches)
+      .set({ awayCode: resolved })
+      .where(eq(matches.awayCode, placeholder));
+  }
+}
 
 /*
  * Admin encerra a partida e pontua (Task 2.4). Revalida role admin, grava placar +
@@ -49,6 +82,9 @@ export async function closeMatch(
     .set({ homeScore, awayScore, status: "encerrada" })
     .where(eq(matches.id, matchId));
 
+  // Avanca o chaveamento: preenche o time real no confronto seguinte (#1).
+  await propagateWinner(matchId, match.homeCode, match.awayCode, homeScore, awayScore);
+
   const preds = await db
     .select()
     .from(predictions)
@@ -72,6 +108,45 @@ export async function closeMatch(
   revalidatePath("/partidas");
   revalidatePath("/ranking");
   return { ok: true, scored: preds.length };
+}
+
+/*
+ * Admin edita uma partida (#2): horario (Brasilia), estadio e seleções. Permite
+ * corrigir data/hora (o prazo de palpite acompanha) e resolver manualmente
+ * confrontos (ex.: empate no mata-mata definido nos penaltis). Nao altera placar.
+ */
+export async function updateMatch(
+  _prev: AdminState,
+  formData: FormData,
+): Promise<AdminState> {
+  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+
+  const parsed = updateMatchSchema.safeParse({
+    matchId: String(formData.get("matchId") ?? ""),
+    kickoffLocal: String(formData.get("kickoffLocal") ?? ""),
+    stadium: String(formData.get("stadium") ?? "").trim(),
+    homeCode: String(formData.get("homeCode") ?? "").trim(),
+    awayCode: String(formData.get("awayCode") ?? "").trim(),
+  });
+  if (!parsed.success) return { error: "Dados da partida inválidos." };
+
+  const { matchId, kickoffLocal, stadium, homeCode, awayCode } = parsed.data;
+  if (!allTeamCodes.has(homeCode) || !allTeamCodes.has(awayCode)) {
+    return { error: "Seleção inválida." };
+  }
+  // datetime-local nao tem fuso; interpretamos como horario de Brasilia (UTC-3).
+  const kickoffAt = new Date(`${kickoffLocal}:00-03:00`);
+  if (Number.isNaN(kickoffAt.getTime())) return { error: "Data/hora inválida." };
+
+  await db
+    .update(matches)
+    .set({ kickoffAt, stadium: stadium || "A confirmar", homeCode, awayCode })
+    .where(eq(matches.id, matchId));
+
+  revalidatePath(`/admin/partidas/${matchId}`);
+  revalidatePath(`/partidas/${matchId}`);
+  revalidatePath("/partidas");
+  return { ok: true };
 }
 
 // --- Gestao admin (excluir usuario/liga, remover membro). Form actions. ---

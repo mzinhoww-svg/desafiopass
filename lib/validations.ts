@@ -49,6 +49,16 @@ export const adminResultSchema = z.object({
   awayScore: z.number().int().min(0).max(30),
 });
 
+// Edicao de partida pelo admin (#2). kickoffLocal vem de um input datetime-local
+// (horario de Brasilia); a action converte para UTC.
+export const updateMatchSchema = z.object({
+  matchId: z.string().min(1),
+  kickoffLocal: z.string().min(16), // "YYYY-MM-DDTHH:mm"
+  stadium: z.string().max(80).optional(),
+  homeCode: z.string().min(1),
+  awayCode: z.string().min(1),
+});
+
 // Recuperacao de senha (#1).
 export const requestResetSchema = z.object({
   email: z.email(),
