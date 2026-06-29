@@ -152,6 +152,44 @@ Palpite agora: ${args.matchesUrl}`;
   };
 }
 
+// --- Template: resultado de um jogo encerrado (#6) ---
+export function resultEmail(args: {
+  nickname: string;
+  matchLabel: string;
+  scoreLabel: string;
+  guessLabel: string;
+  points: number;
+  position: number | null;
+  rankingUrl: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `Você fez ${args.points} pts em ${args.matchLabel} · Bolão LATAM Pass`;
+  const posLine =
+    args.position != null
+      ? `Você está em <strong>${args.position}º</strong> no ranking geral.`
+      : "Faça mais palpites para entrar no ranking.";
+  const body = `
+    ${heading("Resultado saiu!")}
+    ${paragraph(`Olá, <strong>${escapeHtml(args.nickname)}</strong>. O jogo <strong>${escapeHtml(args.matchLabel)}</strong> terminou <strong>${escapeHtml(args.scoreLabel)}</strong>.`)}
+    ${paragraph(`Seu palpite: ${escapeHtml(args.guessLabel)} — você somou <strong>${args.points} pts</strong>. ${posLine}`)}
+    ${button(args.rankingUrl, "Ver o ranking")}
+  `;
+  const text = `${subject}
+
+Olá, ${args.nickname}. ${args.matchLabel} terminou ${args.scoreLabel}.
+Seu palpite: ${args.guessLabel} — ${args.points} pts.
+${args.position != null ? `Você está em ${args.position}º no ranking geral.` : ""}
+Ranking: ${args.rankingUrl}`;
+  return {
+    subject,
+    html: shell({
+      title: subject,
+      preheader: `${args.matchLabel} terminou ${args.scoreLabel}.`,
+      bodyHtml: body,
+    }),
+    text,
+  };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")

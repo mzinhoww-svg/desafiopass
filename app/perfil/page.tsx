@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
 import { ConfirmButton } from "@/components/confirm-button";
+import { ShareButton } from "@/components/share-button";
 import { ProfileForm } from "./profile-form";
 
 // /perfil: Server Component. Apelido, time do coracao e total de pontos/posicao
@@ -46,6 +47,17 @@ export default async function PerfilPage() {
             <p className="t-caption uppercase tracking-wide text-muted">Posição</p>
           </Card>
         </div>
+
+        <ShareButton
+          text={
+            rank.position
+              ? `Estou em ${rank.position}º no Bolão LATAM Pass da Copa 2026 com ${rank.points} pts! Vem disputar:`
+              : "Tô no Bolão LATAM Pass da Copa 2026! Vem palpitar:"
+          }
+          path="/"
+          label="Compartilhar minha posição"
+          className="mt-4 w-full rounded-xl border border-indigo/30 py-2.5 text-sm font-bold text-indigo"
+        />
 
         <div className="mt-4">
           <Card>

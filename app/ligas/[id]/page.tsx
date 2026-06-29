@@ -6,6 +6,7 @@ import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card } from "@/components/ui/card";
 import { RankingRow } from "@/components/ranking-row";
+import { ShareButton } from "@/components/share-button";
 import { InviteLink } from "./invite-link";
 
 // /ligas/[id] (Task 4.3): ranking interno (so membros), mesma logica do geral.
@@ -54,6 +55,12 @@ export default async function LeaguePage({
         <Card>
           <p className="t-kicker mb-2 text-indigo">Convite da liga</p>
           <InviteLink token={league.inviteToken} />
+          <ShareButton
+            text={`Entra na minha liga "${league.name}" no Bolão LATAM Pass da Copa 2026:`}
+            path={`/ligas/entrar/${league.inviteToken}`}
+            label="Convidar no WhatsApp"
+            className="mt-3 w-full rounded-xl bg-rose py-2.5 text-sm font-bold text-white"
+          />
           <p className="t-caption mt-2 text-muted">
             Compartilhe o link para os amigos entrarem.
           </p>
