@@ -12,12 +12,13 @@ import {
   fetchTopScorer,
   type Fixture,
 } from "@/lib/integrations/football-data";
-import { applyResult, setLiveScore } from "@/lib/results/apply";
+import { applyResult, setLiveScore, updateKickoff } from "@/lib/results/apply";
 import { applySpecialResults } from "@/lib/results/special";
 
 export interface SyncSummary {
   finished: number;
   live: number;
+  rescheduled: number;
   specialApplied?: boolean;
   skipped?: boolean;
 }
@@ -26,7 +27,8 @@ const pairKey = (a: string, b: string) => [a, b].sort().join("|");
 
 export async function syncResults(): Promise<SyncSummary> {
   const fixtures = await fetchFixtures();
-  if (fixtures.length === 0) return { finished: 0, live: 0, skipped: true };
+  if (fixtures.length === 0)
+    return { finished: 0, live: 0, rescheduled: 0, skipped: true };
 
   const all = await getAllMatches();
   // Index das nossas partidas ainda não encerradas, por par de códigos.
@@ -44,6 +46,7 @@ export async function syncResults(): Promise<SyncSummary> {
 
   let finished = 0;
   let live = 0;
+  let rescheduled = 0;
 
   for (const f of fixtures) {
     const m = byPair.get(pairKey(f.homeTla, f.awayTla));
@@ -61,6 +64,19 @@ export async function syncResults(): Promise<SyncSummary> {
       const s = oriented(m, f);
       await setLiveScore(m.id, s.home, s.away);
       live++;
+    } else if (
+      (f.status === "SCHEDULED" || f.status === "TIMED") &&
+      f.utcDate
+    ) {
+      // Corrige o horário oficial do jogo agendado (o prazo acompanha).
+      const apiDate = new Date(f.utcDate);
+      if (
+        !Number.isNaN(apiDate.getTime()) &&
+        apiDate.getTime() !== new Date(m.kickoffAt).getTime()
+      ) {
+        await updateKickoff(m.id, apiDate);
+        rescheduled++;
+      }
     }
   }
 
@@ -84,5 +100,5 @@ export async function syncResults(): Promise<SyncSummary> {
     specialApplied = true;
   }
 
-  return { finished, live, specialApplied };
+  return { finished, live, rescheduled, specialApplied };
 }

@@ -172,3 +172,12 @@ export async function setLiveScore(
     .set({ homeScore, awayScore, status: "ao_vivo" })
     .where(and(eq(matches.id, matchId), ne(matches.status, "encerrada")));
 }
+
+// Corrige o horário oficial da partida pela API. Só em jogos ainda não encerrados
+// (o prazo de palpite acompanha o novo kickoff).
+export async function updateKickoff(matchId: string, kickoffAt: Date) {
+  await db
+    .update(matches)
+    .set({ kickoffAt })
+    .where(and(eq(matches.id, matchId), ne(matches.status, "encerrada")));
+}
