@@ -19,6 +19,7 @@ import {
   getSpecialResults,
   getSpecialDeadline,
 } from "@/lib/queries/special";
+import { fetchScorers } from "@/lib/integrations/football-data";
 import { SpecialForm } from "@/app/palpites-especiais/special-form";
 
 // /palpites (rota /partidas): duas abas via ?aba — "jogos" (placares do mata-mata)
@@ -141,10 +142,11 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
     );
   }
 
-  const [picks, results, deadline] = await Promise.all([
+  const [picks, results, deadline, scorers] = await Promise.all([
     getSpecialPredictions(userId),
     getSpecialResults(),
     getSpecialDeadline(),
+    fetchScorers(),
   ]);
   const open = !deadline || Date.now() < deadline.getTime();
   const realTeams = seedTeams
@@ -188,6 +190,7 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
             teams={realTeams}
             champion={picks.campeao}
             topScorer={picks.artilheiro}
+            scorers={scorers.map((s) => ({ name: s.name, goals: s.goals }))}
           />
         </Card>
       ) : (

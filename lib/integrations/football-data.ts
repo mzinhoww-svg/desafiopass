@@ -86,6 +86,56 @@ export async function fetchFixtures(): Promise<Fixture[]> {
   }
 }
 
+// Lista de artilheiros (#2) para o dropdown de palpite, já ordenada por gols
+// (a API retorna em ordem decrescente). Cacheada por 30 min para não estourar o
+// limite do free tier. Vazia em falta de chave/erro.
+export interface Scorer {
+  name: string;
+  team: string | null;
+  goals: number;
+}
+
+export async function fetchScorers(limit = 50): Promise<Scorer[]> {
+  const key = process.env.FOOTBALL_DATA_API_KEY;
+  if (!key) return [];
+  const comp = process.env.FOOTBALL_DATA_COMPETITION ?? "WC";
+  const season = process.env.FOOTBALL_DATA_SEASON;
+  const url =
+    `https://api.football-data.org/v4/competitions/${comp}/scorers?limit=${limit}` +
+    (season ? `&season=${encodeURIComponent(season)}` : "");
+  try {
+    const res = await fetch(url, {
+      headers: { "X-Auth-Token": key },
+      next: { revalidate: 1800 },
+    });
+    if (!res.ok) {
+      console.error("[football-data] scorers HTTP", res.status);
+      return [];
+    }
+    const data = (await res.json()) as {
+      scorers?: Array<{
+        player?: { name?: string };
+        team?: { name?: string; tla?: string };
+        goals?: number | null;
+      }>;
+    };
+    const out: Scorer[] = [];
+    for (const s of data.scorers ?? []) {
+      const name = s.player?.name;
+      if (!name) continue;
+      out.push({
+        name,
+        team: s.team?.tla ?? s.team?.name ?? null,
+        goals: s.goals ?? 0,
+      });
+    }
+    return out;
+  } catch (e) {
+    console.error("[football-data] scorers lista falha:", e);
+    return [];
+  }
+}
+
 // Nome do artilheiro líder da competição (#2), via endpoint /scorers. Null se
 // indisponível.
 export async function fetchTopScorer(): Promise<string | null> {
