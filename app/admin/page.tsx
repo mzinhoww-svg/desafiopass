@@ -8,6 +8,7 @@ import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
+import { SyncButton } from "./sync-button";
 import { formatBrasilia } from "@/lib/utils/dates";
 
 // /admin: metricas, alertas e lista de partidas para inserir resultado. Protegida
@@ -73,6 +74,10 @@ export default async function AdminPage() {
           {metrics.usersWithPrediction} de {metrics.totalUsers} usuários já fizeram
           ao menos 1 palpite.
         </p>
+
+        <div className="mt-1">
+          <SyncButton />
+        </div>
 
         {metrics.unscored.length > 0 ? (
           <Card className="border border-rose/40 bg-rose/5">
