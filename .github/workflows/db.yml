@@ -10,6 +10,10 @@ name: Database
 on:
   workflow_dispatch:
     inputs:
+      seed:
+        description: "Rodar o seed (recria selecoes/partidas do seed ficticio). Desligue se o chaveamento real ja foi importado."
+        type: boolean
+        default: true
       reset:
         description: "Limpar o banco (apaga ligas/palpites e usuarios fora da allowlist)"
         type: boolean
@@ -30,6 +34,7 @@ jobs:
         env:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
       - name: Rodar seed
+        if: ${{ inputs.seed }}
         run: npm run db:seed
         env:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
