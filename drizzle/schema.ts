@@ -62,6 +62,23 @@ export const settings = pgTable("settings", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Inscricoes de Web Push (notificacoes PWA). Uma por dispositivo/navegador do
+// usuario; endpoint unico. Removida quando o push retorna 404/410 (expirou).
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull().unique(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("push_user_idx").on(t.userId)],
+);
+
 export const teams = pgTable("teams", {
   code: text("code").primaryKey(), // ex 'BRA'
   name: text("name").notNull(),

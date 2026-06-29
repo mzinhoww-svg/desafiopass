@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
 import { ConfirmButton } from "@/components/confirm-button";
 import { ShareButton } from "@/components/share-button";
+import { PushToggle } from "@/components/push-toggle";
 import { ProfileForm } from "./profile-form";
 
 // /perfil: Server Component. Apelido, time do coracao e total de pontos/posicao
@@ -70,6 +71,8 @@ export default async function PerfilPage() {
             />
           </Card>
         </div>
+
+        <PushToggle />
 
         <LinkButton href="/meus-palpites" variant="secondary" className="mt-4 w-full">
           Meus palpites
