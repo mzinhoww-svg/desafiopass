@@ -51,13 +51,17 @@ export async function requestPasswordReset(
     });
     const resetUrl = `${appUrl()}/redefinir-senha?token=${raw}`;
     const mail = passwordResetEmail({ nickname: user.nickname, resetUrl });
-    await sendEmail({
+    const r = await sendEmail({
       to: user.email,
       toName: user.nickname,
       subject: mail.subject,
       html: mail.html,
       text: mail.text,
     });
+    // Diagnostico (sem expor o e-mail): resultado do envio do reset.
+    console.log("[reset] envio:", JSON.stringify(r));
+  } else {
+    console.warn("[reset] e-mail informado nao esta cadastrado");
   }
 
   return { ok: true };

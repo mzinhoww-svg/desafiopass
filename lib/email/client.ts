@@ -53,6 +53,7 @@ export async function sendEmail(
       console.error("[email] Brevo respondeu", res.status, body);
       return { ok: false, error: `brevo_${res.status}` };
     }
+    console.log("[email] enviado via Brevo:", input.subject);
     return { ok: true };
   } catch (e) {
     console.error("[email] falha ao enviar:", e);
