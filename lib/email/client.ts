@@ -7,7 +7,7 @@
 // Env necessarias em producao:
 //   BREVO_API_KEY      chave da API Brevo (Transactional)
 //   EMAIL_FROM_EMAIL   remetente verificado no dominio (ex no-reply@desafiopass.com)
-//   EMAIL_FROM_NAME    nome exibido (ex "Bolão LATAM Pass")
+//   EMAIL_FROM_NAME    nome exibido (ex "Bolão Pass")
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
@@ -24,7 +24,7 @@ export async function sendEmail(
 ): Promise<{ ok: boolean; skipped?: boolean; error?: string }> {
   const apiKey = process.env.BREVO_API_KEY;
   const fromEmail = process.env.EMAIL_FROM_EMAIL ?? "no-reply@desafiopass.com";
-  const fromName = process.env.EMAIL_FROM_NAME ?? "Bolão LATAM Pass";
+  const fromName = process.env.EMAIL_FROM_NAME ?? "Bolão Pass";
 
   if (!apiKey) {
     console.warn("[email] BREVO_API_KEY ausente; e-mail nao enviado:", input.subject);

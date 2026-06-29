@@ -58,7 +58,7 @@ export default async function LeaguePage({
           <p className="t-kicker mb-2 text-indigo">{tr(locale, "Convite da liga", "Invitación de la liga")}</p>
           <InviteLink token={league.inviteToken} />
           <ShareButton
-            text={tr(locale, `Entra na minha liga "${league.name}" no Bolão LATAM Pass da Copa 2026:`, `Únete a mi liga "${league.name}" en el Bolão LATAM Pass de la Copa 2026:`)}
+            text={tr(locale, `Entra na minha liga "${league.name}" no Bolão Pass da Copa 2026:`, `Únete a mi liga "${league.name}" en la Polla Pass de la Copa 2026:`)}
             path={`/ligas/entrar/${league.inviteToken}`}
             label={tr(locale, "Convidar no WhatsApp", "Invitar por WhatsApp")}
             className="mt-3 w-full rounded-xl bg-rose py-2.5 text-sm font-bold text-white"

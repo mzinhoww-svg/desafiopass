@@ -8,7 +8,7 @@ export default async function EsqueciSenhaPage() {
     <>
       <Header
         title={tr(locale, "Recuperar acesso", "Recuperar acceso")}
-        subtitle={tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}
+        subtitle={tr(locale, "Bolão Pass", "Polla Pass")}
       />
       <main className="flex-1 px-5 py-8">
         <EsqueciSenhaForm />

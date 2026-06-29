@@ -14,7 +14,7 @@ export default async function RedefinirSenhaPage({
     <>
       <Header
         title={tr(locale, "Nova senha", "Nueva contraseña")}
-        subtitle={tr(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}
+        subtitle={tr(locale, "Bolão Pass", "Polla Pass")}
       />
       <main className="flex-1 px-5 py-8">
         <RedefinirSenhaForm token={token ?? ""} />

@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
 
 // PWA manifest (#12). Permite "adicionar à tela inicial" com cara de app.
-// Cores Elevate: indigo profundo de fundo, rosa de acento.
+// Indigo profundo de fundo, rosa de acento.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Bolão LATAM Pass · Copa 2026",
-    short_name: "Bolão LATAM",
+    name: "Bolão Pass · Copa 2026",
+    short_name: "Bolão Pass",
     description:
       "Palpite os placares do mata-mata, acumule pontos e fique no topo do ranking.",
     start_url: "/",
