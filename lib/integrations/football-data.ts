@@ -65,3 +65,32 @@ export async function fetchFixtures(): Promise<Fixture[]> {
     return [];
   }
 }
+
+// Nome do artilheiro líder da competição (#2), via endpoint /scorers. Null se
+// indisponível.
+export async function fetchTopScorer(): Promise<string | null> {
+  const key = process.env.FOOTBALL_DATA_API_KEY;
+  if (!key) return null;
+  const comp = process.env.FOOTBALL_DATA_COMPETITION ?? "WC";
+  const season = process.env.FOOTBALL_DATA_SEASON;
+  const url =
+    `https://api.football-data.org/v4/competitions/${comp}/scorers?limit=1` +
+    (season ? `&season=${encodeURIComponent(season)}` : "");
+  try {
+    const res = await fetch(url, {
+      headers: { "X-Auth-Token": key },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("[football-data] scorers HTTP", res.status);
+      return null;
+    }
+    const data = (await res.json()) as {
+      scorers?: Array<{ player?: { name?: string } }>;
+    };
+    return data.scorers?.[0]?.player?.name ?? null;
+  } catch (e) {
+    console.error("[football-data] scorers falha:", e);
+    return null;
+  }
+}

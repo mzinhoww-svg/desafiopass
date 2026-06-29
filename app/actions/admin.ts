@@ -66,7 +66,9 @@ export async function syncResultsAction(
     }
     return {
       ok: true,
-      message: `${r.finished} jogo(s) encerrado(s), ${r.live} ao vivo.`,
+      message:
+        `${r.finished} jogo(s) encerrado(s), ${r.live} ao vivo.` +
+        (r.specialApplied ? " Campeão e artilheiro definidos." : ""),
     };
   } catch (e) {
     console.error("[admin] sync falhou:", e);
