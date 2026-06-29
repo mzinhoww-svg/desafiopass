@@ -13,6 +13,7 @@ export interface Fixture {
   homeTla: string;
   awayTla: string;
   status: string; // SCHEDULED | TIMED | IN_PLAY | PAUSED | FINISHED | ...
+  stage: string; // GROUP_STAGE | LAST_32 | LAST_16 | QUARTER_FINALS | SEMI_FINALS | THIRD_PLACE | FINAL
   homeScore: number | null;
   awayScore: number | null;
   utcDate: string | null; // horário oficial (ISO UTC)
@@ -43,6 +44,7 @@ export async function fetchFixtures(): Promise<Fixture[]> {
     const data = (await res.json()) as {
       matches?: Array<{
         status: string;
+        stage?: string | null;
         utcDate?: string | null;
         venue?: string | null;
         homeTeam?: { tla?: string | null };
@@ -59,6 +61,7 @@ export async function fetchFixtures(): Promise<Fixture[]> {
         homeTla: homeTla.toUpperCase(),
         awayTla: awayTla.toUpperCase(),
         status: m.status,
+        stage: m.stage ?? "",
         homeScore: m.score?.fullTime?.home ?? null,
         awayScore: m.score?.fullTime?.away ?? null,
         utcDate: m.utcDate ?? null,

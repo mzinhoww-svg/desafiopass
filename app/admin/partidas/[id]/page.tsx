@@ -64,7 +64,8 @@ export default async function AdminMatchPage({
             />
             <p className="t-caption mt-3 text-center text-muted">
               Ao salvar, os pontos de todos os palpites desta partida são
-              calculados e o vencedor avança no chaveamento automaticamente.
+              calculados e quem avançou segue no chaveamento. Em empate decidido
+              nos pênaltis, escolha quem avançou no seletor acima.
             </p>
           </Card>
         </div>

@@ -32,8 +32,12 @@ export async function closeMatch(
   });
   if (!parsed.success) return { error: "Placar invalido (inteiros de 0 a 30)." };
 
+  // Quem avançou (mata-mata): vazio = decide pelo placar; um código = escolha do
+  // admin (empate nos pênaltis). Validado contra as seleções da partida em applyResult.
+  const winner = String(formData.get("winner") ?? "").trim() || undefined;
+
   const { matchId, homeScore, awayScore } = parsed.data;
-  const res = await applyResult(matchId, homeScore, awayScore);
+  const res = await applyResult(matchId, homeScore, awayScore, winner);
   if (!res) return { error: "Partida nao encontrada." };
 
   revalidatePath(`/admin/partidas/${matchId}`);

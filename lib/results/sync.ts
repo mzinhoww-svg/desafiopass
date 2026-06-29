@@ -25,6 +25,27 @@ export interface SyncSummary {
 
 const pairKey = (a: string, b: string) => [a, b].sort().join("|");
 
+// Mapeia a fase (stage) da API football-data para a nossa fase de mata-mata.
+// A Copa 2026 tem 48 seleções: o mata-mata começa no LAST_32 (16 avos).
+export function stageToPhase(stage: string): string | null {
+  switch (stage) {
+    case "LAST_32":
+      return "16avos";
+    case "LAST_16":
+      return "oitavas";
+    case "QUARTER_FINALS":
+      return "quartas";
+    case "SEMI_FINALS":
+      return "semi";
+    case "THIRD_PLACE":
+      return "terceiro";
+    case "FINAL":
+      return "final";
+    default:
+      return null; // GROUP_STAGE e afins não fazem parte do nosso bolão
+  }
+}
+
 export async function syncResults(): Promise<SyncSummary> {
   const fixtures = await fetchFixtures();
   if (fixtures.length === 0)
@@ -55,6 +76,28 @@ export async function syncResults(): Promise<SyncSummary> {
     fixtures.slice(0, 6).map((f) => `${f.homeTla}-${f.awayTla}(${f.status})`).join(", "),
     [...byPair.keys()].slice(0, 6).join(", "),
   );
+
+  // Diagnóstico do mata-mata: lista TODOS os confrontos reais das fases finais
+  // (LAST_32 em diante) com a sua fase mapeada. Serve para conferir/atualizar o
+  // chaveamento real (Opção A) — os confrontos das fases de grupo são ignorados.
+  const knockout = fixtures
+    .filter((f) => stageToPhase(f.stage) !== null)
+    .sort((a, b) => (a.utcDate ?? "").localeCompare(b.utcDate ?? ""));
+  console.log(
+    "[sync] fases na API: %s",
+    [...new Set(fixtures.map((f) => f.stage))].join(", ") || "(nenhuma)",
+  );
+  for (const f of knockout) {
+    console.log(
+      "[sync][mata-mata] %s -> %s | %s-%s (%s) %s",
+      f.stage,
+      stageToPhase(f.stage),
+      f.homeTla,
+      f.awayTla,
+      f.status,
+      f.utcDate ?? "",
+    );
+  }
 
   for (const f of fixtures) {
     const m = byPair.get(pairKey(f.homeTla, f.awayTla));
