@@ -5,6 +5,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { matches, leagues, leagueMembers, users, teams } from "@/drizzle/schema";
 import { isAdmin, getCurrentUser } from "@/lib/auth-helpers";
+import { getLocale, tr } from "@/lib/i18n";
 import { adminResultSchema, updateMatchSchema } from "@/lib/validations";
 import { applyResult } from "@/lib/results/apply";
 import { syncResults } from "@/lib/results/sync";
@@ -21,14 +22,29 @@ export async function closeMatch(
   _prev: AdminState,
   formData: FormData,
 ): Promise<AdminState> {
-  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+  const locale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(
+        locale,
+        "Acesso restrito a admin.",
+        "Acceso restringido a administradores.",
+      ),
+    };
 
   const parsed = adminResultSchema.safeParse({
     matchId: String(formData.get("matchId") ?? ""),
     homeScore: Number(formData.get("homeScore")),
     awayScore: Number(formData.get("awayScore")),
   });
-  if (!parsed.success) return { error: "Placar invalido (inteiros de 0 a 30)." };
+  if (!parsed.success)
+    return {
+      error: tr(
+        locale,
+        "Placar invalido (inteiros de 0 a 30).",
+        "Marcador inválido (enteros de 0 a 30).",
+      ),
+    };
 
   // Quem avançou (mata-mata): vazio = decide pelo placar; um código = escolha do
   // admin (empate nos pênaltis). Validado contra as seleções da partida em applyResult.
@@ -36,7 +52,8 @@ export async function closeMatch(
 
   const { matchId, homeScore, awayScore } = parsed.data;
   const res = await applyResult(matchId, homeScore, awayScore, winner);
-  if (!res) return { error: "Partida nao encontrada." };
+  if (!res)
+    return { error: tr(locale, "Partida nao encontrada.", "Partido no encontrado.") };
 
   revalidatePath(`/admin/partidas/${matchId}`);
   revalidatePath(`/partidas/${matchId}`);
@@ -57,25 +74,50 @@ export async function syncResultsAction(
 ): Promise<SyncState> {
   void _prev;
   void _formData;
-  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+  const locale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(
+        locale,
+        "Acesso restrito a admin.",
+        "Acceso restringido a administradores.",
+      ),
+    };
   try {
     const r = await syncResults();
     revalidatePath("/admin");
     revalidatePath("/partidas");
     revalidatePath("/ranking");
     if (r.skipped) {
-      return { error: "Sincronização indisponível (sem chave da API configurada)." };
+      return {
+        error: tr(
+          locale,
+          "Sincronização indisponível (sem chave da API configurada).",
+          "Sincronización no disponible (sin clave de API configurada).",
+        ),
+      };
     }
     return {
       ok: true,
-      message:
+      message: tr(
+        locale,
         `${r.finished} jogo(s) encerrado(s), ${r.live} ao vivo, ` +
-        `${r.rescheduled} agenda(s) atualizada(s) (horário/estádio).` +
-        (r.specialApplied ? " Campeão e artilheiro definidos." : ""),
+          `${r.rescheduled} agenda(s) atualizada(s) (horário/estádio).` +
+          (r.specialApplied ? " Campeão e artilheiro definidos." : ""),
+        `${r.finished} partido(s) cerrado(s), ${r.live} en vivo, ` +
+          `${r.rescheduled} agenda(s) actualizada(s) (horario/estadio).` +
+          (r.specialApplied ? " Campeón y goleador definidos." : ""),
+      ),
     };
   } catch (e) {
     console.error("[admin] sync falhou:", e);
-    return { error: "Falha ao sincronizar. Veja os logs." };
+    return {
+      error: tr(
+        locale,
+        "Falha ao sincronizar. Veja os logs.",
+        "Error al sincronizar. Revisa los logs.",
+      ),
+    };
   }
 }
 
@@ -88,7 +130,15 @@ export async function updateMatch(
   _prev: AdminState,
   formData: FormData,
 ): Promise<AdminState> {
-  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+  const locale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(
+        locale,
+        "Acesso restrito a admin.",
+        "Acceso restringido a administradores.",
+      ),
+    };
 
   const parsed = updateMatchSchema.safeParse({
     matchId: String(formData.get("matchId") ?? ""),
@@ -97,7 +147,14 @@ export async function updateMatch(
     homeCode: String(formData.get("homeCode") ?? "").trim(),
     awayCode: String(formData.get("awayCode") ?? "").trim(),
   });
-  if (!parsed.success) return { error: "Dados da partida inválidos." };
+  if (!parsed.success)
+    return {
+      error: tr(
+        locale,
+        "Dados da partida inválidos.",
+        "Datos del partido inválidos.",
+      ),
+    };
 
   const { matchId, kickoffLocal, stadium, homeCode, awayCode } = parsed.data;
   // Valida as seleções contra a tabela teams (inclui as reais importadas da API).
@@ -107,11 +164,12 @@ export async function updateMatch(
     .where(inArray(teams.code, [homeCode, awayCode]));
   const validCodes = new Set(valid.map((t) => t.code));
   if (!validCodes.has(homeCode) || !validCodes.has(awayCode)) {
-    return { error: "Seleção inválida." };
+    return { error: tr(locale, "Seleção inválida.", "Selección inválida.") };
   }
   // datetime-local nao tem fuso; interpretamos como horario de Brasilia (UTC-3).
   const kickoffAt = new Date(`${kickoffLocal}:00-03:00`);
-  if (Number.isNaN(kickoffAt.getTime())) return { error: "Data/hora inválida." };
+  if (Number.isNaN(kickoffAt.getTime()))
+    return { error: tr(locale, "Data/hora inválida.", "Fecha/hora inválida.") };
 
   await db
     .update(matches)
@@ -137,7 +195,15 @@ export async function importBracketAction(
 ): Promise<ImportState> {
   void _prev;
   void _formData;
-  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+  const locale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(
+        locale,
+        "Acesso restrito a admin.",
+        "Acceso restringido a administradores.",
+      ),
+    };
   try {
     const r = await importKnockoutBracket();
     revalidatePath("/admin");
@@ -150,14 +216,25 @@ export async function importBracketAction(
       .join(", ");
     return {
       ok: true,
-      message:
+      message: tr(
+        locale,
         `${r.matches} jogo(s) reais importado(s) (${phases}); ` +
-        `${r.teams} seleções; ${r.finished} já encerrado(s); ` +
-        `${r.removed} partida(s) fictícia(s) removida(s).`,
+          `${r.teams} seleções; ${r.finished} já encerrado(s); ` +
+          `${r.removed} partida(s) fictícia(s) removida(s).`,
+        `${r.matches} partido(s) reales importado(s) (${phases}); ` +
+          `${r.teams} selecciones; ${r.finished} ya cerrado(s); ` +
+          `${r.removed} partido(s) ficticio(s) eliminado(s).`,
+      ),
     };
   } catch (e) {
     console.error("[admin] import falhou:", e);
-    return { error: "Falha ao importar. Veja os logs." };
+    return {
+      error: tr(
+        locale,
+        "Falha ao importar. Veja os logs.",
+        "Error al importar. Revisa los logs.",
+      ),
+    };
   }
 }
 

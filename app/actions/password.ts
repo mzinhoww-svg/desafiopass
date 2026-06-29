@@ -8,6 +8,7 @@ import { users, passwordResetTokens } from "@/drizzle/schema";
 import { requestResetSchema, resetPasswordSchema } from "@/lib/validations";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { passwordResetEmail } from "@/lib/email/templates";
+import { getLocale, tr } from "@/lib/i18n";
 
 /*
  * Recuperacao de senha (#1). Fluxo de uso unico e expiravel:
@@ -29,13 +30,22 @@ export async function requestPasswordReset(
   _prev: ResetRequestState,
   formData: FormData,
 ): Promise<ResetRequestState> {
+  const locale = await getLocale();
   const parsed = requestResetSchema.safeParse({
     email: String(formData.get("email") ?? "").trim().toLowerCase(),
   });
-  if (!parsed.success) return { error: "Informe um e-mail válido." };
+  if (!parsed.success)
+    return {
+      error: tr(locale, "Informe um e-mail válido.", "Ingresa un correo válido."),
+    };
 
   const found = await db
-    .select({ id: users.id, nickname: users.nickname, email: users.email })
+    .select({
+      id: users.id,
+      nickname: users.nickname,
+      email: users.email,
+      locale: users.locale,
+    })
     .from(users)
     .where(eq(users.email, parsed.data.email))
     .limit(1);
@@ -50,7 +60,11 @@ export async function requestPasswordReset(
       expiresAt: new Date(Date.now() + TOKEN_TTL_MS),
     });
     const resetUrl = `${appUrl()}/redefinir-senha?token=${raw}`;
-    const mail = passwordResetEmail({ nickname: user.nickname, resetUrl });
+    const mail = passwordResetEmail({
+      nickname: user.nickname,
+      resetUrl,
+      locale: user.locale === "es" ? "es" : "pt",
+    });
     const r = await sendEmail({
       to: user.email,
       toName: user.nickname,
@@ -71,12 +85,19 @@ export async function resetPassword(
   _prev: ResetState,
   formData: FormData,
 ): Promise<ResetState> {
+  const locale = await getLocale();
   const parsed = resetPasswordSchema.safeParse({
     token: String(formData.get("token") ?? ""),
     password: String(formData.get("password") ?? ""),
   });
   if (!parsed.success) {
-    return { error: "A senha precisa de ao menos 8 caracteres." };
+    return {
+      error: tr(
+        locale,
+        "A senha precisa de ao menos 8 caracteres.",
+        "La contraseña necesita al menos 8 caracteres.",
+      ),
+    };
   }
 
   const tokenHash = hashToken(parsed.data.token);
@@ -93,7 +114,13 @@ export async function resetPassword(
     .limit(1);
   const token = rows[0];
   if (!token) {
-    return { error: "Link inválido ou expirado. Peça um novo." };
+    return {
+      error: tr(
+        locale,
+        "Link inválido ou expirado. Peça um novo.",
+        "Enlace inválido o expirado. Pide uno nuevo.",
+      ),
+    };
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);

@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { predictions, matches } from "@/drizzle/schema";
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { getLocale, tr } from "@/lib/i18n";
 import { scoreSchema } from "@/lib/validations";
 import { isPredictionOpen } from "@/lib/utils/dates";
 
@@ -20,25 +21,41 @@ export async function savePrediction(
   formData: FormData,
 ): Promise<PredictionState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Entre para palpitar." };
+  const locale = await getLocale();
+  if (!user)
+    return { error: tr(locale, "Entre para palpitar.", "Ingresa para pronosticar.") };
 
   const matchId = String(formData.get("matchId") ?? "");
   const parsed = scoreSchema.safeParse({
     homeGuess: Number(formData.get("homeGuess")),
     awayGuess: Number(formData.get("awayGuess")),
   });
-  if (!parsed.success) return { error: "Use placares inteiros de 0 a 20." };
+  if (!parsed.success)
+    return {
+      error: tr(
+        locale,
+        "Use placares inteiros de 0 a 20.",
+        "Usa marcadores enteros de 0 a 20.",
+      ),
+    };
 
   const match = (
     await db.select().from(matches).where(eq(matches.id, matchId)).limit(1)
   )[0];
-  if (!match) return { error: "Partida nao encontrada." };
+  if (!match)
+    return { error: tr(locale, "Partida nao encontrada.", "Partido no encontrado.") };
 
   // Condicao canonica de "pode palpitar" (DATA_SPEC 3.3).
   const canPredict =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
   if (!canPredict) {
-    return { error: "Prazo encerrado. O palpite trava no inicio do jogo." };
+    return {
+      error: tr(
+        locale,
+        "Prazo encerrado. O palpite trava no inicio do jogo.",
+        "Plazo cerrado. El pronóstico se bloquea al inicio del partido.",
+      ),
+    };
   }
 
   const { homeGuess, awayGuess } = parsed.data;

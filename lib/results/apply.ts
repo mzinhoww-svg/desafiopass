@@ -12,7 +12,7 @@ import { advancement } from "@/lib/data/copa2026";
 import { getMyGlobalRank } from "@/lib/queries/ranking";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { resultEmail } from "@/lib/email/templates";
-import { pushToUsers } from "@/lib/push/notify";
+import { pushToUsersLocalized } from "@/lib/push/notify";
 import { applySpecialResults } from "@/lib/results/special";
 
 // Propaga o vencedor (ou perdedor, p/ 3º lugar) para o confronto seguinte (#1).
@@ -52,6 +52,7 @@ async function notifyResults(
       email: users.email,
       nickname: users.nickname,
       emailReminders: users.emailReminders,
+      locale: users.locale,
     })
     .from(users)
     .where(inArray(users.id, ids));
@@ -70,6 +71,7 @@ async function notifyResults(
       points: s.points,
       position: rank?.position ?? null,
       rankingUrl,
+      locale: u.locale === "es" ? "es" : "pt",
     });
     await sendEmail({
       to: u.email,
@@ -176,14 +178,21 @@ export async function applyResult(
     console.error("[results] falha ao notificar e-mail:", e);
   }
 
-  // Push para quem palpitou (#4).
+  // Push para quem palpitou (#4), no idioma de cada um.
   try {
-    await pushToUsers(
+    await pushToUsersLocalized(
       scored.map((s) => s.userId),
       {
-        title: "Resultado saiu!",
-        body: `${matchLabel} terminou ${scoreLabel}. Veja seus pontos.`,
-        url: "/ranking",
+        pt: {
+          title: "Resultado saiu!",
+          body: `${matchLabel} terminou ${scoreLabel}. Veja seus pontos.`,
+          url: "/ranking",
+        },
+        es: {
+          title: "¡Salió el resultado!",
+          body: `${matchLabel} terminó ${scoreLabel}. Mira tus puntos.`,
+          url: "/ranking",
+        },
       },
     );
   } catch (e) {

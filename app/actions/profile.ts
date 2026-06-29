@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { users, leagues } from "@/drizzle/schema";
 import { signOut } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { getLocale, tr } from "@/lib/i18n";
 import { profileSchema } from "@/lib/validations";
 import { teams as seedTeams } from "@/lib/data/copa2026";
 
@@ -21,14 +22,28 @@ export async function updateProfile(
   formData: FormData,
 ): Promise<ProfileState> {
   const current = await getCurrentUser();
-  if (!current) return { error: "Sessao expirada. Entre novamente." };
+  const locale = await getLocale();
+  if (!current)
+    return {
+      error: tr(
+        locale,
+        "Sessao expirada. Entre novamente.",
+        "Sesión expirada. Ingresa de nuevo.",
+      ),
+    };
 
   const parsed = profileSchema.safeParse({
     nickname: String(formData.get("nickname") ?? "").trim(),
     favoriteTeam: String(formData.get("favoriteTeam") ?? ""),
   });
   if (!parsed.success) {
-    return { error: "Apelido de 3 a 20 caracteres: letras, numeros ou _." };
+    return {
+      error: tr(
+        locale,
+        "Apelido de 3 a 20 caracteres: letras, numeros ou _.",
+        "Apodo de 3 a 20 caracteres: letras, números o _.",
+      ),
+    };
   }
 
   const { nickname } = parsed.data;
@@ -37,7 +52,7 @@ export async function updateProfile(
       ? parsed.data.favoriteTeam
       : null;
   if (favoriteTeam && !realTeamCodes.has(favoriteTeam)) {
-    return { error: "Selecao invalida." };
+    return { error: tr(locale, "Selecao invalida.", "Selección inválida.") };
   }
 
   // Unicidade do apelido (ignorando o proprio usuario).
@@ -45,7 +60,8 @@ export async function updateProfile(
     .select({ id: users.id })
     .from(users)
     .where(and(eq(users.nickname, nickname), ne(users.id, current.id)));
-  if (clash.length > 0) return { error: "Apelido ja em uso." };
+  if (clash.length > 0)
+    return { error: tr(locale, "Apelido ja em uso.", "Ese apodo ya está en uso.") };
 
   // Avatar opcional: data URL de imagem ja redimensionada no client. Vazio = sem
   // alteracao. Limite de tamanho como guarda (256px jpeg fica bem abaixo disso).
@@ -55,7 +71,13 @@ export async function updateProfile(
   const avatarUpdate: { avatarUrl?: string } = {};
   if (avatarRaw) {
     if (!avatarRaw.startsWith("data:image/") || avatarRaw.length > 400_000) {
-      return { error: "Imagem invalida ou muito grande." };
+      return {
+        error: tr(
+          locale,
+          "Imagem invalida ou muito grande.",
+          "Imagen inválida o demasiado grande.",
+        ),
+      };
     }
     avatarUpdate.avatarUrl = await storeAvatar(avatarRaw, current.id);
   }

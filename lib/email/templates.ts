@@ -3,6 +3,11 @@
 // HTML de e-mail responsivo e à prova de clients (tabelas + estilos inline).
 // Identidade LATAM Pass Elevate: índigo #16064F, rosa #FE3173, teal #0AE7C6.
 // Sem emoji, sem imagens externas pesadas (logo em texto para máxima entrega).
+//
+// Bilíngue: cada template recebe o locale do destinatário ('pt' | 'es') e escolhe
+// o texto com L(locale, pt, es).
+
+import type { Locale } from "@/lib/i18n";
 
 const INDIGO = "#16064F";
 const INDIGO_DEEP = "#0E0436";
@@ -16,7 +21,12 @@ const CLOUD = "#F4F4F8";
 const FONT =
   "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
+function L(locale: Locale, pt: string, es: string): string {
+  return locale === "es" ? es : pt;
+}
+
 interface ShellOptions {
+  locale: Locale;
   title: string;
   preheader: string;
   bodyHtml: string;
@@ -24,9 +34,9 @@ interface ShellOptions {
 
 // Esqueleto comum: cabeçalho índigo com marca, corpo branco, barra de marca e
 // rodapé discreto. Largura 600px, centralizado, com preheader oculto.
-function shell({ title, preheader, bodyHtml }: ShellOptions): string {
+function shell({ locale, title, preheader, bodyHtml }: ShellOptions): string {
   return `<!doctype html>
-<html lang="pt-BR">
+<html lang="${locale === "es" ? "es-CL" : "pt-BR"}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -40,8 +50,8 @@ function shell({ title, preheader, bodyHtml }: ShellOptions): string {
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:${PAPER};border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(22,6,79,0.10);">
   <tr>
     <td style="background:linear-gradient(135deg, ${INDIGO} 0%, ${INDIGO_DEEP} 100%);padding:28px 32px;">
-      <span style="font-family:${FONT};font-size:18px;font-weight:800;letter-spacing:.5px;color:#FFFFFF;text-transform:uppercase;">Bolão LATAM Pass</span>
-      <div style="font-family:${FONT};font-size:13px;color:#C9C5E6;margin-top:2px;">Copa 2026 · Mata-mata</div>
+      <span style="font-family:${FONT};font-size:18px;font-weight:800;letter-spacing:.5px;color:#FFFFFF;text-transform:uppercase;">${L(locale, "Bolão LATAM Pass", "Polla LATAM Pass")}</span>
+      <div style="font-family:${FONT};font-size:13px;color:#C9C5E6;margin-top:2px;">${L(locale, "Copa 2026 · Mata-mata", "Copa 2026 · Eliminatorias")}</div>
     </td>
   </tr>
   <tr><td style="height:4px;background:linear-gradient(90deg, ${ROSE} 0%, ${TEAL} 100%);font-size:0;line-height:0;">&nbsp;</td></tr>
@@ -52,8 +62,8 @@ function shell({ title, preheader, bodyHtml }: ShellOptions): string {
   </tr>
   <tr>
     <td style="padding:20px 32px;background:${CLOUD};font-family:${FONT};font-size:12px;color:${MUTED};">
-      Bolão LATAM Pass · Copa 2026<br>
-      Você recebeu este e-mail porque tem uma conta no bolão.
+      ${L(locale, "Bolão LATAM Pass · Copa 2026", "Polla LATAM Pass · Copa 2026")}<br>
+      ${L(locale, "Você recebeu este e-mail porque tem uma conta no bolão.", "Recibiste este correo porque tienes una cuenta en la polla.")}
     </td>
   </tr>
 </table>
@@ -82,26 +92,51 @@ function paragraph(text: string): string {
 export function passwordResetEmail(args: {
   nickname: string;
   resetUrl: string;
+  locale?: Locale;
 }): { subject: string; html: string; text: string } {
-  const subject = "Redefina sua senha · Bolão LATAM Pass";
+  const locale = args.locale ?? "pt";
+  const subject = L(
+    locale,
+    "Redefina sua senha · Bolão LATAM Pass",
+    "Restablece tu contraseña · Polla LATAM Pass",
+  );
   const body = `
-    ${heading("Redefinir senha")}
-    ${paragraph(`Olá, <strong>${escapeHtml(args.nickname)}</strong>.`)}
-    ${paragraph("Recebemos um pedido para redefinir a senha da sua conta no bolão. Toque no botão abaixo para criar uma nova senha. O link vale por 1 hora.")}
-    ${button(args.resetUrl, "Criar nova senha")}
-    ${paragraph(`Se o botão não funcionar, copie e cole este endereço no navegador:<br><span style="color:${MUTED};font-size:13px;word-break:break-all;">${args.resetUrl}</span>`)}
-    ${paragraph(`<span style="color:${MUTED};font-size:13px;">Se você não pediu isso, pode ignorar este e-mail — sua senha continua a mesma.</span>`)}
+    ${heading(L(locale, "Redefinir senha", "Restablecer contraseña"))}
+    ${paragraph(L(locale, `Olá, <strong>${escapeHtml(args.nickname)}</strong>.`, `Hola, <strong>${escapeHtml(args.nickname)}</strong>.`))}
+    ${paragraph(L(locale, "Recebemos um pedido para redefinir a senha da sua conta no bolão. Toque no botão abaixo para criar uma nova senha. O link vale por 1 hora.", "Recibimos una solicitud para restablecer la contraseña de tu cuenta. Toca el botón de abajo para crear una nueva contraseña. El enlace vale por 1 hora."))}
+    ${button(args.resetUrl, L(locale, "Criar nova senha", "Crear nueva contraseña"))}
+    ${paragraph(L(locale, `Se o botão não funcionar, copie e cole este endereço no navegador:<br><span style="color:${MUTED};font-size:13px;word-break:break-all;">${args.resetUrl}</span>`, `Si el botón no funciona, copia y pega esta dirección en el navegador:<br><span style="color:${MUTED};font-size:13px;word-break:break-all;">${args.resetUrl}</span>`))}
+    ${paragraph(`<span style="color:${MUTED};font-size:13px;">${L(locale, "Se você não pediu isso, pode ignorar este e-mail — sua senha continua a mesma.", "Si no lo solicitaste, puedes ignorar este correo — tu contraseña sigue igual.")}</span>`)}
   `;
-  const text = `Redefinir senha - Bolão LATAM Pass
+  const text = L(
+    locale,
+    `Redefinir senha - Bolão LATAM Pass
 
 Olá, ${args.nickname}.
 Recebemos um pedido para redefinir sua senha. Acesse o link abaixo (válido por 1 hora):
 ${args.resetUrl}
 
-Se você não pediu isso, ignore este e-mail.`;
+Se você não pediu isso, ignore este e-mail.`,
+    `Restablecer contraseña - Polla LATAM Pass
+
+Hola, ${args.nickname}.
+Recibimos una solicitud para restablecer tu contraseña. Entra al enlace de abajo (válido por 1 hora):
+${args.resetUrl}
+
+Si no lo solicitaste, ignora este correo.`,
+  );
   return {
     subject,
-    html: shell({ title: subject, preheader: "Link para criar uma nova senha (válido por 1 hora).", bodyHtml: body }),
+    html: shell({
+      locale,
+      title: subject,
+      preheader: L(
+        locale,
+        "Link para criar uma nova senha (válido por 1 hora).",
+        "Enlace para crear una nueva contraseña (válido por 1 hora).",
+      ),
+      bodyHtml: body,
+    }),
     text,
   };
 }
@@ -111,12 +146,18 @@ export function reminderEmail(args: {
   nickname: string;
   matchesUrl: string;
   games: Array<{ label: string; when: string }>;
+  locale?: Locale;
 }): { subject: string; html: string; text: string } {
+  const locale = args.locale ?? "pt";
   const count = args.games.length;
   const subject =
     count === 1
-      ? "Falta 1 palpite · Bolão LATAM Pass"
-      : `Faltam ${count} palpites · Bolão LATAM Pass`;
+      ? L(locale, "Falta 1 palpite · Bolão LATAM Pass", "Falta 1 pronóstico · Polla LATAM Pass")
+      : L(
+          locale,
+          `Faltam ${count} palpites · Bolão LATAM Pass`,
+          `Faltan ${count} pronósticos · Polla LATAM Pass`,
+        );
 
   const rows = args.games
     .map(
@@ -128,24 +169,46 @@ export function reminderEmail(args: {
     )
     .join("");
 
+  const headingText =
+    count === 1
+      ? L(locale, "Falta 1 jogo para palpitar", "Falta 1 partido por pronosticar")
+      : L(
+          locale,
+          `Faltam ${count} jogos para palpitar`,
+          `Faltan ${count} partidos por pronosticar`,
+        );
   const body = `
-    ${heading(count === 1 ? "Falta 1 jogo para palpitar" : `Faltam ${count} jogos para palpitar`)}
-    ${paragraph(`Olá, <strong>${escapeHtml(args.nickname)}</strong>. O apito está chegando e estes jogos ainda esperam o seu palpite:`)}
+    ${heading(headingText)}
+    ${paragraph(L(locale, `Olá, <strong>${escapeHtml(args.nickname)}</strong>. O apito está chegando e estes jogos ainda esperam o seu palpite:`, `Hola, <strong>${escapeHtml(args.nickname)}</strong>. El pitazo se acerca y estos partidos aún esperan tu pronóstico:`))}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 4px;">${rows}</table>
-    ${button(args.matchesUrl, "Palpitar agora")}
-    ${paragraph(`<span style="color:${MUTED};font-size:13px;">Sem palpite até o apito, o jogo vale zero ponto. Não perca pontos por esquecimento.</span>`)}
+    ${button(args.matchesUrl, L(locale, "Palpitar agora", "Pronosticar ahora"))}
+    ${paragraph(`<span style="color:${MUTED};font-size:13px;">${L(locale, "Sem palpite até o apito, o jogo vale zero ponto. Não perca pontos por esquecimento.", "Sin pronóstico antes del pitazo, el partido vale cero puntos. No pierdas puntos por olvido.")}</span>`)}
   `;
-  const text = `${subject}
+  const text = L(
+    locale,
+    `${subject}
 
 Olá, ${args.nickname}. Estes jogos ainda esperam o seu palpite:
 ${args.games.map((g) => `- ${g.label} (${g.when})`).join("\n")}
 
-Palpite agora: ${args.matchesUrl}`;
+Palpite agora: ${args.matchesUrl}`,
+    `${subject}
+
+Hola, ${args.nickname}. Estos partidos aún esperan tu pronóstico:
+${args.games.map((g) => `- ${g.label} (${g.when})`).join("\n")}
+
+Pronostica ahora: ${args.matchesUrl}`,
+  );
   return {
     subject,
     html: shell({
+      locale,
       title: subject,
-      preheader: "O apito está chegando e há jogos sem o seu palpite.",
+      preheader: L(
+        locale,
+        "O apito está chegando e há jogos sem o seu palpite.",
+        "El pitazo se acerca y hay partidos sin tu pronóstico.",
+      ),
       bodyHtml: body,
     }),
     text,
@@ -161,29 +224,57 @@ export function resultEmail(args: {
   points: number;
   position: number | null;
   rankingUrl: string;
+  locale?: Locale;
 }): { subject: string; html: string; text: string } {
-  const subject = `Você fez ${args.points} pts em ${args.matchLabel} · Bolão LATAM Pass`;
+  const locale = args.locale ?? "pt";
+  const subject = L(
+    locale,
+    `Você fez ${args.points} pts em ${args.matchLabel} · Bolão LATAM Pass`,
+    `Hiciste ${args.points} pts en ${args.matchLabel} · Polla LATAM Pass`,
+  );
   const posLine =
     args.position != null
-      ? `Você está em <strong>${args.position}º</strong> no ranking geral.`
-      : "Faça mais palpites para entrar no ranking.";
+      ? L(
+          locale,
+          `Você está em <strong>${args.position}º</strong> no ranking geral.`,
+          `Estás en el <strong>${args.position}º</strong> del ranking general.`,
+        )
+      : L(
+          locale,
+          "Faça mais palpites para entrar no ranking.",
+          "Haz más pronósticos para entrar al ranking.",
+        );
   const body = `
-    ${heading("Resultado saiu!")}
-    ${paragraph(`Olá, <strong>${escapeHtml(args.nickname)}</strong>. O jogo <strong>${escapeHtml(args.matchLabel)}</strong> terminou <strong>${escapeHtml(args.scoreLabel)}</strong>.`)}
-    ${paragraph(`Seu palpite: ${escapeHtml(args.guessLabel)} — você somou <strong>${args.points} pts</strong>. ${posLine}`)}
-    ${button(args.rankingUrl, "Ver o ranking")}
+    ${heading(L(locale, "Resultado saiu!", "¡Salió el resultado!"))}
+    ${paragraph(L(locale, `Olá, <strong>${escapeHtml(args.nickname)}</strong>. O jogo <strong>${escapeHtml(args.matchLabel)}</strong> terminou <strong>${escapeHtml(args.scoreLabel)}</strong>.`, `Hola, <strong>${escapeHtml(args.nickname)}</strong>. El partido <strong>${escapeHtml(args.matchLabel)}</strong> terminó <strong>${escapeHtml(args.scoreLabel)}</strong>.`))}
+    ${paragraph(L(locale, `Seu palpite: ${escapeHtml(args.guessLabel)} — você somou <strong>${args.points} pts</strong>. ${posLine}`, `Tu pronóstico: ${escapeHtml(args.guessLabel)} — sumaste <strong>${args.points} pts</strong>. ${posLine}`))}
+    ${button(args.rankingUrl, L(locale, "Ver o ranking", "Ver el ranking"))}
   `;
-  const text = `${subject}
+  const text = L(
+    locale,
+    `${subject}
 
 Olá, ${args.nickname}. ${args.matchLabel} terminou ${args.scoreLabel}.
 Seu palpite: ${args.guessLabel} — ${args.points} pts.
 ${args.position != null ? `Você está em ${args.position}º no ranking geral.` : ""}
-Ranking: ${args.rankingUrl}`;
+Ranking: ${args.rankingUrl}`,
+    `${subject}
+
+Hola, ${args.nickname}. ${args.matchLabel} terminó ${args.scoreLabel}.
+Tu pronóstico: ${args.guessLabel} — ${args.points} pts.
+${args.position != null ? `Estás en el ${args.position}º del ranking general.` : ""}
+Ranking: ${args.rankingUrl}`,
+  );
   return {
     subject,
     html: shell({
+      locale,
       title: subject,
-      preheader: `${args.matchLabel} terminou ${args.scoreLabel}.`,
+      preheader: L(
+        locale,
+        `${args.matchLabel} terminou ${args.scoreLabel}.`,
+        `${args.matchLabel} terminó ${args.scoreLabel}.`,
+      ),
       bodyHtml: body,
     }),
     text,

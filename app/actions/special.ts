@@ -10,6 +10,7 @@ import { teams as seedTeams } from "@/lib/data/copa2026";
 import { getSpecialDeadline, getSpecialResults } from "@/lib/queries/special";
 import { specialPoints, type SpecialType } from "@/lib/special-scoring";
 import { applySpecialResults } from "@/lib/results/special";
+import { getLocale, tr } from "@/lib/i18n";
 
 const realTeamCodes = new Set(
   seedTeams.filter((t) => t.flagCode).map((t) => t.code),
@@ -22,25 +23,42 @@ export async function saveSpecialPrediction(
   _prev: SpecialState,
   formData: FormData,
 ): Promise<SpecialState> {
+  const locale = await getLocale();
   const user = await getCurrentUser();
-  if (!user) return { error: "Sessão expirada. Entre novamente." };
+  if (!user)
+    return {
+      error: tr(locale, "Sessão expirada. Entre novamente.", "Sesión expirada. Ingresa de nuevo."),
+    };
 
   // Prazo: trava no primeiro apito do mata-mata.
   const deadline = await getSpecialDeadline();
   if (deadline && Date.now() >= deadline.getTime()) {
-    return { error: "O prazo dos palpites especiais já encerrou." };
+    return {
+      error: tr(
+        locale,
+        "O prazo dos palpites especiais já encerrou.",
+        "El plazo de los pronósticos especiales ya cerró.",
+      ),
+    };
   }
 
   const parsed = specialPredictionSchema.safeParse({
     champion: String(formData.get("champion") ?? "").trim(),
     topScorer: String(formData.get("topScorer") ?? "").trim(),
   });
-  if (!parsed.success) return { error: "Dados inválidos." };
+  if (!parsed.success)
+    return { error: tr(locale, "Dados inválidos.", "Datos inválidos.") };
 
   const champion = parsed.data.champion?.trim() ?? "";
   const topScorer = parsed.data.topScorer?.trim() ?? "";
   if (champion && !realTeamCodes.has(champion)) {
-    return { error: "Seleção inválida para campeão." };
+    return {
+      error: tr(
+        locale,
+        "Seleção inválida para campeão.",
+        "Selección inválida para campeón.",
+      ),
+    };
   }
 
   await upsertOrClear(user.id, "campeao", champion);
@@ -50,7 +68,12 @@ export async function saveSpecialPrediction(
   const official = await getSpecialResults();
   await recomputeForUser(user.id, official);
 
-  revalidatePath("/palpites-especiais");
+  // O formulário de especiais vive em /partidas (aba "Artilharia e outros"); é essa
+  // rota que precisa revalidar para refletir o palpite salvo. Os pontos entram no
+  // ranking, então revalida ranking/home também.
+  revalidatePath("/partidas");
+  revalidatePath("/ranking");
+  revalidatePath("/");
   return { ok: true };
 }
 
