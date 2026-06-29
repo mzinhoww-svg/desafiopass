@@ -34,6 +34,7 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("user"), // 'user' | 'admin'
   isPremium: boolean("is_premium").notNull().default(false),
   emailReminders: boolean("email_reminders").notNull().default(true), // opt-out lembretes (#5)
+  locale: text("locale").notNull().default("pt"), // 'pt' | 'es' — idioma de e-mail/push
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

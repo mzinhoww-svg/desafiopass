@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "@/components/i18n/locale-provider";
+import { setLocalePreference } from "@/app/actions/locale";
 import type { Locale } from "@/lib/i18n";
 
 // Nome do cookie inline (não importar valor de @/lib/i18n, que puxa next/headers
@@ -12,10 +13,16 @@ const LOCALE_COOKIE = "locale";
 export function LocaleToggle({ variant = "light" }: { variant?: "light" | "dark" }) {
   const locale = useLocale();
 
-  function set(next: Locale) {
+  async function set(next: Locale) {
     if (next === locale) return;
     // 1 ano. path=/ para valer no app inteiro.
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+    // Persiste no perfil (se logado) para e-mails/push seguirem o idioma; ignora erro.
+    try {
+      await setLocalePreference(next);
+    } catch {
+      // segue mesmo assim — o cookie já vale para a navegação
+    }
     window.location.reload();
   }
 

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { matches, predictions, users } from "@/drizzle/schema";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { reminderEmail } from "@/lib/email/templates";
-import { pushToUsers } from "@/lib/push/notify";
+import { pushToUsersLocalized } from "@/lib/push/notify";
 import { formatBrasilia } from "@/lib/utils/dates";
 
 /*
@@ -51,7 +51,12 @@ export async function GET(request: Request) {
 
   const [recipients, preds] = await Promise.all([
     db
-      .select({ id: users.id, email: users.email, nickname: users.nickname })
+      .select({
+        id: users.id,
+        email: users.email,
+        nickname: users.nickname,
+        locale: users.locale,
+      })
       .from(users)
       .where(eq(users.emailReminders, true)),
     db
@@ -78,6 +83,7 @@ export async function GET(request: Request) {
         label: `${m.homeCode} x ${m.awayCode}`,
         when: formatBrasilia(new Date(m.kickoffAt)),
       })),
+      locale: user.locale === "es" ? "es" : "pt",
     });
     const r = await sendEmail({
       to: user.email,
@@ -89,12 +95,19 @@ export async function GET(request: Request) {
     if (r.ok) sent++;
   }
 
-  // Push para os mesmos usuários com palpites pendentes (#4).
+  // Push para os mesmos usuários com palpites pendentes (#4), no idioma de cada um.
   try {
-    await pushToUsers(pushTargets, {
-      title: "Não esqueça de palpitar",
-      body: "Há jogos abrindo em breve esperando o seu palpite.",
-      url: "/partidas",
+    await pushToUsersLocalized(pushTargets, {
+      pt: {
+        title: "Não esqueça de palpitar",
+        body: "Há jogos abrindo em breve esperando o seu palpite.",
+        url: "/partidas",
+      },
+      es: {
+        title: "No olvides pronosticar",
+        body: "Hay partidos abriendo pronto esperando tu pronóstico.",
+        url: "/partidas",
+      },
     });
   } catch (e) {
     console.error("[reminders] falha no push:", e);

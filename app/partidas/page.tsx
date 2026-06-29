@@ -187,6 +187,7 @@ async function EspeciaisTab({ userId }: { userId: string | null }) {
       {open ? (
         <Card>
           <SpecialForm
+            key={`${picks.campeao ?? ""}-${picks.artilheiro ?? ""}`}
             teams={realTeams}
             champion={picks.campeao}
             topScorer={picks.artilheiro}

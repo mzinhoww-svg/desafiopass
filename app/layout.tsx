@@ -3,7 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { TabBar } from "@/components/tab-bar";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { getPendingPredictionCount } from "@/lib/queries/matches";
-import { getLocale, htmlLang } from "@/lib/i18n";
+import { getLocale, htmlLang, tr } from "@/lib/i18n";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import "./globals.css";
@@ -17,20 +17,30 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Bolão LATAM Pass · Copa 2026",
-  description:
-    "Bolão de palpites da Copa do Mundo 2026, fase mata-mata, com identidade LATAM Pass. Palpite os placares, acumule pontos e fique no topo do ranking.",
-  manifest: "/manifest.webmanifest",
-  appleWebApp: {
-    capable: true,
-    title: "Bolão LATAM",
-    statusBarStyle: "black-translucent",
-  },
-  icons: {
-    apple: "/apple-touch-icon.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: tr(
+      locale,
+      "Bolão LATAM Pass · Copa 2026",
+      "Polla LATAM Pass · Copa 2026",
+    ),
+    description: tr(
+      locale,
+      "Bolão de palpites da Copa do Mundo 2026, fase mata-mata, com identidade LATAM Pass. Palpite os placares, acumule pontos e fique no topo do ranking.",
+      "Polla de pronósticos del Mundial 2026, fase eliminatoria, con identidad LATAM Pass. Pronostica los marcadores, suma puntos y llega a lo más alto del ranking.",
+    ),
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      title: tr(locale, "Bolão LATAM", "Polla LATAM"),
+      statusBarStyle: "black-translucent",
+    },
+    icons: {
+      apple: "/apple-touch-icon.png",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#16064F",
