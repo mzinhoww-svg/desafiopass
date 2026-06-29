@@ -7,12 +7,18 @@
 // vivo. Conservador: só age quando há correspondência única e clara.
 
 import { getAllMatches } from "@/lib/queries/matches";
-import { fetchFixtures, type Fixture } from "@/lib/integrations/football-data";
+import {
+  fetchFixtures,
+  fetchTopScorer,
+  type Fixture,
+} from "@/lib/integrations/football-data";
 import { applyResult, setLiveScore } from "@/lib/results/apply";
+import { applySpecialResults } from "@/lib/results/special";
 
 export interface SyncSummary {
   finished: number;
   live: number;
+  specialApplied?: boolean;
   skipped?: boolean;
 }
 
@@ -58,5 +64,25 @@ export async function syncResults(): Promise<SyncSummary> {
     }
   }
 
-  return { finished, live };
+  // Resultado oficial dos especiais (#2): quando a FINAL terminar, define o
+  // campeão (vencedor da final) e o artilheiro (líder em /scorers) e recalcula.
+  let specialApplied = false;
+  const refreshed = await getAllMatches();
+  const final = refreshed.find(
+    (m) => m.phase === "final" && m.status === "encerrada",
+  );
+  if (
+    final &&
+    final.homeScore != null &&
+    final.awayScore != null &&
+    final.homeScore !== final.awayScore
+  ) {
+    const champion =
+      final.homeScore > final.awayScore ? final.homeCode : final.awayCode;
+    const topScorer = await fetchTopScorer();
+    await applySpecialResults({ champion, topScorer });
+    specialApplied = true;
+  }
+
+  return { finished, live, specialApplied };
 }

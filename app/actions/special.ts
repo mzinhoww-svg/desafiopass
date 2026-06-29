@@ -3,12 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { specialPredictions, settings } from "@/drizzle/schema";
+import { specialPredictions } from "@/drizzle/schema";
 import { getCurrentUser, isAdmin } from "@/lib/auth-helpers";
 import { specialPredictionSchema, specialResultSchema } from "@/lib/validations";
 import { teams as seedTeams } from "@/lib/data/copa2026";
 import { getSpecialDeadline, getSpecialResults } from "@/lib/queries/special";
 import { specialPoints, type SpecialType } from "@/lib/special-scoring";
+import { applySpecialResults } from "@/lib/results/special";
 
 const realTeamCodes = new Set(
   seedTeams.filter((t) => t.flagCode).map((t) => t.code),
@@ -117,39 +118,10 @@ export async function setSpecialResult(
     return { error: "Seleção inválida para campeão." };
   }
 
-  await setSetting("champion", champion);
-  await setSetting("top_scorer", topScorer);
-
-  // Recalcula pontos de todos os palpites especiais.
-  const all = await db
-    .select({
-      userId: specialPredictions.userId,
-      type: specialPredictions.type,
-      value: specialPredictions.value,
-    })
-    .from(specialPredictions);
-  for (const r of all) {
-    const type = r.type as SpecialType;
-    const off = type === "campeao" ? champion : topScorer;
-    const points = specialPoints(type, r.value, off || null);
-    await db
-      .update(specialPredictions)
-      .set({ points })
-      .where(
-        and(
-          eq(specialPredictions.userId, r.userId),
-          eq(specialPredictions.type, type),
-        ),
-      );
-  }
+  // Grava e recalcula via lógica compartilhada (mesma usada pela sincronização).
+  await applySpecialResults({ champion, topScorer });
 
   revalidatePath("/admin");
+  revalidatePath("/ranking");
   return { ok: true };
-}
-
-async function setSetting(key: string, value: string) {
-  await db
-    .insert(settings)
-    .values({ key, value })
-    .onConflictDoUpdate({ target: settings.key, set: { value } });
 }
