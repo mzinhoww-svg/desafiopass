@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   matches,
@@ -14,6 +14,9 @@ import { isAdmin, getCurrentUser } from "@/lib/auth-helpers";
 import { adminResultSchema, updateMatchSchema } from "@/lib/validations";
 import { finalPoints, type Phase } from "@/lib/scoring";
 import { advancement, teams as seedTeams } from "@/lib/data/copa2026";
+import { getMyGlobalRank } from "@/lib/queries/ranking";
+import { sendEmail, appUrl } from "@/lib/email/client";
+import { resultEmail } from "@/lib/email/templates";
 
 const allTeamCodes = new Set(seedTeams.map((t) => t.code));
 
@@ -90,6 +93,7 @@ export async function closeMatch(
     .from(predictions)
     .where(eq(predictions.matchId, matchId));
 
+  const scored: { userId: string; guessLabel: string; points: number }[] = [];
   for (const p of preds) {
     const breakdown = finalPoints({
       guess: { homeGuess: p.homeGuess, awayGuess: p.awayGuess },
@@ -101,6 +105,22 @@ export async function closeMatch(
       .update(predictions)
       .set({ points: breakdown.final, criterion: breakdown.criterion })
       .where(eq(predictions.id, p.id));
+    scored.push({
+      userId: p.userId,
+      guessLabel: `${p.homeGuess} x ${p.awayGuess}`,
+      points: breakdown.final,
+    });
+  }
+
+  // Notifica por e-mail quem palpitou (#6). Nao bloqueia o sucesso da pontuacao.
+  try {
+    await notifyResults(
+      `${match.homeCode} x ${match.awayCode}`,
+      `${homeScore} x ${awayScore}`,
+      scored,
+    );
+  } catch (e) {
+    console.error("[admin] falha ao notificar resultados:", e);
   }
 
   revalidatePath(`/admin/partidas/${matchId}`);
@@ -147,6 +167,49 @@ export async function updateMatch(
   revalidatePath(`/partidas/${matchId}`);
   revalidatePath("/partidas");
   return { ok: true };
+}
+
+// Envia o e-mail de resultado (#6) para quem palpitou e aceita receber e-mails.
+async function notifyResults(
+  matchLabel: string,
+  scoreLabel: string,
+  scored: { userId: string; guessLabel: string; points: number }[],
+) {
+  if (scored.length === 0) return;
+  const ids = scored.map((s) => s.userId);
+  const recipients = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      nickname: users.nickname,
+      emailReminders: users.emailReminders,
+    })
+    .from(users)
+    .where(inArray(users.id, ids));
+  const byId = new Map(recipients.map((r) => [r.id, r]));
+  const rankingUrl = `${appUrl()}/ranking`;
+
+  for (const s of scored) {
+    const u = byId.get(s.userId);
+    if (!u || !u.emailReminders) continue;
+    const rank = await getMyGlobalRank(u.id);
+    const mail = resultEmail({
+      nickname: u.nickname,
+      matchLabel,
+      scoreLabel,
+      guessLabel: s.guessLabel,
+      points: s.points,
+      position: rank?.position ?? null,
+      rankingUrl,
+    });
+    await sendEmail({
+      to: u.email,
+      toName: u.nickname,
+      subject: mail.subject,
+      html: mail.html,
+      text: mail.text,
+    });
+  }
 }
 
 // --- Gestao admin (excluir usuario/liga, remover membro). Form actions. ---
