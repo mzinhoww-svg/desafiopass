@@ -13,20 +13,16 @@ import { getMyGlobalRank } from "@/lib/queries/ranking";
 import { sendEmail, appUrl } from "@/lib/email/client";
 import { resultEmail } from "@/lib/email/templates";
 import { pushToUsers } from "@/lib/push/notify";
+import { applySpecialResults } from "@/lib/results/special";
 
 // Propaga o vencedor (ou perdedor, p/ 3º lugar) para o confronto seguinte (#1).
+// Recebe vencedor/perdedor já resolvidos (pelo placar OU pela escolha do admin,
+// no caso de empate decidido nos pênaltis).
 async function propagateWinner(
   matchId: string,
-  homeCode: string,
-  awayCode: string,
-  homeScore: number,
-  awayScore: number,
+  winner: string | null,
+  loser: string | null,
 ) {
-  const winner =
-    homeScore > awayScore ? homeCode : awayScore > homeScore ? awayCode : null;
-  const loser =
-    homeScore > awayScore ? awayCode : awayScore > homeScore ? homeCode : null;
-
   for (const [placeholder, info] of Object.entries(advancement)) {
     if (info.fromMatch !== matchId) continue;
     const resolved = info.takes === "winner" ? winner : loser;
@@ -90,11 +86,18 @@ async function notifyResults(
  * avança o chaveamento, pontua todos os palpites e notifica. Idempotente
  * (recalcula e sobrescreve). Retorna quantos palpites foram pontuados, ou null
  * se a partida não existe.
+ *
+ * winnerCode (opcional): no mata-mata, um jogo pode terminar empatado no tempo
+ * normal e ser decidido nos pênaltis (ex.: 0x0 com o Canadá avançando). Quando o
+ * admin informa quem avançou, esse código tem prioridade sobre o placar para o
+ * chaveamento e para o campeão — sem alterar a pontuação dos palpites, que segue
+ * o placar do tempo normal.
  */
 export async function applyResult(
   matchId: string,
   homeScore: number,
   awayScore: number,
+  winnerCode?: string | null,
 ): Promise<{ scored: number } | null> {
   const match = (
     await db.select().from(matches).where(eq(matches.id, matchId)).limit(1)
@@ -108,7 +111,26 @@ export async function applyResult(
     .set({ homeScore, awayScore, status: "encerrada" })
     .where(eq(matches.id, matchId));
 
-  await propagateWinner(matchId, match.homeCode, match.awayCode, homeScore, awayScore);
+  // Vencedor para o chaveamento: a escolha do admin (penâltis) tem prioridade;
+  // na ausência, decide pelo placar (null em empate => nada avança).
+  const override =
+    winnerCode && (winnerCode === match.homeCode || winnerCode === match.awayCode)
+      ? winnerCode
+      : null;
+  const scoreWinner =
+    homeScore > awayScore
+      ? match.homeCode
+      : awayScore > homeScore
+        ? match.awayCode
+        : null;
+  const winner = override ?? scoreWinner;
+  const loser = winner
+    ? winner === match.homeCode
+      ? match.awayCode
+      : match.homeCode
+    : null;
+
+  await propagateWinner(matchId, winner, loser);
 
   const preds = await db
     .select()
@@ -132,6 +154,17 @@ export async function applyResult(
       guessLabel: `${p.homeGuess} x ${p.awayGuess}`,
       points: breakdown.final,
     });
+  }
+
+  // Campeão (palpites especiais #2): ao encerrar a FINAL, define o campeão pelo
+  // vencedor resolvido (placar ou escolha do admin nos pênaltis) e recalcula. O
+  // artilheiro fica a cargo da sincronização pela API (não sobrescreve aqui).
+  if (match.phase === "final" && winner) {
+    try {
+      await applySpecialResults({ champion: winner });
+    } catch (e) {
+      console.error("[results] falha ao definir campeão:", e);
+    }
   }
 
   const matchLabel = `${match.homeCode} x ${match.awayCode}`;

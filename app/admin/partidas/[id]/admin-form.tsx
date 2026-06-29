@@ -58,6 +58,26 @@ export function AdminForm({
         </div>
       </div>
 
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="winner" className="t-kicker text-indigo">
+          Quem avançou? (mata-mata)
+        </label>
+        <select
+          id="winner"
+          name="winner"
+          defaultValue=""
+          className="min-h-12 rounded-xl border border-black/10 bg-paper px-3 text-ink"
+        >
+          <option value="">Decidir pelo placar</option>
+          <option value={home.code}>{home.name} avançou</option>
+          <option value={away.code}>{away.name} avançou</option>
+        </select>
+        <p className="t-caption text-muted">
+          Use quando o jogo empatar e for decidido nos pênaltis (ex.: 0x0). A
+          pontuação dos palpites segue o placar do tempo normal.
+        </p>
+      </div>
+
       {state?.error ? (
         <p className="t-body text-center font-bold text-rose" role="alert">
           {state.error}

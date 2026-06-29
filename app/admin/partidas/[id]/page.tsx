@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { isAdmin } from "@/lib/auth-helpers";
 import { getMatchById } from "@/lib/queries/matches";
-import { teamOf } from "@/lib/teams";
+import { getTeamMap, resolveTeam } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
 import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -23,11 +23,19 @@ export default async function AdminMatchPage({
   const match = await getMatchById(id);
   if (!match) notFound();
 
-  const home = teamOf(match.homeCode);
-  const away = teamOf(match.awayCode);
-  const realTeams = seedTeams
-    .filter((t) => t.flagCode)
-    .map((t) => ({ code: t.code, name: t.name }));
+  const teamMap = await getTeamMap();
+  const home = resolveTeam(teamMap, match.homeCode);
+  const away = resolveTeam(teamMap, match.awayCode);
+  // Seleções para os seletores: as do banco (inclui as reais importadas) + as do
+  // seed, sem duplicar. Ordenadas por nome.
+  const teamOptions = [
+    ...new Map(
+      [
+        ...teamMap.values(),
+        ...seedTeams.filter((t) => t.flagCode),
+      ].map((t) => [t.code, { code: t.code, name: t.name }]),
+    ).values(),
+  ].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
@@ -64,7 +72,8 @@ export default async function AdminMatchPage({
             />
             <p className="t-caption mt-3 text-center text-muted">
               Ao salvar, os pontos de todos os palpites desta partida são
-              calculados e o vencedor avança no chaveamento automaticamente.
+              calculados e quem avançou segue no chaveamento. Em empate decidido
+              nos pênaltis, escolha quem avançou no seletor acima.
             </p>
           </Card>
         </div>
@@ -82,7 +91,7 @@ export default async function AdminMatchPage({
               awayCode={match.awayCode}
               homeName={home.name}
               awayName={away.name}
-              teams={realTeams}
+              teams={teamOptions}
             />
             <p className="t-caption mt-3 text-center text-muted">
               Ajuste data/hora (o prazo de palpite acompanha), estádio e as
