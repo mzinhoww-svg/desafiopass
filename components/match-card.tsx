@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Flag } from "@/components/flag";
 import { Countdown } from "@/components/countdown";
 import { Pill } from "@/components/ui/pill";
-import { teamOf } from "@/lib/teams";
+import type { Team } from "@/lib/data/copa2026";
 import { phaseBadge } from "@/lib/phases";
 import { CRITERION_LABEL } from "@/lib/scoring-labels";
 import { formatBrasilia, isPredictionOpen, isLive } from "@/lib/utils/dates";
@@ -32,12 +32,14 @@ function Num({ value, tone }: { value: number | null; tone: "guess" | "result" |
 export function MatchCard({
   match,
   prediction,
+  home,
+  away,
 }: {
   match: MatchRow;
   prediction: PredictionRow | null;
+  home: Team;
+  away: Team;
 }) {
-  const home = teamOf(match.homeCode);
-  const away = teamOf(match.awayCode);
   const isBrazil = match.homeCode === "BRA" || match.awayCode === "BRA";
   const closed = match.status === "encerrada";
   const open =

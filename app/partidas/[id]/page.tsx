@@ -15,7 +15,7 @@ import {
   getMatchPredictionsWithUsers,
 } from "@/lib/queries/matches";
 import { getCurrentUser } from "@/lib/auth-helpers";
-import { teamOf } from "@/lib/teams";
+import { getTeamMap, resolveTeam } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
 import { CRITERION_LABEL } from "@/lib/scoring-labels";
 import { formatBrasilia, isPredictionOpen } from "@/lib/utils/dates";
@@ -32,8 +32,9 @@ export default async function PartidaPage({
 
   const user = await getCurrentUser();
   const prediction = user ? await getUserPrediction(user.id, id) : null;
-  const home = teamOf(match.homeCode);
-  const away = teamOf(match.awayCode);
+  const teamMap = await getTeamMap();
+  const home = resolveTeam(teamMap, match.homeCode);
+  const away = resolveTeam(teamMap, match.awayCode);
   const isBrazil = match.homeCode === "BRA" || match.awayCode === "BRA";
   const closed = match.status === "encerrada";
   const open =

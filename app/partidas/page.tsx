@@ -11,7 +11,7 @@ import { getAllMatches, getUserPredictionMap } from "@/lib/queries/matches";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { PHASE_ORDER, PHASE_LABEL } from "@/lib/phases";
 import { teams as seedTeams } from "@/lib/data/copa2026";
-import { teamOf } from "@/lib/teams";
+import { teamOf, getTeamMap, resolveTeam } from "@/lib/teams";
 import { formatBrasilia } from "@/lib/utils/dates";
 import {
   getSpecialPredictions,
@@ -65,9 +65,10 @@ export default async function PartidasPage({
 }
 
 async function JogosTab({ userId }: { userId: string | null }) {
-  const [all, predMap] = await Promise.all([
+  const [all, predMap, teamMap] = await Promise.all([
     getAllMatches(),
     getUserPredictionMap(userId),
+    getTeamMap(),
   ]);
   const groups = PHASE_ORDER.map((phase) => ({
     phase,
@@ -94,6 +95,8 @@ async function JogosTab({ userId }: { userId: string | null }) {
                 key={m.id}
                 match={m}
                 prediction={predMap.get(m.id) ?? null}
+                home={resolveTeam(teamMap, m.homeCode)}
+                away={resolveTeam(teamMap, m.awayCode)}
               />
             ))}
           </div>

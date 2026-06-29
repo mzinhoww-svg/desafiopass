@@ -1,16 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { matches, leagues, leagueMembers, users } from "@/drizzle/schema";
+import { matches, leagues, leagueMembers, users, teams } from "@/drizzle/schema";
 import { isAdmin, getCurrentUser } from "@/lib/auth-helpers";
 import { adminResultSchema, updateMatchSchema } from "@/lib/validations";
-import { teams as seedTeams } from "@/lib/data/copa2026";
 import { applyResult } from "@/lib/results/apply";
 import { syncResults } from "@/lib/results/sync";
-
-const allTeamCodes = new Set(seedTeams.map((t) => t.code));
+import { importKnockoutBracket } from "@/lib/results/import";
 
 /*
  * Admin encerra a partida e pontua (Task 2.4). Delega para applyResult (lógica
@@ -102,7 +100,13 @@ export async function updateMatch(
   if (!parsed.success) return { error: "Dados da partida inválidos." };
 
   const { matchId, kickoffLocal, stadium, homeCode, awayCode } = parsed.data;
-  if (!allTeamCodes.has(homeCode) || !allTeamCodes.has(awayCode)) {
+  // Valida as seleções contra a tabela teams (inclui as reais importadas da API).
+  const valid = await db
+    .select({ code: teams.code })
+    .from(teams)
+    .where(inArray(teams.code, [homeCode, awayCode]));
+  const validCodes = new Set(valid.map((t) => t.code));
+  if (!validCodes.has(homeCode) || !validCodes.has(awayCode)) {
     return { error: "Seleção inválida." };
   }
   // datetime-local nao tem fuso; interpretamos como horario de Brasilia (UTC-3).
@@ -118,6 +122,43 @@ export async function updateMatch(
   revalidatePath(`/partidas/${matchId}`);
   revalidatePath("/partidas");
   return { ok: true };
+}
+
+/*
+ * Importa o mata-mata REAL da API (#A): substitui o chaveamento fictício pelos
+ * confrontos reais da Copa (seleções, datas, estádios e resultados). Destrutivo —
+ * remove partidas e palpites que não vierem da API. Acionável só pelo admin.
+ */
+export type ImportState = { error?: string; ok?: boolean; message?: string };
+
+export async function importBracketAction(
+  _prev: ImportState,
+  _formData: FormData,
+): Promise<ImportState> {
+  void _prev;
+  void _formData;
+  if (!(await isAdmin())) return { error: "Acesso restrito a admin." };
+  try {
+    const r = await importKnockoutBracket();
+    revalidatePath("/admin");
+    revalidatePath("/partidas");
+    revalidatePath("/");
+    revalidatePath("/ranking");
+    if (r.skipped) return { error: r.reason };
+    const phases = Object.entries(r.byPhase)
+      .map(([p, n]) => `${n} ${p}`)
+      .join(", ");
+    return {
+      ok: true,
+      message:
+        `${r.matches} jogo(s) reais importado(s) (${phases}); ` +
+        `${r.teams} seleções; ${r.finished} já encerrado(s); ` +
+        `${r.removed} partida(s) fictícia(s) removida(s).`,
+    };
+  } catch (e) {
+    console.error("[admin] import falhou:", e);
+    return { error: "Falha ao importar. Veja os logs." };
+  }
 }
 
 // --- Gestao admin (excluir usuario/liga, remover membro). Form actions. ---

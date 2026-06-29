@@ -5,6 +5,7 @@ import { LinkButton } from "@/components/ui/link-button";
 import { MatchCard } from "@/components/match-card";
 import { FadeIn } from "@/components/motion/fade-in";
 import { getAllMatches, getUserPredictionMap } from "@/lib/queries/matches";
+import { getTeamMap, resolveTeam } from "@/lib/teams";
 import { getCurrentUser } from "@/lib/auth-helpers";
 
 // Passo a passo da proposta, exibido na home para quem ainda nao conhece o bolao.
@@ -18,9 +19,10 @@ const STEPS = [
 // (agendados futuros), com a navegacao principal na tab bar (layout).
 export default async function Home() {
   const user = await getCurrentUser();
-  const [all, predMap] = await Promise.all([
+  const [all, predMap, teamMap] = await Promise.all([
     getAllMatches(),
     getUserPredictionMap(user?.id ?? null),
+    getTeamMap(),
   ]);
   const now = Date.now();
   const openMatches = all.filter(
@@ -94,6 +96,8 @@ export default async function Home() {
                   key={m.id}
                   match={m}
                   prediction={predMap.get(m.id) ?? null}
+                  home={resolveTeam(teamMap, m.homeCode)}
+                  away={resolveTeam(teamMap, m.awayCode)}
                 />
               ))}
             </div>

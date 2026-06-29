@@ -10,8 +10,13 @@
 //   FOOTBALL_DATA_SEASON         ano da temporada (opcional)
 
 export interface Fixture {
+  apiId: number | null; // id da partida na API (para id estável WC-<id>)
   homeTla: string;
   awayTla: string;
+  homeName: string; // nome oficial da seleção (API)
+  awayName: string;
+  homeCrest: string | null; // URL da bandeira (API), usado quando não há SVG local
+  awayCrest: string | null;
   status: string; // SCHEDULED | TIMED | IN_PLAY | PAUSED | FINISHED | ...
   stage: string; // GROUP_STAGE | LAST_32 | LAST_16 | QUARTER_FINALS | SEMI_FINALS | THIRD_PLACE | FINAL
   homeScore: number | null;
@@ -43,12 +48,13 @@ export async function fetchFixtures(): Promise<Fixture[]> {
     }
     const data = (await res.json()) as {
       matches?: Array<{
+        id?: number | null;
         status: string;
         stage?: string | null;
         utcDate?: string | null;
         venue?: string | null;
-        homeTeam?: { tla?: string | null };
-        awayTeam?: { tla?: string | null };
+        homeTeam?: { tla?: string | null; name?: string | null; crest?: string | null };
+        awayTeam?: { tla?: string | null; name?: string | null; crest?: string | null };
         score?: { fullTime?: { home: number | null; away: number | null } };
       }>;
     };
@@ -58,8 +64,13 @@ export async function fetchFixtures(): Promise<Fixture[]> {
       const awayTla = m.awayTeam?.tla ?? "";
       if (!homeTla || !awayTla) continue;
       out.push({
+        apiId: m.id ?? null,
         homeTla: homeTla.toUpperCase(),
         awayTla: awayTla.toUpperCase(),
+        homeName: m.homeTeam?.name ?? homeTla.toUpperCase(),
+        awayName: m.awayTeam?.name ?? awayTla.toUpperCase(),
+        homeCrest: m.homeTeam?.crest ?? null,
+        awayCrest: m.awayTeam?.crest ?? null,
         status: m.status,
         stage: m.stage ?? "",
         homeScore: m.score?.fullTime?.home ?? null,
