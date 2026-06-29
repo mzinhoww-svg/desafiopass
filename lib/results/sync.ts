@@ -48,9 +48,22 @@ export async function syncResults(): Promise<SyncSummary> {
   let live = 0;
   let rescheduled = 0;
 
+  // Diagnóstico: total e amostra dos códigos retornados pela API vs os nossos.
+  console.log(
+    "[sync] fixtures=%d. amostra API: %s | nossos pares: %s",
+    fixtures.length,
+    fixtures.slice(0, 6).map((f) => `${f.homeTla}-${f.awayTla}(${f.status})`).join(", "),
+    [...byPair.keys()].slice(0, 6).join(", "),
+  );
+
   for (const f of fixtures) {
     const m = byPair.get(pairKey(f.homeTla, f.awayTla));
-    if (!m) continue;
+    if (!m) {
+      if (f.status === "FINISHED") {
+        console.log("[sync] sem match p/ FINISHED %s-%s", f.homeTla, f.awayTla);
+      }
+      continue;
+    }
 
     if (f.status === "FINISHED" && f.homeScore != null && f.awayScore != null) {
       const s = oriented(m, f);

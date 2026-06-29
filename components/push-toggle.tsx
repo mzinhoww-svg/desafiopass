@@ -18,7 +18,7 @@ function urlBase64ToUint8Array(base64: string): BufferSource {
   return out;
 }
 
-type Status = "loading" | "unsupported" | "off" | "on" | "denied";
+type Status = "loading" | "unsupported" | "ios" | "off" | "on" | "denied";
 
 export function PushToggle() {
   const [status, setStatus] = useState<Status>("loading");
@@ -26,13 +26,20 @@ export function PushToggle() {
   const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
   useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      !("serviceWorker" in navigator) ||
-      !("PushManager" in window) ||
-      !vapid
-    ) {
+    if (typeof window === "undefined" || !vapid) {
       setStatus("unsupported");
+      return;
+    }
+    const isIOS =
+      /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      // iPadOS se passa por Mac; detecta pelo touch.
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const standalone =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      // No iPhone, push só funciona no PWA instalado (tela inicial).
+      setStatus(isIOS && !standalone ? "ios" : "unsupported");
       return;
     }
     if (Notification.permission === "denied") {
@@ -92,6 +99,15 @@ export function PushToggle() {
   }
 
   if (status === "loading" || status === "unsupported") return null;
+
+  if (status === "ios") {
+    return (
+      <p className="t-caption mt-4 text-center text-muted">
+        Para receber notificações no iPhone, toque em Compartilhar →{" "}
+        <strong>Adicionar à Tela de Início</strong> e abra o app por lá.
+      </p>
+    );
+  }
 
   if (status === "denied") {
     return (
