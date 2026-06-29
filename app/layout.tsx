@@ -19,25 +19,41 @@ const jakarta = Plus_Jakarta_Sans({
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
+  const title = tr(locale, "Bolão Pass · Copa 2026", "Polla Pass · Copa 2026");
+  const description = tr(
+    locale,
+    "Bolão de palpites da Copa do Mundo 2026, fase mata-mata. Palpite os placares, acumule pontos e fique no topo do ranking.",
+    "Polla de pronósticos del Mundial 2026, fase eliminatoria. Pronostica los marcadores, suma puntos y llega a lo más alto del ranking.",
+  );
+  const siteName = tr(locale, "Bolão Pass", "Polla Pass");
   return {
-    title: tr(
-      locale,
-      "Bolão Pass · Copa 2026",
-      "Polla Pass · Copa 2026",
-    ),
-    description: tr(
-      locale,
-      "Bolão de palpites da Copa do Mundo 2026, fase mata-mata. Palpite os placares, acumule pontos e fique no topo do ranking.",
-      "Polla de pronósticos del Mundial 2026, fase eliminatoria. Pronostica los marcadores, suma puntos y llega a lo más alto del ranking.",
-    ),
+    metadataBase: new URL("https://desafiopass.com"),
+    title,
+    description,
     manifest: "/manifest.webmanifest",
     appleWebApp: {
       capable: true,
-      title: tr(locale, "Bolão Pass", "Polla Pass"),
+      title: siteName,
       statusBarStyle: "black-translucent",
     },
     icons: {
       apple: "/apple-touch-icon.png",
+    },
+    // Preview de link (WhatsApp/redes): imagem própria com a cauda + marca.
+    openGraph: {
+      type: "website",
+      url: "/",
+      siteName,
+      title,
+      description,
+      locale: locale === "es" ? "es_CL" : "pt_BR",
+      images: [{ url: "/og.png", width: 1200, height: 630, alt: siteName }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og.png"],
     },
   };
 }
