@@ -67,7 +67,8 @@ export async function syncResultsAction(
     return {
       ok: true,
       message:
-        `${r.finished} jogo(s) encerrado(s), ${r.live} ao vivo.` +
+        `${r.finished} jogo(s) encerrado(s), ${r.live} ao vivo, ` +
+        `${r.rescheduled} horário(s) ajustado(s).` +
         (r.specialApplied ? " Campeão e artilheiro definidos." : ""),
     };
   } catch (e) {
