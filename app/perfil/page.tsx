@@ -5,11 +5,12 @@ import { db } from "@/lib/db";
 import { users } from "@/drizzle/schema";
 import { getMyRank } from "@/lib/queries/ranking";
 import { teams as seedTeams } from "@/lib/data/copa2026";
-import { logout } from "@/app/actions/profile";
+import { logout, deleteOwnAccount } from "@/app/actions/profile";
 import { Header } from "@/components/header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
+import { ConfirmButton } from "@/components/confirm-button";
 import { ProfileForm } from "./profile-form";
 
 // /perfil: Server Component. Apelido, time do coracao e total de pontos/posicao
@@ -58,6 +59,10 @@ export default async function PerfilPage() {
           </Card>
         </div>
 
+        <LinkButton href="/meus-palpites" variant="secondary" className="mt-4 w-full">
+          Meus palpites
+        </LinkButton>
+
         <LinkButton href="/partidas?aba=especiais" variant="secondary" className="mt-4 w-full">
           Palpites especiais (campeão e artilheiro)
         </LinkButton>
@@ -72,6 +77,15 @@ export default async function PerfilPage() {
           <Button type="submit" variant="secondary" className="w-full">
             Sair da conta
           </Button>
+        </form>
+
+        <form action={deleteOwnAccount} className="mt-8">
+          <ConfirmButton
+            message="Tem certeza? Isso apaga sua conta, seus palpites e as ligas que você criou. Não dá para desfazer."
+            className="w-full rounded-xl py-2 text-center text-sm font-bold text-rose"
+          >
+            Excluir minha conta
+          </ConfirmButton>
         </form>
       </main>
     </>

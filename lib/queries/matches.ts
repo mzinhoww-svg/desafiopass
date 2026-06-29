@@ -55,6 +55,47 @@ export interface CommunityPrediction {
   points: number;
 }
 
+// Historico de palpites do usuario (#4): palpite + dados da partida + pontos,
+// ordenado por data do jogo. Usado na tela "Meus palpites".
+export interface UserPredictionRow {
+  matchId: string;
+  phase: string;
+  homeCode: string;
+  awayCode: string;
+  kickoffAt: Date;
+  status: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  homeGuess: number;
+  awayGuess: number;
+  points: number;
+  criterion: string | null;
+}
+
+export async function getUserPredictionsWithMatches(
+  userId: string,
+): Promise<UserPredictionRow[]> {
+  return db
+    .select({
+      matchId: matches.id,
+      phase: matches.phase,
+      homeCode: matches.homeCode,
+      awayCode: matches.awayCode,
+      kickoffAt: matches.kickoffAt,
+      status: matches.status,
+      homeScore: matches.homeScore,
+      awayScore: matches.awayScore,
+      homeGuess: predictions.homeGuess,
+      awayGuess: predictions.awayGuess,
+      points: predictions.points,
+      criterion: predictions.criterion,
+    })
+    .from(predictions)
+    .innerJoin(matches, eq(matches.id, predictions.matchId))
+    .where(eq(predictions.userId, userId))
+    .orderBy(asc(matches.kickoffAt));
+}
+
 // Quantos jogos ainda abertos (agendados, antes do apito) o usuario NAO palpitou.
 // Base do indicador de palpites pendentes (#3). Uma contagem leve.
 export async function getPendingPredictionCount(userId: string): Promise<number> {

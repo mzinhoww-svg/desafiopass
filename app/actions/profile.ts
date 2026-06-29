@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { and, eq, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { users } from "@/drizzle/schema";
+import { users, leagues } from "@/drizzle/schema";
 import { signOut } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { profileSchema } from "@/lib/validations";
@@ -73,6 +73,19 @@ export async function updateProfile(
 }
 
 export async function logout() {
+  await signOut({ redirectTo: "/" });
+}
+
+/*
+ * Exclusao da propria conta (#3, LGPD). Remove as ligas que o usuario criou
+ * (cascata nos membros) e depois o usuario (cascata em predictions, league_members
+ * e special_predictions). Encerra a sessao e volta para a home.
+ */
+export async function deleteOwnAccount() {
+  const current = await getCurrentUser();
+  if (!current) return;
+  await db.delete(leagues).where(eq(leagues.ownerId, current.id));
+  await db.delete(users).where(eq(users.id, current.id));
   await signOut({ redirectTo: "/" });
 }
 
