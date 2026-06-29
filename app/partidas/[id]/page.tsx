@@ -7,6 +7,7 @@ import { Pill } from "@/components/ui/pill";
 import { LinkButton } from "@/components/ui/link-button";
 import { ScoreInput } from "@/components/score-input";
 import { MatchTabs } from "@/components/match-tabs";
+import { CommunityStats } from "@/components/community-stats";
 import { PredictForm } from "./predict-form";
 import {
   getMatchById,
@@ -153,7 +154,15 @@ export default async function PartidaPage({
   );
 
   const comunidadeBlock = (
-    <Card>
+    <>
+      {reveal && community.length > 0 ? (
+        <CommunityStats
+          predictions={community}
+          homeCode={match.homeCode}
+          awayCode={match.awayCode}
+        />
+      ) : null}
+      <Card>
       {!reveal ? (
         <p className="t-body text-center text-muted">
           Faça seu palpite para ver os palpites da comunidade.
@@ -188,7 +197,8 @@ export default async function PartidaPage({
           })}
         </div>
       )}
-    </Card>
+      </Card>
+    </>
   );
 
   return (
