@@ -47,14 +47,16 @@ export function MatchCard({
   // Pendente: aberto e ainda sem palpite -> destaque para o usuario nao esquecer.
   const pending = open && !prediction;
 
-  // Numeros entre as bandeiras: placar real (encerrado) ou palpite (antes do jogo).
-  const tone: "guess" | "result" | "empty" = closed
-    ? "result"
-    : prediction
-      ? "guess"
-      : "empty";
-  const left = closed ? match.homeScore : (prediction?.homeGuess ?? null);
-  const right = closed ? match.awayScore : (prediction?.awayGuess ?? null);
+  // Placar ao vivo: jogo em andamento com placar parcial vindo da sincronizacao (#6).
+  const showLiveScore =
+    live && match.homeScore != null && match.awayScore != null;
+  // Numeros entre as bandeiras: placar real (encerrado/ao vivo) ou palpite (antes).
+  const tone: "guess" | "result" | "empty" =
+    closed || showLiveScore ? "result" : prediction ? "guess" : "empty";
+  const left =
+    closed || showLiveScore ? match.homeScore : (prediction?.homeGuess ?? null);
+  const right =
+    closed || showLiveScore ? match.awayScore : (prediction?.awayGuess ?? null);
 
   return (
     <Link
