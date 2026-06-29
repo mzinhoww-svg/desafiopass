@@ -1,0 +1,110 @@
+"use client";
+
+import { useActionState } from "react";
+import { updateMatch, type AdminState } from "@/app/actions/admin";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+const initial: AdminState = {};
+
+export function EditMatchForm({
+  matchId,
+  kickoffLocal,
+  stadium,
+  homeCode,
+  awayCode,
+  homeName,
+  awayName,
+  teams,
+}: {
+  matchId: string;
+  kickoffLocal: string;
+  stadium: string;
+  homeCode: string;
+  awayCode: string;
+  homeName: string;
+  awayName: string;
+  teams: { code: string; name: string }[];
+}) {
+  const [state, formAction, pending] = useActionState(updateMatch, initial);
+
+  // Garante que o valor atual (mesmo placeholder de avanço) apareça no select.
+  const withCurrent = (code: string, name: string) =>
+    teams.some((t) => t.code === code)
+      ? teams
+      : [{ code, name }, ...teams];
+
+  return (
+    <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="matchId" value={matchId} />
+
+      <Input
+        id="kickoffLocal"
+        name="kickoffLocal"
+        type="datetime-local"
+        label="Data e hora (Brasília)"
+        defaultValue={kickoffLocal}
+        required
+      />
+
+      <Input
+        id="stadium"
+        name="stadium"
+        label="Estádio"
+        defaultValue={stadium}
+        placeholder="A confirmar"
+      />
+
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="homeCode" className="t-kicker text-indigo">
+          Mandante
+        </label>
+        <select
+          id="homeCode"
+          name="homeCode"
+          defaultValue={homeCode}
+          className="min-h-12 rounded-xl border border-black/10 bg-paper px-3 text-ink"
+        >
+          {withCurrent(homeCode, homeName).map((t) => (
+            <option key={t.code} value={t.code}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="awayCode" className="t-kicker text-indigo">
+          Visitante
+        </label>
+        <select
+          id="awayCode"
+          name="awayCode"
+          defaultValue={awayCode}
+          className="min-h-12 rounded-xl border border-black/10 bg-paper px-3 text-ink"
+        >
+          {withCurrent(awayCode, awayName).map((t) => (
+            <option key={t.code} value={t.code}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {state.error ? (
+        <p className="t-body font-bold text-rose" role="alert">
+          {state.error}
+        </p>
+      ) : null}
+      {state.ok ? (
+        <p className="t-body font-bold text-ink" role="status">
+          Partida atualizada.
+        </p>
+      ) : null}
+
+      <Button type="submit" variant="secondary" disabled={pending}>
+        {pending ? "Salvando" : "Salvar dados da partida"}
+      </Button>
+    </form>
+  );
+}

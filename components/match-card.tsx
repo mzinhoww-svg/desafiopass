@@ -5,7 +5,7 @@ import { Pill } from "@/components/ui/pill";
 import { teamOf } from "@/lib/teams";
 import { phaseBadge } from "@/lib/phases";
 import { CRITERION_LABEL } from "@/lib/scoring-labels";
-import { formatBrasilia, isPredictionOpen } from "@/lib/utils/dates";
+import { formatBrasilia, isPredictionOpen, isLive } from "@/lib/utils/dates";
 import type { Criterion, Phase } from "@/lib/scoring";
 import type { MatchRow, PredictionRow } from "@/lib/queries/matches";
 
@@ -42,6 +42,8 @@ export function MatchCard({
   const closed = match.status === "encerrada";
   const open =
     match.status === "agendada" && isPredictionOpen(new Date(match.kickoffAt));
+  // Em andamento: apito passou, ainda nao encerrado (#5).
+  const live = isLive(new Date(match.kickoffAt), match.status);
   // Pendente: aberto e ainda sem palpite -> destaque para o usuario nao esquecer.
   const pending = open && !prediction;
 
@@ -63,7 +65,14 @@ export function MatchCard({
     >
       <div className="flex items-center justify-between gap-2">
         <Pill variant="neutral">{phaseBadge(match.phase as Phase)}</Pill>
-        {isBrazil ? <Pill variant="rose">x2 Brasil</Pill> : null}
+        {live ? (
+          <span className="flex items-center gap-1.5 rounded-full bg-rose px-2.5 py-1 text-xs font-bold text-white">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+            Ao vivo
+          </span>
+        ) : isBrazil ? (
+          <Pill variant="rose">x2 Brasil</Pill>
+        ) : null}
       </div>
 
       <div className="mt-3 flex items-center justify-center gap-2.5">
@@ -97,7 +106,9 @@ export function MatchCard({
                 ? "Seu palpite salvo"
                 : open
                   ? "Palpite pendente"
-                  : "Prazo encerrado"}
+                  : live
+                    ? "Em andamento"
+                    : "Prazo encerrado"}
             </span>
             <Pill variant="neutral">
               {open ? (
@@ -105,6 +116,8 @@ export function MatchCard({
                   kickoffAt={new Date(match.kickoffAt).toISOString()}
                   fallback={formatBrasilia(new Date(match.kickoffAt))}
                 />
+              ) : live ? (
+                "Aguardando resultado"
               ) : (
                 "Prazo encerrado"
               )}
