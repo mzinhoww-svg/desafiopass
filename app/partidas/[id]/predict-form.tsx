@@ -47,7 +47,7 @@ export function PredictForm({
           )}
         </p>
       ) : null}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending
           ? t("Salvando", "Guardando")
           : t("Salvar palpite", "Guardar pronóstico")}

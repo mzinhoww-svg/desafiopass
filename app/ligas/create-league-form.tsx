@@ -25,7 +25,7 @@ export function CreateLeagueForm() {
           {state.error}
         </p>
       ) : null}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending ? t("Criando", "Creando") : t("Criar nova liga", "Crear nueva liga")}
       </Button>
     </form>

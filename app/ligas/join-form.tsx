@@ -25,7 +25,7 @@ export function JoinForm() {
           {state.error}
         </p>
       ) : null}
-      <Button type="submit" variant="secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" loading={pending}>
         {pending ? t("Entrando", "Uniéndote") : t("Entrar no grupo", "Unirse al grupo")}
       </Button>
     </form>

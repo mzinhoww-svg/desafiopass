@@ -64,7 +64,7 @@ export function LoginForm({ registered }: { registered: boolean }) {
             {error}
           </p>
         ) : null}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" loading={pending}>
           {pending ? t("Entrando", "Ingresando") : t("Entrar", "Ingresar")}
         </Button>
       </form>

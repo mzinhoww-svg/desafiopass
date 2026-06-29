@@ -63,7 +63,7 @@ export function SpecialResultForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending
           ? t("Salvando", "Guardando")
           : t("Salvar e recalcular", "Guardar y recalcular")}

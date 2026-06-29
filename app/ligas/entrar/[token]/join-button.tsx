@@ -18,7 +18,7 @@ export function JoinButton({ token }: { token: string }) {
           {state.error}
         </p>
       ) : null}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending ? t("Entrando", "Uniéndote") : t("Entrar na liga", "Unirse a la liga")}
       </Button>
     </form>

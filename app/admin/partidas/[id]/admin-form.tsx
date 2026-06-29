@@ -100,7 +100,7 @@ export function AdminForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending
           ? t("Salvando", "Guardando")
           : t("Salvar e calcular pontos", "Guardar y calcular puntos")}

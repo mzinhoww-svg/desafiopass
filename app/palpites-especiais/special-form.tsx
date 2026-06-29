@@ -114,7 +114,7 @@ export function SpecialForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" loading={pending}>
         {pending
           ? t("Salvando", "Guardando")
           : t("Salvar palpites especiais", "Guardar pronósticos especiales")}
