@@ -7,6 +7,7 @@ import {
 } from "@/app/actions/special";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { topScorerCandidates } from "@/lib/data/players";
 
 const initial: SpecialState = {};
 
@@ -51,7 +52,14 @@ export function SpecialForm({
         label="Artilheiro"
         placeholder="Nome do jogador"
         defaultValue={topScorer ?? ""}
+        list="top-scorer-options"
+        autoComplete="off"
       />
+      <datalist id="top-scorer-options">
+        {topScorerCandidates.map((p) => (
+          <option key={p} value={p} />
+        ))}
+      </datalist>
 
       {state.error ? (
         <p className="t-body font-bold text-rose" role="alert">

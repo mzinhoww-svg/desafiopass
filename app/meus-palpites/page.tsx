@@ -12,13 +12,29 @@ import { CRITERION_LABEL } from "@/lib/scoring-labels";
 import { formatBrasilia } from "@/lib/utils/dates";
 import type { Phase, Criterion } from "@/lib/scoring";
 
+function Stat({ value, label }: { value: string | number; label: string }) {
+  return (
+    <div className="rounded-xl border border-black/10 bg-paper p-3 text-center">
+      <p className="text-xl font-extrabold text-indigo">{value}</p>
+      <p className="t-caption text-muted">{label}</p>
+    </div>
+  );
+}
+
 // /meus-palpites (#4): histórico dos palpites do usuário, com placar real e pontos.
 export default async function MeusPalpitesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   const rows = await getUserPredictionsWithMatches(user.id);
-  const total = rows.reduce((s, r) => s + (r.status === "encerrada" ? r.points : 0), 0);
+  const closedRows = rows.filter((r) => r.status === "encerrada");
+  const total = closedRows.reduce((s, r) => s + r.points, 0);
+  // Estatisticas pessoais (#5).
+  const exactCount = closedRows.filter((r) => r.criterion === "placar_exato").length;
+  const hits = closedRows.filter((r) => r.points > 0).length;
+  const accuracy =
+    closedRows.length > 0 ? Math.round((hits / closedRows.length) * 100) : 0;
+  const best = closedRows.reduce((m, r) => Math.max(m, r.points), 0);
 
   return (
     <>
@@ -37,7 +53,7 @@ export default async function MeusPalpitesPage() {
         ) : (
           <>
             <div
-              className="mb-4 flex items-center justify-between rounded-2xl px-4 py-3 text-white"
+              className="mb-3 flex items-center justify-between rounded-2xl px-4 py-3 text-white"
               style={{ background: "var(--grad-deep)" }}
             >
               <span className="t-body font-bold">Total de pontos</span>
@@ -45,6 +61,14 @@ export default async function MeusPalpitesPage() {
                 {total.toLocaleString("pt-BR")}
               </span>
             </div>
+
+            {closedRows.length > 0 ? (
+              <div className="mb-4 grid grid-cols-3 gap-2">
+                <Stat value={`${accuracy}%`} label="Aproveitamento" />
+                <Stat value={exactCount} label="Placares exatos" />
+                <Stat value={best} label="Melhor jogo" />
+              </div>
+            ) : null}
 
             <div className="flex flex-col gap-2">
               {rows.map((r) => {
