@@ -16,6 +16,7 @@ import { sendEmail, appUrl } from "@/lib/email/client";
 import { phaseOpenEmail } from "@/lib/email/templates";
 import { phaseLabel } from "@/lib/phases";
 import { formatBrasilia } from "@/lib/utils/dates";
+import { inviteToken } from "@/lib/utils/slug";
 import type { Phase } from "@/lib/scoring";
 
 /*
@@ -367,6 +368,76 @@ export async function announceOitavasAction(
     console.error("[admin] avisar oitavas falhou:", e);
     return {
       error: tr(adminLocale, "Falha ao enviar avisos. Veja os logs.", "Error al enviar avisos. Revisa los logs."),
+    };
+  }
+}
+
+/*
+ * Cria (uma vez) a liga da reta final e devolve o link de convite para divulgar.
+ * Idempotente: se já existir a liga com esse nome do admin, devolve o link dela.
+ */
+const RETA_FINAL_NAME = "Reta Final · Oitavas à Final";
+export type RetaLeagueState = {
+  error?: string;
+  ok?: boolean;
+  url?: string;
+  name?: string;
+};
+
+export async function createRetaFinalLeagueAction(
+  _prev: RetaLeagueState,
+  _formData: FormData,
+): Promise<RetaLeagueState> {
+  void _prev;
+  void _formData;
+  const locale = await getLocale();
+  const user = await getCurrentUser();
+  if (user?.role !== "admin")
+    return {
+      error: tr(locale, "Acesso restrito a admin.", "Acceso restringido a administradores."),
+    };
+  try {
+    const existing = await db
+      .select({ token: leagues.inviteToken })
+      .from(leagues)
+      .where(and(eq(leagues.ownerId, user.id), eq(leagues.name, RETA_FINAL_NAME)))
+      .limit(1);
+    let token = existing[0]?.token;
+    if (!token) {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const inserted = await db
+            .insert(leagues)
+            .values({
+              name: RETA_FINAL_NAME,
+              ownerId: user.id,
+              inviteToken: inviteToken(),
+            })
+            .returning({ id: leagues.id, inviteToken: leagues.inviteToken });
+          const row = inserted[0];
+          if (!row) continue;
+          token = row.inviteToken;
+          await db
+            .insert(leagueMembers)
+            .values({ leagueId: row.id, userId: user.id })
+            .onConflictDoNothing();
+          break;
+        } catch (e) {
+          if ((e as { code?: string }).code === "23505" && attempt < 2) continue;
+          throw e;
+        }
+      }
+    }
+    revalidatePath("/ligas");
+    return {
+      ok: true,
+      name: RETA_FINAL_NAME,
+      url: `${appUrl()}/ligas/entrar/${token}`,
+    };
+  } catch (e) {
+    console.error("[admin] criar liga reta final falhou:", e);
+    return {
+      error: tr(locale, "Falha ao criar a liga. Veja os logs.", "Error al crear la liga. Revisa los logs."),
     };
   }
 }
