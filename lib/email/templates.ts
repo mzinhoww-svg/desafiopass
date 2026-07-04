@@ -281,6 +281,74 @@ Ranking: ${args.rankingUrl}`,
   };
 }
 
+// --- Template: aviso de fase aberta (ex.: oitavas) ---
+export function phaseOpenEmail(args: {
+  nickname: string;
+  phaseLabel: string;
+  games: Array<{ label: string; when: string }>;
+  matchesUrl: string;
+  locale?: Locale;
+  prizeTeaser?: boolean;
+}): { subject: string; html: string; text: string } {
+  const locale = args.locale ?? "pt";
+  const subject = L(
+    locale,
+    `As ${args.phaseLabel} estão abertas! · Bolão Pass`,
+    `¡${args.phaseLabel} ya está abierta! · Polla Pass`,
+  );
+  const rows = args.games
+    .map(
+      (g) => `
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid #ECECF3;font-family:${FONT};font-size:15px;font-weight:700;color:${INDIGO};">${escapeHtml(g.label)}</td>
+        <td style="padding:12px 0;border-bottom:1px solid #ECECF3;font-family:${FONT};font-size:13px;color:${MUTED};text-align:right;">${escapeHtml(g.when)}</td>
+      </tr>`,
+    )
+    .join("");
+  const prize = args.prizeTeaser
+    ? paragraph(
+        `<span style="color:${ROSE};font-weight:800;">${L(locale, "🎁 Tem prêmio surpresa nesta reta final.", "🎁 Hay un premio sorpresa en esta recta final.")}</span> ${L(locale, "Palpite todos os jogos até a final e concorra.", "Pronostica todos los partidos hasta la final y participa.")}`,
+      )
+    : "";
+  const body = `
+    ${heading(L(locale, `${args.phaseLabel} abertas!`, `¡${args.phaseLabel}!`))}
+    ${paragraph(L(locale, `Olá, <strong>${escapeHtml(args.nickname)}</strong>. Começou o mata-mata da reta final — já dá para palpitar:`, `Hola, <strong>${escapeHtml(args.nickname)}</strong>. Empezó la fase decisiva — ya puedes pronosticar:`))}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 4px;">${rows}</table>
+    ${prize}
+    ${button(args.matchesUrl, L(locale, "Fazer meus palpites", "Hacer mis pronósticos"))}
+    ${paragraph(`<span style="color:${MUTED};font-size:13px;">${L(locale, "O prazo de cada jogo fecha no apito inicial. Vale o último palpite.", "El plazo de cada partido cierra al pitazo inicial. Vale el último pronóstico.")}</span>`)}
+  `;
+  const text = L(
+    locale,
+    `${subject}
+
+Olá, ${args.nickname}. Começou o mata-mata da reta final:
+${args.games.map((g) => `- ${g.label} (${g.when})`).join("\n")}
+
+Palpite agora: ${args.matchesUrl}`,
+    `${subject}
+
+Hola, ${args.nickname}. Empezó la fase decisiva:
+${args.games.map((g) => `- ${g.label} (${g.when})`).join("\n")}
+
+Pronostica ahora: ${args.matchesUrl}`,
+  );
+  return {
+    subject,
+    html: shell({
+      locale,
+      title: subject,
+      preheader: L(
+        locale,
+        "Começou o mata-mata da reta final. Faça seus palpites.",
+        "Empezó la fase decisiva. Haz tus pronósticos.",
+      ),
+      bodyHtml: body,
+    }),
+    text,
+  };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")

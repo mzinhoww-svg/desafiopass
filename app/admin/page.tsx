@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { SyncButton } from "./sync-button";
 import { ImportButton } from "./import-button";
+import { OitavasButtons } from "./oitavas-buttons";
 import { formatBrasilia } from "@/lib/utils/dates";
 import { getLocale, tr } from "@/lib/i18n";
 
@@ -94,6 +95,7 @@ export default async function AdminPage() {
         </p>
 
         <div className="mt-1 flex flex-col gap-2">
+          <OitavasButtons />
           <SyncButton />
           <ImportButton />
         </div>
