@@ -10,6 +10,13 @@ import { adminResultSchema, updateMatchSchema } from "@/lib/validations";
 import { applyResult } from "@/lib/results/apply";
 import { syncResults } from "@/lib/results/sync";
 import { importKnockoutBracket } from "@/lib/results/import";
+import { openOitavasBracket } from "@/lib/results/open-oitavas";
+import { getAllMatches } from "@/lib/queries/matches";
+import { sendEmail, appUrl } from "@/lib/email/client";
+import { phaseOpenEmail } from "@/lib/email/templates";
+import { phaseLabel } from "@/lib/phases";
+import { formatBrasilia } from "@/lib/utils/dates";
+import type { Phase } from "@/lib/scoring";
 
 /*
  * Admin encerra a partida e pontua (Task 2.4). Delega para applyResult (lógica
@@ -234,6 +241,132 @@ export async function importBracketAction(
         "Falha ao importar. Veja os logs.",
         "Error al importar. Revisa los logs.",
       ),
+    };
+  }
+}
+
+/*
+ * Abre as OITAVAS em diante (não destrutivo: mantém os 16avos e os palpites já
+ * feitos). Cria/atualiza o chaveamento da reta final com os cruzamentos prováveis.
+ */
+export type OpenBracketState = { error?: string; ok?: boolean; message?: string };
+
+export async function openOitavasAction(
+  _prev: OpenBracketState,
+  _formData: FormData,
+): Promise<OpenBracketState> {
+  void _prev;
+  void _formData;
+  const locale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(locale, "Acesso restrito a admin.", "Acceso restringido a administradores."),
+    };
+  try {
+    const r = await openOitavasBracket();
+    revalidatePath("/partidas");
+    revalidatePath("/");
+    revalidatePath("/ranking");
+    revalidatePath("/admin");
+    return {
+      ok: true,
+      message: tr(
+        locale,
+        `${r.oitavas} oitavas abertas; ${r.later} jogo(s) do chaveamento criado(s) (quartas→final).`,
+        `${r.oitavas} octavos abiertos; ${r.later} partido(s) del cuadro creado(s) (cuartos→final).`,
+      ),
+    };
+  } catch (e) {
+    console.error("[admin] abrir oitavas falhou:", e);
+    return {
+      error: tr(locale, "Falha ao abrir as oitavas. Veja os logs.", "Error al abrir los octavos. Revisa los logs."),
+    };
+  }
+}
+
+/*
+ * Avisa os participantes (que aceitam e-mail) que as oitavas estão abertas, com
+ * a lista dos jogos e um teaser de prêmio surpresa. Envio em lotes.
+ */
+export type AnnounceState = { error?: string; ok?: boolean; message?: string };
+
+export async function announceOitavasAction(
+  _prev: AnnounceState,
+  _formData: FormData,
+): Promise<AnnounceState> {
+  void _prev;
+  void _formData;
+  const adminLocale = await getLocale();
+  if (!(await isAdmin()))
+    return {
+      error: tr(adminLocale, "Acesso restrito a admin.", "Acceso restringido a administradores."),
+    };
+  try {
+    const all = await getAllMatches();
+    const now = Date.now();
+    const oitavas = all.filter(
+      (m) =>
+        m.phase === "oitavas" &&
+        m.status === "agendada" &&
+        new Date(m.kickoffAt).getTime() > now,
+    );
+    if (oitavas.length === 0)
+      return {
+        error: tr(
+          adminLocale,
+          "Nenhuma oitava aberta para avisar. Abra as oitavas primeiro.",
+          "No hay octavos abiertos para avisar. Abre los octavos primero.",
+        ),
+      };
+    const recipients = await db
+      .select({ email: users.email, nickname: users.nickname, locale: users.locale })
+      .from(users)
+      .where(eq(users.emailReminders, true));
+    const matchesUrl = `${appUrl()}/partidas`;
+
+    let sent = 0;
+    const CHUNK = 10;
+    for (let i = 0; i < recipients.length; i += CHUNK) {
+      const batch = recipients.slice(i, i + CHUNK);
+      const results = await Promise.allSettled(
+        batch.map((u) => {
+          const loc = u.locale === "es" ? "es" : "pt";
+          const mail = phaseOpenEmail({
+            nickname: u.nickname,
+            phaseLabel: phaseLabel("oitavas" as Phase, loc),
+            games: oitavas.map((m) => ({
+              label: `${m.homeCode} x ${m.awayCode}`,
+              when: formatBrasilia(new Date(m.kickoffAt)),
+            })),
+            matchesUrl,
+            locale: loc,
+            prizeTeaser: true,
+          });
+          return sendEmail({
+            to: u.email,
+            toName: u.nickname,
+            subject: mail.subject,
+            html: mail.html,
+            text: mail.text,
+          });
+        }),
+      );
+      sent += results.filter(
+        (r) => r.status === "fulfilled" && (r.value as { ok: boolean }).ok,
+      ).length;
+    }
+    return {
+      ok: true,
+      message: tr(
+        adminLocale,
+        `Aviso enviado para ${sent} de ${recipients.length} participante(s).`,
+        `Aviso enviado a ${sent} de ${recipients.length} participante(s).`,
+      ),
+    };
+  } catch (e) {
+    console.error("[admin] avisar oitavas falhou:", e);
+    return {
+      error: tr(adminLocale, "Falha ao enviar avisos. Veja os logs.", "Error al enviar avisos. Revisa los logs."),
     };
   }
 }
