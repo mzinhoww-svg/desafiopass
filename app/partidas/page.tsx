@@ -86,6 +86,30 @@ async function JogosTab({ userId }: { userId: string | null }) {
     list: all.filter((m) => m.phase === phase),
   })).filter((g) => g.list.length > 0);
 
+  // Ordem de exibição: a fase ATUAL primeiro, depois as PASSADAS (mais recente
+  // antes) e por fim as FUTURAS (ainda com placeholders "Vencedor de..."). Assim
+  // sempre aparece primeiro o que dá para palpitar agora.
+  const isPlaceholder = (code: string) =>
+    code.startsWith("W_") || code.startsWith("L_");
+  const bucketOf = (list: (typeof groups)[number]["list"]) => {
+    const allClosed = list.every((m) => m.status === "encerrada");
+    const hasOpenReal = list.some(
+      (m) =>
+        m.status !== "encerrada" &&
+        !isPlaceholder(m.homeCode) &&
+        !isPlaceholder(m.awayCode),
+    );
+    return allClosed ? 1 : hasOpenReal ? 0 : 2; // 0 atual, 1 passada, 2 futura
+  };
+  const ordered = [...groups].sort((a, b) => {
+    const ra = bucketOf(a.list);
+    const rb = bucketOf(b.list);
+    if (ra !== rb) return ra - rb;
+    const ia = PHASE_ORDER.indexOf(a.phase);
+    const ib = PHASE_ORDER.indexOf(b.phase);
+    return ra === 1 ? ib - ia : ia - ib; // passadas: decrescente; resto: crescente
+  });
+
   if (all.length === 0) {
     return (
       <EmptyState
@@ -103,7 +127,7 @@ async function JogosTab({ userId }: { userId: string | null }) {
 
   return (
     <>
-      {groups.map((g) => (
+      {ordered.map((g) => (
         <section key={g.phase} className="mb-6">
           <p className="t-kicker mb-2 text-indigo">{g.label}</p>
           <div className="flex flex-col gap-3">
